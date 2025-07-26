@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
@@ -11,7 +12,10 @@ export default defineConfig({
   },
   // Add resolve extensions
   resolve: {
-    extensions: ['.js', '.jsx', '.json']
+    extensions: ['.jsx', '.js', '.json'],  // JSX first
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
   },
   esbuild: {
     loader: 'jsx',
