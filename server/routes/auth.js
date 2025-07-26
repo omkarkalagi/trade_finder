@@ -47,46 +47,9 @@ router.post('/send-otp', (req, res) => {
 });
 
 // Verify OTP
-router.post('/verify-otp', (req, res) => {
-  try {
-    const { phone, otp } = req.body;
-    if (!phone || !otp) return res.status(400).json({ success: false, message: 'Phone and OTP required' });
-    const storedOtp = otpStore[phone];
-
-    // Check if OTP exists
-    if (!storedOtp) {
-      return res.status(400).json({ success: false, message: 'OTP not found or expired' });
-    }
-
-    // Check expiration
-    if (Date.now() > storedOtp.expires) {
-      delete otpStore[phone];
-      return res.status(400).json({ success: false, message: 'OTP expired' });
-    }
-
-    // Verify OTP
-    if (storedOtp.otp === otp) {
-      delete otpStore[phone];
-
-      // Generate actual JWT token
-      const token = jwt.sign(
-        { phone },
-        process.env.JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-
-      return res.json({
-        success: true,
-        message: 'OTP verified',
-        token, // Send actual token
-        user: { phone } // Minimal user data
-      });
-    }
-
-    res.status(400).json({ success: false, message: 'Invalid OTP' });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
+router.post('/verify-otp', async (req, res) => {
+  // OTP verification logic
+  // Should return JWT token on success
 });
 
 module.exports = router;
