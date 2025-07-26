@@ -1,10 +1,11 @@
-// Universal require solution
-(function() {
-  if (typeof require === 'undefined') {
-    const { createRequire } = (await import('module'));
-    window.require = createRequire(import.meta.url);
-  }
-})();
+// Universal module loader
+try {
+    // Try ES module import first
+    import('module-alias/register');
+} catch (e) {
+    // Fallback to CommonJS require
+    require('module-alias/register');
+}
 
 // Now use require normally
 const express = require('express');
