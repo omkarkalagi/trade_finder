@@ -39,7 +39,7 @@ const preloadRoute = (routeName) => {
   }
 };
 
-export default function App() {
+export function App() {
   return (
     <AuthProvider>
       <Router>
