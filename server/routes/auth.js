@@ -108,4 +108,43 @@ router.post('/verify-otp', async (req, res) => {
   }
 });
 
+// Add this new route for email login
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // In a real app, you would:
+    // 1. Verify email/password against database
+    // 2. Check password hash
+    // 3. Generate JWT token
+
+    // For now, we'll use a placeholder
+    if (email && password) {
+      const token = jwt.sign(
+        { email },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      return res.json({
+        success: true,
+        message: 'Login successful',
+        token,
+        user: { email }
+      });
+    }
+
+    res.status(401).json({
+      success: false,
+      message: 'Invalid credentials'
+    });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
+});
+
 export default router;
