@@ -15,16 +15,20 @@ const app = express();
 
 // Add above other routes
 app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Add this above other routes
-app.get('/', (req, res) => {
-  res.redirect('/health');
-});
+app.get('/', (req, res) => res.redirect('/health'));
 
 // ... rest of your application code
 
 // Start server
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, '0.0.0.0', () => { // Listen on all interfaces
+  console.log(`Server running on port ${PORT}`);
+  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+});
