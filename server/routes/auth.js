@@ -1,10 +1,9 @@
 import express from 'express';
-const router = express.Router();
-const twilio = require('twilio'); // Make sure to install: npm install twilio
-const jwt = require('jsonwebtoken'); // Add at top
+import cors from 'cors';
+import jwt from 'jsonwebtoken';
 
-// In-memory storage for OTPs (replace with database in production)
-const otpStore = {};
+const router = express.Router();
+const otpStore = {}; // Temporary storage for OTPs
 
 // Generate and send OTP
 router.post('/send-otp', (req, res) => {
@@ -46,10 +45,67 @@ router.post('/send-otp', (req, res) => {
   }
 });
 
-// Verify OTP
+// Verify OTP - FULL IMPLEMENTATION
 router.post('/verify-otp', async (req, res) => {
-  // OTP verification logic
-  // Should return JWT token on success
+  try {
+    const { phone, otp } = req.body;
+
+    // Input validation
+    if (!phone || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: 'Phone and OTP required'
+      });
+    }
+
+    // Check if OTP exists
+    const storedOtp = otpStore[phone];
+    if (!storedOtp) {
+      return res.status(400).json({
+        success: false,
+        message: 'OTP not found or expired'
+      });
+    }
+
+    // Check expiration
+    if (Date.now() > storedOtp.expires) {
+      delete otpStore[phone];
+      return res.status(400).json({
+        success: false,
+        message: 'OTP expired'
+      });
+    }
+
+    // Verify OTP
+    if (storedOtp.otp === otp) {
+      delete otpStore[phone];
+
+      // Generate JWT token
+      const token = jwt.sign(
+        { phone },
+        process.env.JWT_SECRET,
+        { expiresIn: '1h' }
+      );
+
+      return res.json({
+        success: true,
+        message: 'OTP verified',
+        token,
+        user: { phone }
+      });
+    }
+
+    res.status(400).json({
+      success: false,
+      message: 'Invalid OTP'
+    });
+  } catch (err) {
+    console.error('OTP verification error:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error'
+    });
+  }
 });
 
-module.exports = router;
+export default router;
