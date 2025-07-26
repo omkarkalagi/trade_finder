@@ -86,3 +86,5 @@ export function App() {
 App.propTypes = {
   // Define your prop types here
 };
+
+export default App;
