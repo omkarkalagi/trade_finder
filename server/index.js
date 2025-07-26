@@ -1,29 +1,35 @@
-require('module-alias/register');
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const { securityHeaders, apiLimiter, sanitizeData, sessionSecurity } = require('./middleware/security');
-const authRoutes = require('./routes/authRoutes');
-const tradeRoutes = require('./routes/tradeRoutes');
-const stockRoutes = require('./routes/stockRoutes');
-const aiRoutes = require('./routes/aiRoutes');
-const newsRoutes = require('@routes/newsRoutes');
-const algoRoutes = require('./routes/algoRoutes');
-const autoTradingRoutes = require('./routes/autoTradingRoutes');
-const marketRoutes = require('./routes/marketRoutes');
-const kiteRoutes = require('@routes/kiteRoutes');
-const compression = require('compression');
-const cluster = require('cluster');
-const numCPUs = require('os').cpus().length;
-const { trainTradingModel } = require('@/services/modelTrainingService');
-const redis = require('redis');
-const { createClient } = require('@redis/client');
-const jwt = require('jsonwebtoken'); // Add this at the top
-require('dotenv').config(); // Load environment variables first
-const dns = require('dns');
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import { securityHeaders, apiLimiter, sanitizeData, sessionSecurity } from './middleware/security';
+import authRoutes from './routes/auth.js';
+import tradeRoutes from './routes/tradeRoutes.js';
+import stockRoutes from './routes/stockRoutes';
+import aiRoutes from './routes/aiRoutes';
+import newsRoutes from '@routes/newsRoutes';
+import algoRoutes from './routes/algoRoutes';
+import autoTradingRoutes from './routes/autoTradingRoutes';
+import marketRoutes from './routes/marketRoutes';
+import kiteRoutes from '@routes/kiteRoutes';
+import compression from 'compression';
+import cluster from 'cluster';
+import { cpus } from 'os';
+import { trainTradingModel } from '@/services/modelTrainingService';
+import redis from 'redis';
+import { createClient } from '@redis/client';
+import jwt from 'jsonwebtoken'; // Add this at the top
+import dotenv from 'dotenv';
+dotenv.config(); // Load environment variables first
+import dns from 'dns';
+import path from 'path';
 console.log('Current directory:', __dirname);
 console.log('Files in directory:', require('fs').readdirSync(__dirname));
 
@@ -127,7 +133,7 @@ if (cluster.isMaster) {
   }
 
   // API routes
-  app.use('/api/auth', require('./routes/auth')); // Fixed path
+  app.use('/api/auth', authRoutes); // Fixed path
   app.use('/api/trade', tradeRoutes);
   app.use('/api/stock', stockRoutes);
   app.use('/api/ai', aiRoutes);
