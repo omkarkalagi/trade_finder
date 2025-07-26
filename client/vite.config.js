@@ -9,4 +9,13 @@ export default defineConfig({
   server: {
     port: 3000,
   },
+  // Add resolve extensions
+  resolve: {
+    extensions: ['.js', '.jsx', '.json']
+  },
+  esbuild: {
+    loader: 'jsx',
+    include: /src\/.*\.jsx?$/,
+    exclude: [],
+  },
 });
