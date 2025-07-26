@@ -8,4 +8,4 @@ const indexPath = path.join(buildPath, 'index.html');
 let content = fs.readFileSync(indexPath, 'utf8');
 content = content.replace(/href="\//g, 'href="./');
 content = content.replace(/src="\//g, 'src="./');
-fs.writeFileSync(indexPath, content, 'utf8'); 
+fs.writeFileSync(indexPath, content, 'utf8');
