@@ -4,6 +4,7 @@ import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout';
 import Loader from './components/Loader';
 import PropTypes from 'prop-types';
+import MarketChart from './components/MarketChart';
 
 // Lazy load all pages with prefetching
 const Dashboard = lazy(() => import(/* webpackPrefetch: true */ './pages/Dashboard'));
@@ -37,6 +38,8 @@ const preloadRoute = (routeName) => {
 };
 
 export function App() {
+  console.log('App component rendering'); // Add this
+
   return (
     // Remove the test div
     <AuthProvider>
