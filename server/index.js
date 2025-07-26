@@ -5,6 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cluster from 'cluster';
+import os from 'os';
 
 // Create __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -28,7 +30,24 @@ app.get('/', (req, res) => res.redirect('/health'));
 
 // Start server
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, '0.0.0.0', () => { // Listen on all interfaces
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+
+if (cluster.isPrimary) {
+  const numCPUs = os.cpus().length;
+  console.log(`Master ${process.pid} is running with ${numCPUs} workers`);
+
+  // Fork workers
+  for (let i = 0; i < Math.min(numCPUs, 4); i++) {
+    cluster.fork();
+  }
+
+  cluster.on('exit', (worker) => {
+    console.log(`Worker ${worker.process.pid} died`);
+    cluster.fork();
+  });
+} else {
+  // Worker process
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Worker ${process.pid} running on port ${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+}
