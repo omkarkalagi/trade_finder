@@ -1,10 +1,4 @@
-﻿
-# Navigate to server directory
-cd C:\Projects\trade_finder\server
-
-# Create a clean package.json
-@'
-{
+﻿{
   "name": "trade_finder-backend",
   "version": "1.0.0",
   "scripts": {
@@ -20,7 +14,3 @@ cd C:\Projects\trade_finder\server
     "redis": "^4.6.13"
   }
 }
-'@ | Set-Content -Path package.json -Encoding UTF8
-
-# Verify file encoding
-Get-Content -Path package.json -Encoding UTF8 
