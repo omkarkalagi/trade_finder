@@ -1,7 +1,7 @@
 // Placeholder authentication service
 import axios from 'axios';
 
-// Remove unused variable
+// Remove unused constant
 const API_URL = "https://trade-finder-uebi.onrender.com/api/auth";
 
 export const loginWithEmail = async (email, password) => {

@@ -5,6 +5,10 @@ import cors from 'cors';
 
 const PORT = process.env.PORT || 10000;
 
+// Import routes at the top level (outside conditionals)
+import authRouter from './routes/auth.js';
+
+// Cluster setup
 if (cluster.isPrimary) {
   console.log(`Master ${process.pid} running`);
   for (let i = 0; i < Math.min(os.cpus().length, 4); i++) {
@@ -19,22 +23,18 @@ if (cluster.isPrimary) {
       'https://trade-finder-three.vercel.app',
       'http://localhost:3000'
     ],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
   }));
-  app.use(express.json()); // Also add this to parse JSON bodies
+  app.use(express.json());
 
   // Routes
-  app.get('/health', (req, res) => res.json({ status: 'OK' }));
-
-  // Mount auth router
-  import authRouter from './routes/auth.js';
   app.use('/api/auth', authRouter);
 
-  // ... any other routers
+  // Health check
+  app.get('/health', (req, res) => res.json({ status: 'OK' }));
 
-  app.listen(PORT, () => {
+  // Start server
+  app.listen(PORT, '0.0.0.0', () => {
     console.log(`Worker ${process.pid} started on port ${PORT}`);
   });
 }
