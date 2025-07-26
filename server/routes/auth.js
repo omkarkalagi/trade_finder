@@ -1,4 +1,4 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
 const twilio = require('twilio'); // Make sure to install: npm install twilio
 const jwt = require('jsonwebtoken'); // Add at top
@@ -11,10 +11,10 @@ router.post('/send-otp', (req, res) => {
   try {
     const { phone } = req.body;
     if (!phone) return res.status(400).json({ success: false, message: 'Phone number required' });
-    
+
     // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    
+
     // Store OTP with expiration (5 minutes)
     otpStore[phone] = {
       otp,
@@ -26,7 +26,7 @@ router.post('/send-otp', (req, res) => {
     // In production, uncomment this Twilio code:
     /*
     const client = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-    
+
     client.messages.create({
       body: `Your OTP is: ${otp}`,
       from: process.env.TWILIO_PHONE_NUMBER,
@@ -67,16 +67,16 @@ router.post('/verify-otp', (req, res) => {
     // Verify OTP
     if (storedOtp.otp === otp) {
       delete otpStore[phone];
-      
+
       // Generate actual JWT token
       const token = jwt.sign(
         { phone },
         process.env.JWT_SECRET,
         { expiresIn: '1h' }
       );
-      
-      return res.json({ 
-        success: true, 
+
+      return res.json({
+        success: true,
         message: 'OTP verified',
         token, // Send actual token
         user: { phone } // Minimal user data
@@ -89,4 +89,4 @@ router.post('/verify-otp', (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

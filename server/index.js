@@ -1,13 +1,20 @@
-// Universal module loader
-try {
-    // Try ES module import first
-    import('module-alias/register');
-} catch (e) {
-    // Fallback to CommonJS require
-    require('module-alias/register');
-}
+// Replace ALL require() with import statements
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-// Now use require normally
-const express = require('express');
-const mongoose = require('mongoose');
-// ... other requires
+// Create __dirname equivalent
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Initialize app
+const app = express();
+
+// ... rest of your application code
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
