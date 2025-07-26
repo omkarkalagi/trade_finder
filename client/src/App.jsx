@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout';
@@ -37,7 +38,7 @@ const preloadRoute = (routeName) => {
   }
 };
 
-function App() {
+export default function App() {
   return (
     <AuthProvider>
       <Router>
@@ -46,32 +47,32 @@ function App() {
             {/* Public routes */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
-            
+
             {/* Protected routes - only accessible when authenticated */}
             <Route element={<Layout preloadRoute={preloadRoute} />}>
-              <Route 
-                path="/dashboard" 
+              <Route
+                path="/dashboard"
                 element={
                   <ProtectedRoute>
                     <Dashboard />
                   </ProtectedRoute>
-                } 
+                }
               />
               {/* Add similar protection for all other private routes */}
-              <Route 
-                path="/portfolio" 
+              <Route
+                path="/portfolio"
                 element={
                   <ProtectedRoute>
                     <Portfolio />
                   </ProtectedRoute>
-                } 
+                }
               />
               {/* ... other protected routes ... */}
             </Route>
-            
+
             {/* Redirect root to login */}
             <Route path="/" element={<RootRedirect />} />
-            
+
             {/* Redirect any unknown paths to login */}
             <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
@@ -80,5 +81,3 @@ function App() {
     </AuthProvider>
   );
 }
-
-export default App;
