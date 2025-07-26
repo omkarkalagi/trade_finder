@@ -17,10 +17,8 @@ const app = express();
 
 // Add above other routes
 app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString()
-  });
+  // Add minimal logic - avoid DB/Redis checks
+  res.status(200).json({ status: 'OK' });
 });
 
 // Add this above other routes
@@ -50,4 +48,15 @@ if (cluster.isPrimary) {
     console.log(`Worker ${process.pid} running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   });
+
+  // Defer heavy initialization
+  setTimeout(() => {
+    try {
+      connectToRedis();
+      initializeMarketDataStream();
+      console.log('Delayed initialization complete');
+    } catch (err) {
+      console.error('Delayed init error:', err);
+    }
+  }, 30000);
 }
