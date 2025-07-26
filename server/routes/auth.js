@@ -103,7 +103,8 @@ router.post('/verify-otp', async (req, res) => {
     console.error('OTP verification error:', err);
     res.status(500).json({
       success: false,
-      message: 'Server error'
+      message: 'Server error',
+      error: err.message  // Send error details to frontend
     });
   }
 });

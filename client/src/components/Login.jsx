@@ -21,12 +21,19 @@ const Login = () => {
     }
   }, [countdown]);
 
+  useEffect(() => {
+    // Test backend connection on component mount
+    axios.get('https://trade-finder-uebi.onrender.com/health')
+      .then(response => console.log('Backend connection:', response.data))
+      .catch(error => console.error('Backend connection failed:', error));
+  }, []);
+
   const handleSendOTP = async () => {
     if (!phone.match(/^\+?[1-9]\d{1,14}$/)) {
       setError('Invalid phone number format');
       return;
     }
-    
+
     setLoading(true);
     setError('');
     try {
@@ -45,12 +52,12 @@ const Login = () => {
       setError('OTP must be 6 digits');
       return;
     }
-    
+
     setLoading(true);
     setError('');
     try {
       const result = await loginWithOTP(phone, otp);
-      
+
       if (result.token) {
         localStorage.setItem('token', result.token);
         navigate('/dashboard');
@@ -67,9 +74,9 @@ const Login = () => {
   return (
     <div className="login-container">
       <h2>Login with OTP</h2>
-      
+
       {error && <div className="error alert">{error}</div>}
-      
+
       <div className="form-group">
         <label>Phone Number</label>
         <input
@@ -99,15 +106,15 @@ const Login = () => {
         {loading ? (
           <LoadingSpinner />
         ) : !otpSent ? (
-          <button 
-            onClick={handleSendOTP} 
+          <button
+            onClick={handleSendOTP}
             disabled={!phone || countdown > 0}
           >
             {countdown > 0 ? `Resend OTP in ${countdown}s` : 'Send OTP'}
           </button>
         ) : (
-          <button 
-            onClick={handleVerifyOTP} 
+          <button
+            onClick={handleVerifyOTP}
             disabled={!otp}
           >
             Verify OTP
@@ -118,4 +125,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

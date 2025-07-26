@@ -19,7 +19,13 @@ if (cluster.isPrimary) {
 
   // Temporary CORS: allow all
   app.use(cors({
-    origin: true,
+    origin: [
+      'https://trade-finder-*-omkar-ds-projects.vercel.app', // Allow all Vercel previews
+      'https://trade-finder.vercel.app', // Your production domain
+      'http://localhost:3000'
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
   }));
 
