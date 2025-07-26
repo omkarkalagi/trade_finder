@@ -1,53 +1,15 @@
 {
-  "name": "alladins-chirag-client",
-  "version": "1.0.0",
+  "name": "client",
   "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "axios": "^1.11.0",
-    "chart.js": "^4.5.0",
-    "history": "^5.3.0",
-    "module-alias": "^2.2.3",
-    "qrcode.react": "^4.2.0",
-    "react": "^18.2.0",
-    "react-chartjs-2": "^5.3.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3",
-    "react-scripts": "5.0.1",
-    "recharts": "^3.1.0",
-    "socket.io-client": "^4.8.1",
-    "web-vitals": "^2.1.4"
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.14",
-    "postcss": "^8.4.21",
-    "tailwindcss": "^3.3.2"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "GENERATE_SOURCEMAP=true react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "vercel-build": "npm run build && npm run analyze"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4"
   }
 }
