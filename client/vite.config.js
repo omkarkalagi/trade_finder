@@ -4,7 +4,11 @@ import path from 'path';
 
 export default defineConfig({
   base: '/', // Ensure base is root
-  plugins: [react()],
+  plugins: [
+    react(),
+    require('tailwindcss'), // Add this
+    require('autoprefixer'), // Add this
+  ],
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
