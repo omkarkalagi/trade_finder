@@ -17,23 +17,16 @@ if (cluster.isPrimary) {
 } else {
   const app = express();
 
-  // Middleware
+  // Temporary CORS: allow all
   app.use(cors({
-    origin: [
-      'https://trade-finder-three.vercel.app',
-      'http://localhost:3000'
-    ],
+    origin: true,
     credentials: true
   }));
+
   app.use(express.json());
-
-  // Routes
   app.use('/api/auth', authRouter);
-
-  // Health check
   app.get('/health', (req, res) => res.json({ status: 'OK' }));
 
-  // Start server
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Worker ${process.pid} started on port ${PORT}`);
   });

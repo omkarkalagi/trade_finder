@@ -6,6 +6,7 @@ import Layout from './components/Layout';
 import Loader from './components/Loader';
 import ProtectedRoute from './components/ProtectedRoute';
 import RootRedirect from './components/RootRedirect';
+import PropTypes from 'prop-types';
 
 // Lazy load all pages with prefetching
 const Dashboard = lazy(() => import(/* webpackPrefetch: true */ './pages/Dashboard'));
@@ -81,3 +82,7 @@ export default function App() {
     </AuthProvider>
   );
 }
+
+App.propTypes = {
+  // Define your prop types here
+};
