@@ -9,50 +9,12 @@ export const AuthContext = createContext({
   logout: () => {}
 }); // Add default values
 
-export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const verifyToken = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setLoading(false);
-        return;
-      }
-      
-      try {
-        const response = await axios.get('/api/auth/verify', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setCurrentUser(response.data.user);
-      } catch (error) {
-        console.error('Token verification failed:', error);
-        localStorage.removeItem('token');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    verifyToken();
-  }, []);
-
-  // Add explicit return of context value
-  const contextValue = {
-    currentUser,
-    loading,
-    login: (user, token) => {
-      localStorage.setItem('token', token);
-      setCurrentUser(user);
-    },
-    logout: () => {
-      localStorage.removeItem('token');
-      setCurrentUser(null);
-    }
-  };
+// Simplify AuthProvider to always be authenticated
+const AuthProvider = ({ children }) => {
+  const [user, setUser] = useState({ isAuthenticated: true }); // Always authenticated
 
   return (
-    <AuthContext.Provider value={contextValue}>
+    <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>
   );
@@ -65,4 +27,4 @@ export const useAuth = () => {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-}; 
+};

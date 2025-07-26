@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext';
 import Layout from './components/Layout';
 import Loader from './components/Loader';
-import ProtectedRoute from './components/ProtectedRoute';
-import RootRedirect from './components/RootRedirect';
 import PropTypes from 'prop-types';
 
 // Lazy load all pages with prefetching
@@ -45,37 +43,25 @@ export function App() {
       <Router>
         <Suspense fallback={<Loader fullscreen />}>
           <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            {/* Redirect root directly to dashboard */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-            {/* Protected routes - only accessible when authenticated */}
-            <Route element={<Layout preloadRoute={preloadRoute} />}>
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Add similar protection for all other private routes */}
-              <Route
-                path="/portfolio"
-                element={
-                  <ProtectedRoute>
-                    <Portfolio />
-                  </ProtectedRoute>
-                }
-              />
-              {/* ... other protected routes ... */}
+            {/* Dashboard route */}
+            <Route path="/dashboard" element={<Dashboard />} />
+
+            {/* Other routes */}
+            <Route element={<Layout />}>
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/algo-trading" element={<AlgoTrading />} />
+              <Route path="/auto-trading" element={<AutoTrading />} />
+              <Route path="/market-chart" element={<MarketChart />} />
+              <Route path="/sector-analysis" element={<SectorAnalysis />} />
+              <Route path="/ai-prediction-bot" element={<AIPredictionBot />} />
+              <Route path="/placeholder" element={<Placeholder />} />
             </Route>
 
-            {/* Redirect root to login */}
-            <Route path="/" element={<RootRedirect />} />
-
-            {/* Redirect any unknown paths to login */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
+            {/* Catch-all redirect to dashboard */}
+            <Route path="*" element={<Navigate to="/dashboard" />} />
           </Routes>
         </Suspense>
       </Router>
