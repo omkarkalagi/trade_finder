@@ -13,6 +13,9 @@ import { createClient } from 'redis';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Declare PORT only once at the top level
+const PORT = process.env.PORT || 10000;
+
 // Initialize app
 const app = express();
 
@@ -41,8 +44,6 @@ app.get('/', (req, res) => res.redirect('/health'));
 // ... rest of your application code
 
 // Start server
-const PORT = process.env.PORT || 10000;
-
 if (cluster.isPrimary) {
   const numCPUs = os.cpus().length;
   console.log(`Master ${process.pid} is running with ${numCPUs} workers`);
@@ -134,7 +135,6 @@ app.get('/', (req, res) => res.redirect('/health'));
 
 // Start the server
 console.time('Server startup');
-const PORT = process.env.PORT || 10000;
 app.listen(PORT, '0.0.0.0', () => {
   console.timeEnd('Server startup');
   console.log(`✅ Server running on port ${PORT}`);
