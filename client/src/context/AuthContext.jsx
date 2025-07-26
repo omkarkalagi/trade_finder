@@ -10,7 +10,7 @@ export const AuthContext = createContext({
 }); // Add default values
 
 // Simplify AuthProvider to always be authenticated
-const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({ isAuthenticated: true }); // Always authenticated
 
   return (
