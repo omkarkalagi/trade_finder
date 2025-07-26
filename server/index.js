@@ -35,13 +35,13 @@ dns.lookup('localhost', (err, address) => {
 if (cluster.isMaster) {
   console.log(`Master ${process.pid} is running`);
   
-  // Safe model training with error handling
-  trainTradingModel()
-    .then(() => console.log('Initial model training completed'))
-    .catch(err => console.error('Initial training failed:', err.message)); // Log only message
+  // Disable intensive training on startup
+  // trainTradingModel()
+  //   .then(() => console.log('Initial model training completed'))
+  //   .catch(err => console.error('Initial training failed:', err));
   
   // Fork workers
-  for (let i = 0; i < numCPUs; i++) {
+  for (let i = 0; i < Math.min(numCPUs, 2); i++) { // Limit to 2 workers
     cluster.fork();
   }
   
@@ -142,6 +142,10 @@ if (cluster.isMaster) {
   app.get('/api', (req, res) => {
     res.json({ message: 'Backend is running!' });
   });
+
+  app.get('/health', (req, res) => {
+    res.status(200).send('OK');
+  });
   
   // Server-side rendering for critical pages
   // app.get(['/', '/dashboard', '/login'], (req, res) => {
@@ -151,10 +155,10 @@ if (cluster.isMaster) {
   // });
   
   // Static files with caching
-  app.use(express.static('client/build', {
+  app.use(express.static(path.join(__dirname, '../../client/build'), {
     maxAge: '1y',
-    setHeaders: (res, path) => {
-      if (path.endsWith('.html')) {
+    setHeaders: (res, filePath) => {
+      if (path.extname(filePath) === '.html') {
         res.setHeader('Cache-Control', 'public, max-age=0');
       }
     }
@@ -184,8 +188,8 @@ if (cluster.isMaster) {
   });
 
   // Start server
-  app.listen(PORT, '127.0.0.1', () => { // Use 127.0.0.1 instead of 0.0.0.0
-    console.log(`✅ Server running on http://127.0.0.1:${PORT}`);
+  app.listen(process.env.PORT || 5001, '0.0.0.0', () => { // Use 127.0.0.1 instead of 0.0.0.0
+    console.log(`✅ Server running on port ${process.env.PORT}`);
     
     try {
       // Start market data stream
@@ -194,11 +198,11 @@ if (cluster.isMaster) {
       console.error('Failed to start market data stream:', err);
     }
     
-    // Schedule periodic model training
-    setInterval(() => {
-      trainTradingModel()
-        .then(() => console.log('Periodic model training completed'))
-        .catch(err => console.error('Periodic training failed', err));
-    }, 2 * 60 * 60 * 1000); // Every 2 hours
+    // Comment out periodic training
+    // setInterval(() => {
+    //   trainTradingModel()
+    //     .then(() => console.log('Periodic model training completed'))
+    //     .catch(err => console.error('Periodic training failed', err));
+    // }, 2 * 60 * 60 * 1000);
   });
 } 

@@ -41,6 +41,9 @@ exports.trainTradingModel = async () => {
       })
     ]);
     
+    // Add sentimentData fallback
+    const sentimentData = socialSentiment?.data || [];
+    
     // 2. Prepare TensorFlow dataset
     const dataset = prepareTensorFlowDataset(marketData, economicData, sentimentData);
     
@@ -62,8 +65,8 @@ exports.trainTradingModel = async () => {
     
     console.log('✅ Intensive model training completed successfully');
     return refinedModel;
-  } catch (error) {
-    console.error('❌ Model training error:', error);
+  } catch (err) {
+    console.error('Model training error:', err.message);
     throw new Error('Failed to train trading model');
   }
 };
