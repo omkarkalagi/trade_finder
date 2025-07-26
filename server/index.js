@@ -10,7 +10,17 @@ import os from 'os';
 import { createClient } from 'redis';
 import helmet from 'helmet';
 import compression from 'compression';
-import rateLimiter from './middleware/rateLimiter';
+import rateLimiter from './middleware/rateLimiter.js';
+import rateLimit from 'express-rate-limit';
+
+// Add try-catch for critical imports
+try {
+  import compression from 'compression';
+} catch (err) {
+  console.error('❌ Missing dependency: compression');
+  console.error('❌ Run: npm install compression');
+  process.exit(1);
+}
 
 // Create __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
@@ -120,7 +130,17 @@ app.use(cors());
 app.use(express.json());
 app.use(helmet());
 app.use(compression());
-app.use(rateLimiter);
+
+// Define rate limiter
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per window
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: 'Too many requests from this IP, please try again after 15 minutes'
+});
+
+app.use(limiter); // Use the rate limiter
 
 // Health check route
 app.get('/health', (req, res) => {
