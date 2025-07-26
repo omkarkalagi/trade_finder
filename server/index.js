@@ -23,6 +23,9 @@ const { createClient } = require('@redis/client');
 const jwt = require('jsonwebtoken'); // Add this at the top
 require('dotenv').config(); // Load environment variables first
 const dns = require('dns');
+const path = require('path');
+console.log('Current directory:', __dirname);
+console.log('Files in directory:', require('fs').readdirSync(__dirname));
 
 dns.lookup('localhost', (err, address) => {
   console.log(`DNS resolution: localhost -> ${address}`);
@@ -77,8 +80,19 @@ if (cluster.isMaster) {
   app.use(express.json({ limit: '10kb' }));
   
   // Update CORS configuration
+  const allowedOrigins = [
+    'https://your-frontend-url.vercel.app', // Your Vercel frontend URL
+    'https://your-backend-url.onrender.com' // Your Render backend URL
+  ];
+  
   app.use(cors({
-    origin: 'http://127.0.0.1:3000', // Update to match frontend
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
@@ -91,18 +105,27 @@ if (cluster.isMaster) {
   //   .catch(err => console.error('MongoDB connection error:', err));
 
   // Redis connection
-  const redisClient = createClient({
-    url: process.env.REDIS_URL,
-    socket: {
-      tls: true,
-      rejectUnauthorized: false
+  let redisClient;
+  try {
+    if (process.env.REDIS_URL) {
+      redisClient = createClient({
+        url: process.env.REDIS_URL,
+        socket: {
+          tls: true,
+          rejectUnauthorized: false
+        }
+      });
+    } else {
+      // Fallback to local Redis
+      redisClient = createClient();
     }
-  });
-
-  redisClient.on('error', err => console.error('Redis error:', err));
-  redisClient.connect()
-    .then(() => console.log('Redis connected'))
-    .catch(err => console.error('Redis connection error:', err)); // Add catch
+    
+    redisClient.on('error', err => console.error('Redis error:', err));
+    await redisClient.connect();
+    console.log('Redis connected');
+  } catch (err) {
+    console.error('Redis connection failed:', err.message);
+  }
   
   // API routes
   app.use('/api/auth', require('./routes/auth')); // Fixed path

@@ -1,9 +1,8 @@
 // Placeholder authentication service
-import { API_BASE_URL } from '../config';
 import axios from 'axios';
 
-// Use environment variable for API URL
-const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5001/api/auth';
+// Remove unused variable
+const API_URL = process.env.REACT_APP_API_URL;
 
 export const loginWithEmail = async (email, password) => {
   try {
