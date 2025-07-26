@@ -129,7 +129,8 @@ process.on('unhandledRejection', (reason, promise) => {
 app.use(cors());
 app.use(express.json());
 app.use(helmet());
-app.use(compression());
+// Comment out the import
+// app.use(compression());
 
 // Define rate limiter
 const limiter = rateLimit({
