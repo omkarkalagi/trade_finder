@@ -8,6 +8,9 @@ import { fileURLToPath } from 'url';
 import cluster from 'cluster';
 import os from 'os';
 import { createClient } from 'redis';
+import helmet from 'helmet';
+import compression from 'compression';
+import rateLimiter from './middleware/rateLimiter';
 
 // Create __dirname equivalent
 const __filename = fileURLToPath(import.meta.url);
