@@ -1,0 +1,6 @@
+{
+  "extends": ["plugin:react/recommended"],
+  "rules": {
+    "no-duplicate-imports": "error"
+  }
+}
