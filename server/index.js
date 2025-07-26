@@ -120,8 +120,11 @@ app.use(rateLimiter);
 
 // Health check route
 app.get('/health', (req, res) => {
-  console.log('Health check received');
-  res.status(200).json({ status: 'OK' });
+  console.log('✅ Health check passed');
+  res.status(200).json({
+    status: 'OK',
+    timestamp: new Date().toISOString()
+  });
 });
 
 // ... other routes (auth, market, etc.) ...
@@ -134,8 +137,8 @@ console.time('Server startup');
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, '0.0.0.0', () => {
   console.timeEnd('Server startup');
-  console.log(`Server running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`✅ Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 
 // Defer heavy operations
