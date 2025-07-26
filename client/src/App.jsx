@@ -40,45 +40,48 @@ const preloadRoute = (routeName) => {
 
 export function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <Suspense fallback={<Loader fullscreen />}>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+    <div>
+      <h1 style={{color: 'red'}}>TEST - If you see this, React is working</h1>
+      <AuthProvider>
+        <Router>
+          <Suspense fallback={<Loader fullscreen />}>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
 
-            {/* Protected routes - only accessible when authenticated */}
-            <Route element={<Layout preloadRoute={preloadRoute} />}>
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Add similar protection for all other private routes */}
-              <Route
-                path="/portfolio"
-                element={
-                  <ProtectedRoute>
-                    <Portfolio />
-                  </ProtectedRoute>
-                }
-              />
-              {/* ... other protected routes ... */}
-            </Route>
+              {/* Protected routes - only accessible when authenticated */}
+              <Route element={<Layout preloadRoute={preloadRoute} />}>
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* Add similar protection for all other private routes */}
+                <Route
+                  path="/portfolio"
+                  element={
+                    <ProtectedRoute>
+                      <Portfolio />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* ... other protected routes ... */}
+              </Route>
 
-            {/* Redirect root to login */}
-            <Route path="/" element={<RootRedirect />} />
+              {/* Redirect root to login */}
+              <Route path="/" element={<RootRedirect />} />
 
-            {/* Redirect any unknown paths to login */}
-            <Route path="*" element={<Navigate to="/login" replace />} />
-          </Routes>
-        </Suspense>
-      </Router>
-    </AuthProvider>
+              {/* Redirect any unknown paths to login */}
+              <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+          </Suspense>
+        </Router>
+      </AuthProvider>
+    </div>
   );
 }
 
