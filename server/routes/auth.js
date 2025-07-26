@@ -148,4 +148,9 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Add temporary open route
+router.get('/status', (req, res) => {
+  res.json({ status: 'Auth disabled' });
+});
+
 export default router;
