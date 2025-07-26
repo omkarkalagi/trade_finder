@@ -1,14 +1,20 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import tailwindcss from 'tailwindcss'; // Add this import
+import autoprefixer from 'autoprefixer'; // Add this import
 
 export default defineConfig({
-  base: '/', // Ensure base is root
-  plugins: [
-    react(),
-    require('tailwindcss'), // Add this
-    require('autoprefixer'), // Add this
-  ],
+  base: '/',
+  plugins: [react()],
+  css: {
+    postcss: {
+      plugins: [
+        tailwindcss(), // Use as ES module
+        autoprefixer() // Use as ES module
+      ]
+    }
+  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
@@ -22,9 +28,8 @@ export default defineConfig({
   server: {
     port: 3000,
   },
-  // Add resolve extensions
   resolve: {
-    extensions: ['.jsx', '.js', '.json'],  // JSX first
+    extensions: ['.jsx', '.js', '.json'],
     alias: {
       '@': path.resolve(__dirname, './src')
     }
