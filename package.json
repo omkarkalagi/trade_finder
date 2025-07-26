@@ -1,0 +1,27 @@
+{
+  "name": "alladins-chirag-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "recharts": "^3.1.0",
+    "redis": "^4.6.13",
+    "socket.io-client": "^4.8.1"
+  },
+  "_moduleAliases": {
+    "@": "./",
+    "@controllers": "./controllers",
+    "@models": "./models",
+    "@routes": "./routes",
+    "@services": "./services",
+    "@utils": "./utils",
+    "@middleware": "./middleware",
+    "@config": "./config"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
