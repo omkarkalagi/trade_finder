@@ -1,4 +1,4 @@
-# Alladins Chirag - AI Stock Trading Platform
+# Trade Finder - AI Stock Trading Platform
 
 ## Features
 - Real-time Indian stock market data via Zerodha Kite API
