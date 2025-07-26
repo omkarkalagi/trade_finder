@@ -105,8 +105,8 @@ if (cluster.isPrimary) {
 
 // Placeholder functions (implement these in separate files)
 async function initializeMarketDataStream() {
-  console.log("Market data stream starting...");
-  // Implement your market data stream logic here
+  // Implement your market data streaming logic
+  console.log("Market data stream started");
 }
 
 // Start the server in non-cluster mode if not using clustering
