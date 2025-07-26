@@ -2,6 +2,7 @@ import express from 'express';
 import cluster from 'cluster';
 import os from 'os';
 import cors from 'cors';
+import { createClient } from 'redis';
 
 const PORT = process.env.PORT || 10000;
 
@@ -33,7 +34,27 @@ if (cluster.isPrimary) {
   app.use('/api/auth', authRouter);
   app.get('/health', (req, res) => res.json({ status: 'OK' }));
 
+  // Redis connection
+  if (process.env.REDIS_URL) {
+    const redisClient = createClient({
+      url: process.env.REDIS_URL,
+      socket: {
+        tls: true,
+        rejectUnauthorized: false
+      }
+    });
+
+    redisClient.on('error', err => console.error('Redis error:', err));
+
+    await redisClient.connect()
+      .then(() => console.log('✅ Redis connected'))
+      .catch(err => console.error('❌ Redis connection failed:', err));
+  }
+
   app.listen(PORT, '0.0.0.0', () => {
     console.log(`Worker ${process.pid} started on port ${PORT}`);
   });
 }
+
+console.log(`Using Redis: ${process.env.REDIS_URL ? 'Yes' : 'No'}`);
+console.log(`JWT Secret: ${process.env.JWT_SECRET ? 'Set' : 'Missing'}`);
