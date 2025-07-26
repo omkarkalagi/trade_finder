@@ -1,1 +1,0 @@
-import { QRCodeSVG } from 'qrcode.react'; 

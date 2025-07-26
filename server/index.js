@@ -13,6 +13,11 @@ const __dirname = path.dirname(__filename);
 // Initialize app
 const app = express();
 
+// Add above other routes
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 // ... rest of your application code
 
 // Start server
