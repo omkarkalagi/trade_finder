@@ -1,25 +1,26 @@
 import React from 'react';
 
-const Loader = ({ size = 'md', color = 'blue' }) => {
-  const sizeClasses = {
-    sm: 'h-6 w-6',
-    md: 'h-8 w-8',
-    lg: 'h-12 w-12',
-    xl: 'h-16 w-16'
-  };
-  
-  const colorClasses = {
-    blue: 'border-blue-500',
-    green: 'border-green-500',
-    purple: 'border-purple-500',
-    gray: 'border-gray-500'
-  };
-  
+const Loader = ({ fullscreen = false }) => {
+  const loaderContent = (
+    <div className="flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      <span className="ml-3 text-gray-600">Loading...</span>
+    </div>
+  );
+
+  if (fullscreen) {
+    return (
+      <div className="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-50">
+        {loaderContent}
+      </div>
+    );
+  }
+
   return (
-    <div className="flex justify-center items-center">
-      <div className={`animate-spin rounded-full ${sizeClasses[size]} border-t-2 ${colorClasses[color]} border-opacity-50`}></div>
+    <div className="flex items-center justify-center p-8">
+      {loaderContent}
     </div>
   );
 };
 
-export default Loader; 
+export default Loader;

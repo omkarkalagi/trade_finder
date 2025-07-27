@@ -1,456 +1,320 @@
-import React, { useState, useEffect } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { 
-  Chart as ChartJS, 
-  CategoryScale, 
-  LinearScale, 
-  BarElement, 
-  Title, 
-  Tooltip, 
-  Legend 
-} from 'chart.js';
-import { QRCodeSVG } from 'qrcode.react';
-import axios from 'axios';
-import { generateTradingStrategies } from '../services/algoService';
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+import React, { useState } from 'react';
+import {
+  ChartBarIcon,
+  CogIcon,
+  PlayIcon,
+  PauseIcon,
+  CurrencyDollarIcon,
+  TrendingUpIcon
+} from '@heroicons/react/24/outline';
 
 const AlgoTrading = () => {
-  const [budget, setBudget] = useState(100000);
-  const [strategies, setStrategies] = useState([]);
-  const [loading, setLoading] = useState(false);
-  
-  // Auto-trading states
-  const [autoTradeAmount, setAutoTradeAmount] = useState(100000);
-  const [isPaymentProcessing, setIsPaymentProcessing] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [autoTrades, setAutoTrades] = useState([]);
-  const [expectedProfit, setExpectedProfit] = useState(0);
-  const [expectedTime, setExpectedTime] = useState(0); // in hours
-  const [timeLeft, setTimeLeft] = useState(0); // in seconds
-  const [currentProfit, setCurrentProfit] = useState(0);
-  const [paymentId, setPaymentId] = useState('');
-  const [tradeHistory, setTradeHistory] = useState([]);
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState('rsi');
+  const [isRunning, setIsRunning] = useState(false);
+  const [parameters, setParameters] = useState({
+    rsi: { period: 14, overbought: 70, oversold: 30 },
+    macd: { fastPeriod: 12, slowPeriod: 26, signalPeriod: 9 },
+    bollinger: { period: 20, stdDev: 2 },
+    movingAverage: { shortPeriod: 10, longPeriod: 50 }
+  });
 
-  const generateStrategies = () => {
-    setLoading(true);
-    
-    // Simulate AI strategy generation
-    setTimeout(() => {
-      const newStrategies = [
-        {
-          id: 1,
-          stock: 'RELIANCE',
-          buyPrice: 2435.50,
-          sellPrice: 2550.00,
-          quantity: Math.floor(budget * 0.3 / 2435.50),
-          holdingPeriod: '1-3 days',
-          confidence: 88,
-          rationale: 'Breakout from consolidation pattern with high volume'
-        },
-        {
-          id: 2,
-          stock: 'HDFCBANK',
-          buyPrice: 1630.25,
-          sellPrice: 1700.00,
-          quantity: Math.floor(budget * 0.25 / 1630.25),
-          holdingPeriod: '2-5 days',
-          confidence: 82,
-          rationale: 'Oversold RSI with institutional buying'
-        },
-        {
-          id: 3,
-          stock: 'INFY',
-          buyPrice: 1405.75,
-          sellPrice: 1480.00,
-          quantity: Math.floor(budget * 0.2 / 1405.75),
-          holdingPeriod: '3-7 days',
-          confidence: 79,
-          rationale: 'Bullish divergence on MACD indicator'
-        },
-        {
-          id: 4,
-          stock: 'BAJFINANCE',
-          buyPrice: 7200.00,
-          sellPrice: 7500.00,
-          quantity: Math.floor(budget * 0.15 / 7200.00),
-          holdingPeriod: '1-2 weeks',
-          confidence: 85,
-          rationale: 'Strong earnings growth potential'
-        },
-        {
-          id: 5,
-          stock: 'TATAMOTORS',
-          buyPrice: 850.50,
-          sellPrice: 900.00,
-          quantity: Math.floor(budget * 0.1 / 850.50),
-          holdingPeriod: '3-5 days',
-          confidence: 76,
-          rationale: 'Sector rotation into automotive stocks'
-        }
-      ];
-      
-      setStrategies(newStrategies);
-      setLoading(false);
-    }, 1500);
+  const [algorithms] = useState([
+    {
+      id: 'rsi',
+      name: 'RSI Strategy',
+      description: 'Relative Strength Index based trading signals',
+      parameters: ['period', 'overbought', 'oversold']
+    },
+    {
+      id: 'macd',
+      name: 'MACD Strategy',
+      description: 'Moving Average Convergence Divergence signals',
+      parameters: ['fastPeriod', 'slowPeriod', 'signalPeriod']
+    },
+    {
+      id: 'bollinger',
+      name: 'Bollinger Bands',
+      description: 'Price channel breakout strategy',
+      parameters: ['period', 'stdDev']
+    },
+    {
+      id: 'movingAverage',
+      name: 'Moving Average Crossover',
+      description: 'Short and long term MA crossover signals',
+      parameters: ['shortPeriod', 'longPeriod']
+    }
+  ]);
+
+  const [backtestResults] = useState({
+    totalTrades: 89,
+    profitableTrades: 52,
+    lossTrades: 37,
+    winRate: 58.4,
+    totalReturn: 23.5,
+    maxDrawdown: -8.2,
+    sharpeRatio: 1.8
+  });
+
+  const [liveSignals] = useState([
+    { symbol: 'RELIANCE', signal: 'BUY', strength: 'Strong', price: 2456.50, time: '10:30 AM' },
+    { symbol: 'TCS', signal: 'SELL', strength: 'Weak', price: 3456.75, time: '11:15 AM' },
+    { symbol: 'INFY', signal: 'HOLD', strength: 'Neutral', price: 1456.25, time: '12:00 PM' },
+    { symbol: 'HDFC', signal: 'BUY', strength: 'Strong', price: 1654.30, time: '12:45 PM' }
+  ]);
+
+  const handleStartAlgorithm = () => {
+    setIsRunning(true);
+    // Add actual algorithm start logic here
   };
 
-  // Calculate potential profits
-  const calculateProfit = (strategy) => {
-    const investment = strategy.buyPrice * strategy.quantity;
-    const returns = strategy.sellPrice * strategy.quantity;
-    return {
-      investment,
-      returns,
-      profit: returns - investment,
-      roi: ((returns - investment) / investment * 100).toFixed(2)
-    };
+  const handleStopAlgorithm = () => {
+    setIsRunning(false);
+    // Add actual algorithm stop logic here
   };
 
-  // Prepare data for chart
-  const chartData = {
-    labels: strategies.map(s => s.stock),
-    datasets: [
-      {
-        label: 'Potential ROI (%)',
-        data: strategies.map(s => parseFloat(calculateProfit(s).roi)),
-        backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        borderColor: 'rgb(75, 192, 192)',
-        borderWidth: 1
+  const handleParameterChange = (param, value) => {
+    setParameters(prev => ({
+      ...prev,
+      [selectedAlgorithm]: {
+        ...prev[selectedAlgorithm],
+        [param]: Number(value)
       }
-    ]
-  };
-
-  // Simulate payment processing and auto-trade execution
-  const handleAutoTradePayment = async () => {
-    setIsPaymentProcessing(true);
-    
-    try {
-      // In real app, this would call your payment API
-      const paymentResponse = await axios.post('/api/payments/create', {
-        amount: autoTradeAmount,
-        currency: 'INR'
-      });
-      
-      setPaymentId(paymentResponse.data.id);
-      
-      // Simulate payment confirmation
-      setTimeout(async () => {
-        setIsPaymentProcessing(false);
-        setPaymentSuccess(true);
-        
-        // Execute auto-trades
-        const executionResponse = await axios.post('/api/auto-trading/execute', {
-          amount: autoTradeAmount,
-          paymentId: paymentResponse.data.id
-        });
-        
-        setAutoTrades(executionResponse.data.trades);
-        setExpectedProfit(executionResponse.data.expectedProfit);
-        setExpectedTime(executionResponse.data.expectedTimeHours);
-        setTimeLeft(executionResponse.data.expectedTimeHours * 3600);
-        setTradeHistory(executionResponse.data.tradeHistory);
-      }, 3000);
-    } catch (error) {
-      console.error('Payment error:', error);
-      setIsPaymentProcessing(false);
-    }
-  };
-
-  // Countdown timer and profit simulation
-  useEffect(() => {
-    let timer;
-    if (paymentSuccess && timeLeft > 0) {
-      timer = setInterval(() => {
-        setTimeLeft(prev => prev - 1);
-        
-        // Simulate profit growth (linear for demo)
-        const progress = 1 - (timeLeft / (expectedTime * 3600));
-        setCurrentProfit(Math.floor(expectedProfit * progress));
-      }, 1000);
-    }
-    return () => clearInterval(timer);
-  }, [paymentSuccess, timeLeft, expectedProfit, expectedTime]);
-
-  // Format time for display
-  const formatTime = (seconds) => {
-    const days = Math.floor(seconds / (3600 * 24));
-    const hours = Math.floor((seconds % (3600 * 24)) / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    return `${days}d ${hours}h ${minutes}m ${secs}s`;
+    }));
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">Algorithmic Trading</h1>
-      
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Investment Parameters</h2>
-        <div className="flex items-center space-x-4">
-          <div className="flex-1">
-            <label className="block text-gray-700 mb-2">Investment Budget (₹)</label>
-            <input
-              type="range"
-              min="10000"
-              max="1000000"
-              step="10000"
-              value={budget}
-              onChange={(e) => setBudget(Number(e.target.value))}
-              className="w-full"
-            />
-            <div className="text-center mt-2 text-lg font-semibold">
-              ₹{budget.toLocaleString()}
-            </div>
-          </div>
-          <button
-            onClick={generateStrategies}
-            disabled={loading}
-            className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-          >
-            {loading ? 'Generating Strategies...' : 'Generate Strategies'}
-          </button>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Algorithmic Trading</h1>
+          <p className="text-gray-600 mt-2">Advanced algorithmic trading strategies with real-time signals</p>
         </div>
-      </div>
-      
-      {strategies.length > 0 && (
-        <>
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Strategy Performance</h2>
-            <div className="h-80">
-              <Bar 
-                data={chartData} 
-                options={{
-                  responsive: true,
-                  maintainAspectRatio: false,
-                  plugins: {
-                    legend: { position: 'top' },
-                    title: { display: true, text: 'Potential Return on Investment' }
-                  }
-                }}
-              />
+
+        {/* Algorithm Selection and Control */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          {/* Algorithm Selection */}
+          <div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-semibold text-gray-900">Algorithm Control</h2>
+              <div className="flex items-center space-x-4">
+                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                  isRunning ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                }`}>
+                  {isRunning ? 'Running' : 'Stopped'}
+                </span>
+              </div>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {strategies.map(strategy => {
-              const profitData = calculateProfit(strategy);
-              
-              return (
-                <div key={strategy.id} className="bg-white rounded-xl shadow-md p-4">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <h3 className="font-bold text-lg">{strategy.stock}</h3>
-                      <div className="text-sm text-gray-500">
-                        Confidence: <span className="font-semibold">{strategy.confidence}%</span>
-                      </div>
-                    </div>
-                    <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm">
-                      Hold: {strategy.holdingPeriod}
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <div className="text-gray-500 text-sm">Buy At</div>
-                      <div className="font-bold">₹{strategy.buyPrice.toFixed(2)}</div>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <div className="text-gray-500 text-sm">Sell At</div>
-                      <div className="font-bold">₹{strategy.sellPrice.toFixed(2)}</div>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <div className="text-gray-500 text-sm">Quantity</div>
-                      <div className="font-bold">{strategy.quantity}</div>
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded-lg">
-                      <div className="text-gray-500 text-sm">ROI</div>
-                      <div className="font-bold text-green-600">{profitData.roi}%</div>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-3">
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Investment:</span>
-                      <span>₹{profitData.investment.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between text-sm mb-1">
-                      <span>Expected Returns:</span>
-                      <span>₹{profitData.returns.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between font-semibold mt-2">
-                      <span>Potential Profit:</span>
-                      <span className="text-green-600">₹{profitData.profit.toLocaleString()}</span>
-                    </div>
-                  </div>
-                  
-                  <div className="text-sm text-gray-600 mt-3">
-                    <span className="font-medium">Rationale:</span> {strategy.rationale}
-                  </div>
-                  
-                  <button className="w-full mt-4 bg-blue-100 text-blue-700 py-2 rounded-lg hover:bg-blue-200">
-                    Execute This Strategy
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Select Algorithm</label>
+                <select
+                  value={selectedAlgorithm}
+                  onChange={(e) => setSelectedAlgorithm(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {algorithms.map(algo => (
+                    <option key={algo.id} value={algo.id}>{algo.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-end space-x-4">
+                {!isRunning ? (
+                  <button
+                    onClick={handleStartAlgorithm}
+                    className="flex items-center px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                  >
+                    <PlayIcon className="h-4 w-4 mr-2" />
+                    Start
                   </button>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-      
-      {/* Auto Trading Section */}
-      <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-        <h2 className="text-xl font-semibold mb-4">Auto Trading</h2>
-        
-        {!paymentSuccess ? (
-          <>
-            <p className="mb-4">
-              Enter the amount you want to invest in auto-trading. Our AI will automatically execute 
-              trades and manage your portfolio to maximize returns.
-            </p>
-            
-            <div className="flex items-center space-x-4">
-              <div className="flex-1">
-                <label className="block text-gray-700 mb-2">Investment Amount (₹)</label>
-                <input
-                  type="range"
-                  min="10000"
-                  max="1000000"
-                  step="10000"
-                  value={autoTradeAmount}
-                  onChange={(e) => setAutoTradeAmount(Number(e.target.value))}
-                  className="w-full"
-                />
-                <div className="text-center mt-2 text-lg font-semibold">
-                  ₹{autoTradeAmount.toLocaleString()}
-                </div>
+                ) : (
+                  <button
+                    onClick={handleStopAlgorithm}
+                    className="flex items-center px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                  >
+                    <PauseIcon className="h-4 w-4 mr-2" />
+                    Stop
+                  </button>
+                )}
+
+                <button className="flex items-center px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+                  <CogIcon className="h-4 w-4 mr-2" />
+                  Settings
+                </button>
               </div>
-              
-              <button
-                onClick={handleAutoTradePayment}
-                disabled={isPaymentProcessing}
-                className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 disabled:bg-gray-400"
-              >
-                {isPaymentProcessing ? 'Processing...' : 'Start Auto Trading'}
-              </button>
             </div>
-            
-            {isPaymentProcessing && (
-              <div className="mt-6 text-center">
-                <div className="mb-4">Scan QR Code to Pay</div>
-                <QRCodeSVG 
-                  value={`upi://pay?pa=kalagigroup@upi&pn=Kalagi%20Group&am=${autoTradeAmount}&tn=AutoTrading`}
-                  size={256}
-                  className="mx-auto border p-2 rounded-lg"
-                />
-                <div className="mt-4 text-sm text-gray-500">
-                  Pay ₹{autoTradeAmount.toLocaleString()} to start auto trading
-                </div>
-              </div>
-            )}
-          </>
-        ) : (
-          <div>
-            <div className="bg-green-50 text-green-800 p-4 rounded-lg mb-6">
-              <h3 className="font-bold text-lg mb-2">Auto Trading Activated!</h3>
-              <p>
-                Your investment of ₹{autoTradeAmount.toLocaleString()} is being managed by our AI. 
-                Expected profit: ₹{expectedProfit.toLocaleString()} in {expectedTime} hours.
+
+            {/* Algorithm Description */}
+            <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-medium text-gray-900 mb-2">
+                {algorithms.find(a => a.id === selectedAlgorithm)?.name}
+              </h4>
+              <p className="text-sm text-gray-600">
+                {algorithms.find(a => a.id === selectedAlgorithm)?.description}
               </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-bold text-lg mb-2">Profit Progress</h3>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-blue-700 mb-2">
-                    ₹{currentProfit.toLocaleString()}
-                  </div>
-                  <div className="text-gray-600">
-                    of ₹{expectedProfit.toLocaleString()} expected
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <div className="flex justify-between mb-1">
-                    <span>Time remaining:</span>
-                    <span>{formatTime(timeLeft)}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div 
-                      className="bg-blue-600 h-2.5 rounded-full" 
-                      style={{ width: `${((expectedTime * 3600 - timeLeft) / (expectedTime * 3600)) * 100}%` }}
-                    ></div>
-                  </div>
-                </div>
+          </div>
+
+          {/* Quick Stats */}
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Stats</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Win Rate</span>
+                <span className="font-semibold text-green-600">{backtestResults.winRate}%</span>
               </div>
-              
-              <div className="bg-purple-50 p-4 rounded-lg">
-                <h3 className="font-bold text-lg mb-2">Current Portfolio</h3>
-                <div className="space-y-2">
-                  {autoTrades.map((trade, index) => (
-                    <div key={index} className="flex justify-between">
-                      <span className="font-medium">{trade.stock}</span>
-                      <span>{trade.quantity} shares</span>
-                      <span className={`${trade.action === 'BUY' ? 'text-green-600' : 'text-red-600'}`}>
-                        {trade.action}
-                      </span>
-                    </div>
-                  ))}
-                </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Total Return</span>
+                <span className="font-semibold text-blue-600">{backtestResults.totalReturn}%</span>
               </div>
-            </div>
-            
-            <div className="mb-6">
-              <h3 className="font-bold text-lg mb-4">Trade History</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-2 text-left">Time</th>
-                      <th className="px-4 py-2 text-left">Stock</th>
-                      <th className="px-4 py-2 text-left">Action</th>
-                      <th className="px-4 py-2 text-right">Price</th>
-                      <th className="px-4 py-2 text-right">Quantity</th>
-                      <th className="px-4 py-2 text-right">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {tradeHistory.map((trade, index) => (
-                      <tr key={index}>
-                        <td className="px-4 py-2 whitespace-nowrap">{trade.time}</td>
-                        <td className="px-4 py-2 font-medium">{trade.stock}</td>
-                        <td className={`px-4 py-2 font-semibold ${
-                          trade.action === 'BUY' ? 'text-green-600' : 'text-red-600'
-                        }`}>
-                          {trade.action}
-                        </td>
-                        <td className="px-4 py-2 text-right">₹{trade.price.toFixed(2)}</td>
-                        <td className="px-4 py-2 text-right">{trade.quantity}</td>
-                        <td className="px-4 py-2 text-right">₹{(trade.price * trade.quantity).toLocaleString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Sharpe Ratio</span>
+                <span className="font-semibold text-gray-900">{backtestResults.sharpeRatio}</span>
               </div>
-            </div>
-            
-            <div className="text-center">
-              <button 
-                className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
-                onClick={() => {
-                  setPaymentSuccess(false);
-                  setAutoTrades([]);
-                  setTradeHistory([]);
-                }}
-              >
-                Stop Auto Trading
-              </button>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-600">Max Drawdown</span>
+                <span className="font-semibold text-red-600">{backtestResults.maxDrawdown}%</span>
+              </div>
             </div>
           </div>
-        )}
+        </div>
+
+        {/* Parameters Configuration */}
+        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Algorithm Parameters</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {algorithms.find(a => a.id === selectedAlgorithm)?.parameters.map(param => (
+              <div key={param}>
+                <label className="block text-sm font-medium text-gray-700 mb-2 capitalize">
+                  {param.replace(/([A-Z])/g, ' $1').trim()}
+                </label>
+                <input
+                  type="number"
+                  value={parameters[selectedAlgorithm][param]}
+                  onChange={(e) => handleParameterChange(param, e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Backtest Results */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center">
+              <ChartBarIcon className="h-8 w-8 text-blue-500 mr-3" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Trades</p>
+                <p className="text-2xl font-bold text-gray-900">{backtestResults.totalTrades}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center">
+              <TrendingUpIcon className="h-8 w-8 text-green-500 mr-3" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Profitable Trades</p>
+                <p className="text-2xl font-bold text-green-600">{backtestResults.profitableTrades}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center">
+              <span role="img" aria-label="down">📉</span>
+              <div>
+                <p className="text-sm font-medium text-gray-600">Loss Trades</p>
+                <p className="text-2xl font-bold text-red-600">{backtestResults.lossTrades}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="flex items-center">
+              <CurrencyDollarIcon className="h-8 w-8 text-blue-500 mr-3" />
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Return</p>
+                <p className="text-2xl font-bold text-blue-600">{backtestResults.totalReturn}%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Signals and Performance Chart */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Live Signals</h3>
+            <div className="space-y-3">
+              {liveSignals.map((signal, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div className="flex items-center">
+                    <div className={`w-3 h-3 rounded-full mr-3 ${
+                      signal.signal === 'BUY' ? 'bg-green-500' :
+                      signal.signal === 'SELL' ? 'bg-red-500' : 'bg-yellow-500'
+                    }`}></div>
+                    <div>
+                      <p className="font-medium text-gray-900">{signal.symbol}</p>
+                      <p className="text-sm text-gray-600">₹{signal.price}</p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className={`font-medium ${
+                      signal.signal === 'BUY' ? 'text-green-600' :
+                      signal.signal === 'SELL' ? 'text-red-600' : 'text-yellow-600'
+                    }`}>
+                      {signal.signal}
+                    </p>
+                    <p className="text-sm text-gray-600">{signal.strength}</p>
+                    <p className="text-xs text-gray-500">{signal.time}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Chart</h3>
+            <div className="h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+              <p className="text-gray-500">Algorithm performance chart will be displayed here</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Algorithm Comparison */}
+        <div className="mt-8 bg-white rounded-xl shadow-md p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Algorithm Comparison</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Algorithm</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Win Rate</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Return</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sharpe Ratio</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Max Drawdown</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {algorithms.map((algo, index) => (
+                  <tr key={algo.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{algo.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{Math.floor(Math.random() * 30) + 50}%</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{Math.floor(Math.random() * 40) + 10}%</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{(Math.random() * 2 + 0.5).toFixed(1)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">-{Math.floor(Math.random() * 15) + 5}%</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default AlgoTrading; 
+export default AlgoTrading;
