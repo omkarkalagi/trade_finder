@@ -1,30 +1,18 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import {
-  HomeIcon,
-  ChartBarIcon,
-  CogIcon,
-  UserIcon,
-  BellIcon,
-  Bars3Icon,
-  XMarkIcon,
-  CurrencyDollarIcon,
-  ChartPieIcon,
-  CpuChipIcon,
-} from '@heroicons/react/24/outline';
 
 const Layout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: HomeIcon },
-    { name: 'Portfolio', href: '/portfolio', icon: ChartPieIcon },
-    { name: 'Algo Trading', href: '/algo-trading', icon: CpuChipIcon },
-    { name: 'Auto Trading', href: '/auto-trading', icon: CogIcon },
-    { name: 'Market Chart', href: '/market-chart', icon: ChartBarIcon },
-    { name: 'Sector Analysis', href: '/sector-analysis', icon: ChartBarIcon },
-    { name: 'AI Prediction Bot', href: '/ai-prediction-bot', icon: CpuChipIcon },
+    { name: 'Dashboard', href: '/dashboard', icon: '🏠' },
+    { name: 'Portfolio', href: '/portfolio', icon: '📊' },
+    { name: 'Algo Trading', href: '/algo-trading', icon: '🤖' },
+    { name: 'Auto Trading', href: '/auto-trading', icon: '⚙️' },
+    { name: 'Market Chart', href: '/market-chart', icon: '📈' },
+    { name: 'Sector Analysis', href: '/sector-analysis', icon: '🏢' },
+    { name: 'AI Prediction Bot', href: '/ai-prediction-bot', icon: '🧠' },
   ];
 
   const isActive = (href) => location.pathname === href;
@@ -41,7 +29,7 @@ const Layout = () => {
               onClick={() => setSidebarOpen(false)}
               className="text-gray-400 hover:text-gray-600"
             >
-              <XMarkIcon className="h-6 w-6" />
+              <span className="text-2xl">✕</span>
             </button>
           </div>
           <nav className="flex-1 space-y-1 px-2 py-4">
@@ -56,7 +44,7 @@ const Layout = () => {
                 }`}
                 onClick={() => setSidebarOpen(false)}
               >
-                <item.icon className="mr-3 h-5 w-5" />
+                <span className="mr-3 text-lg">{item.icon}</span>
                 {item.name}
               </Link>
             ))}
@@ -81,7 +69,7 @@ const Layout = () => {
                     : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                 }`}
               >
-                <item.icon className="mr-3 h-5 w-5" />
+                <span className="mr-3 text-lg">{item.icon}</span>
                 {item.name}
               </Link>
             ))}
@@ -98,7 +86,7 @@ const Layout = () => {
             className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
             onClick={() => setSidebarOpen(true)}
           >
-            <Bars3Icon className="h-6 w-6" />
+            <span className="text-2xl">☰</span>
           </button>
 
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
@@ -106,14 +94,14 @@ const Layout = () => {
             <div className="flex items-center gap-x-4 lg:gap-x-6">
               {/* Notifications */}
               <button className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
-                <BellIcon className="h-6 w-6" />
+                <span className="text-xl">🔔</span>
               </button>
 
               {/* Profile dropdown */}
               <div className="relative">
                 <button className="-m-1.5 flex items-center p-1.5">
                   <span className="sr-only">Open user menu</span>
-                  <UserIcon className="h-8 w-8 rounded-full bg-gray-50 text-gray-400" />
+                  <span className="h-8 w-8 rounded-full bg-gray-50 text-gray-400 text-xl">👤</span>
                 </button>
               </div>
             </div>
@@ -123,10 +111,7 @@ const Layout = () => {
         {/* Page content */}
         <main className="py-6">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div style={{ padding: '20px', backgroundColor: 'yellow' }}>
-              <h2>Layout is working!</h2>
-              <Outlet />
-            </div>
+            <Outlet />
           </div>
         </main>
       </div>

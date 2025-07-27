@@ -1,263 +1,145 @@
 import React, { useState } from 'react';
-import {
-  ChartBarIcon,
-  TrendingUpIcon,
-  TrendingDownIcon,
-  CalendarIcon
-} from '@heroicons/react/24/outline';
 
 const MarketChart = () => {
-  const [selectedIndex, setSelectedIndex] = useState('nifty');
-  const [timeframe, setTimeframe] = useState('1d');
+  const [selectedTimeframe, setSelectedTimeframe] = useState('1D');
 
-  const indices = [
-    { id: 'nifty', name: 'NIFTY 50', price: 19234.50, change: 234.50, changePercent: 1.23, color: 'green' },
-    { id: 'banknifty', name: 'BANK NIFTY', price: 43256.75, change: -156.25, changePercent: -0.36, color: 'red' },
-    { id: 'sensex', name: 'SENSEX', price: 64234.80, change: 456.20, changePercent: 0.72, color: 'blue' }
+  const timeframes = [
+    { id: '1D', name: '1 Day', icon: '📅' },
+    { id: '1W', name: '1 Week', icon: '📊' },
+    { id: '1M', name: '1 Month', icon: '📈' },
+    { id: '3M', name: '3 Months', icon: '📉' },
+    { id: '1Y', name: '1 Year', icon: '📊' }
   ];
 
-  const timeframes = ['1d', '1w', '1m', '3m', '1y'];
-
-  // Mock chart data
-  const generateChartData = () => {
-    const data = [];
-    const basePrice = indices.find(i => i.id === selectedIndex)?.price || 19000;
-
-    for (let i = 0; i < 24; i++) {
-      const time = `${9 + Math.floor(i/6)}:${(i%6)*10}`;
-      const price = basePrice + Math.sin(i/2) * 200 + i * 10 + (Math.random() - 0.5) * 100;
-      data.push({ time, price: Math.round(price * 100) / 100 });
-    }
-    return data;
-  };
-
-  const chartData = generateChartData();
+  const chartData = [
+    { time: '09:00', price: 19200, volume: 1200 },
+    { time: '10:00', price: 19250, volume: 1500 },
+    { time: '11:00', price: 19300, volume: 1800 },
+    { time: '12:00', price: 19280, volume: 1400 },
+    { time: '13:00', price: 19350, volume: 2000 },
+    { time: '14:00', price: 19400, volume: 2200 },
+    { time: '15:00', price: 19380, volume: 1900 },
+    { time: '16:00', price: 19420, volume: 1600 }
+  ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Market Charts</h1>
-          <p className="text-gray-600 mt-2">Real-time market data and technical analysis</p>
-        </div>
+    <div className="bg-white rounded-xl shadow-md p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-bold text-gray-900">Market Chart</h2>
+        <span className="text-2xl">📈</span>
+      </div>
 
-        {/* Index Selection */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex space-x-4">
-              {indices.map((index) => (
-                <button
-                  key={index.id}
-                  onClick={() => setSelectedIndex(index.id)}
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                    selectedIndex === index.id
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {index.name}
-                </button>
-              ))}
-            </div>
+      {/* Timeframe Selector */}
+      <div className="flex space-x-2 mb-6">
+        {timeframes.map((timeframe) => (
+          <button
+            key={timeframe.id}
+            onClick={() => setSelectedTimeframe(timeframe.id)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              selectedTimeframe === timeframe.id
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            <span className="mr-1">{timeframe.icon}</span>
+            {timeframe.name}
+          </button>
+        ))}
+      </div>
 
-            <div className="flex space-x-2">
-              {timeframes.map((tf) => (
-                <button
-                  key={tf}
-                  onClick={() => setTimeframe(tf)}
-                  className={`px-3 py-1 rounded-md text-sm font-medium ${
-                    timeframe === tf
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {tf}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Selected Index Info */}
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            {indices.map((index) => (
-              index.id === selectedIndex && (
-                <div key={index.id} className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-gray-900">{index.name}</h3>
-                    <p className="text-2xl font-bold text-gray-900">₹{index.price.toLocaleString()}</p>
-                  </div>
-                  <div className="text-right">
-                    <div className={`flex items-center text-lg font-semibold ${
-                      index.color === 'green' ? 'text-green-600' :
-                      index.color === 'red' ? 'text-red-600' : 'text-blue-600'
-                    }`}>
-                      {index.color === 'green' ? (
-                        <TrendingUpIcon className="h-5 w-5 mr-1" />
-                      ) : (
-                        <TrendingDownIcon className="h-5 w-5 mr-1" />
-                      )}
-                      {index.change >= 0 ? '+' : ''}{index.change} ({index.changePercent}%)
-                    </div>
-                    <p className="text-sm text-gray-600">Today's change</p>
-                  </div>
-                </div>
-              )
-            ))}
+      {/* Chart Placeholder */}
+      <div className="bg-gray-50 rounded-lg p-6 mb-6">
+        <div className="h-64 flex items-center justify-center">
+          <div className="text-center">
+            <span className="text-4xl mb-4 block">📊</span>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Interactive Chart</h3>
+            <p className="text-gray-600">Chart data for {selectedTimeframe} timeframe</p>
           </div>
         </div>
+      </div>
 
-        {/* Chart */}
-        <div className="bg-white rounded-xl shadow-md p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Price Chart</h2>
-            <div className="flex items-center text-sm text-gray-600">
-              <CalendarIcon className="h-4 w-4 mr-1" />
-              Last updated: {new Date().toLocaleTimeString()}
-            </div>
-          </div>
-
-          {/* Chart Container */}
-          <div className="h-96 bg-gray-50 rounded-lg p-4">
-            <div className="h-full flex items-end justify-between space-x-1">
-              {chartData.map((point, index) => {
-                const maxPrice = Math.max(...chartData.map(p => p.price));
-                const minPrice = Math.min(...chartData.map(p => p.price));
-                const height = ((point.price - minPrice) / (maxPrice - minPrice)) * 100;
-
-                return (
-                  <div key={index} className="flex-1 flex flex-col items-center">
-                    <div
-                      className="w-full bg-blue-500 rounded-t"
-                      style={{ height: `${height}%` }}
-                    ></div>
-                    {index % 4 === 0 && (
-                      <span className="text-xs text-gray-500 mt-2 rotate-45 origin-left">
-                        {point.time}
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Chart Legend */}
-          <div className="mt-4 flex items-center justify-center space-x-6 text-sm text-gray-600">
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-blue-500 rounded mr-2"></div>
-              Price Movement
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-green-500 rounded mr-2"></div>
-              Volume
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 bg-red-500 rounded mr-2"></div>
-              Support/Resistance
+      {/* Price Statistics */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="bg-green-50 p-4 rounded-lg">
+          <div className="flex items-center">
+            <span className="text-2xl mr-2">📈</span>
+            <div>
+              <p className="text-sm text-gray-600">High</p>
+              <p className="text-lg font-bold text-green-600">₹19,420</p>
             </div>
           </div>
         </div>
-
-        {/* Market Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center">
-              <ChartBarIcon className="h-8 w-8 text-blue-500 mr-3" />
-              <div>
-                <p className="text-sm font-medium text-gray-600">Volume</p>
-                <p className="text-2xl font-bold text-gray-900">2.4B</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center">
-              <TrendingUpIcon className="h-8 w-8 text-green-500 mr-3" />
-              <div>
-                <p className="text-sm font-medium text-gray-600">Advancing</p>
-                <p className="text-2xl font-bold text-green-600">1,234</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center">
-              <TrendingDownIcon className="h-8 w-8 text-red-500 mr-3" />
-              <div>
-                <p className="text-sm font-medium text-gray-600">Declining</p>
-                <p className="text-2xl font-bold text-red-600">567</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <div className="flex items-center">
-              <ChartBarIcon className="h-8 w-8 text-gray-500 mr-3" />
-              <div>
-                <p className="text-sm font-medium text-gray-600">Unchanged</p>
-                <p className="text-2xl font-bold text-gray-900">89</p>
-              </div>
+        <div className="bg-red-50 p-4 rounded-lg">
+          <div className="flex items-center">
+            <span className="text-2xl mr-2">📉</span>
+            <div>
+              <p className="text-sm text-gray-600">Low</p>
+              <p className="text-lg font-bold text-red-600">₹19,200</p>
             </div>
           </div>
         </div>
-
-        {/* Technical Indicators */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Technical Indicators</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium">RSI (14)</span>
-                <span className="text-green-600 font-semibold">65.4</span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium">MACD</span>
-                <span className="text-blue-600 font-semibold">+12.5</span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium">Bollinger Bands</span>
-                <span className="text-yellow-600 font-semibold">Upper</span>
-              </div>
-              <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                <span className="font-medium">Moving Average (50)</span>
-                <span className="text-green-600 font-semibold">Above</span>
-              </div>
+        <div className="bg-blue-50 p-4 rounded-lg">
+          <div className="flex items-center">
+            <span className="text-2xl mr-2">💰</span>
+            <div>
+              <p className="text-sm text-gray-600">Open</p>
+              <p className="text-lg font-bold text-blue-600">₹19,250</p>
             </div>
           </div>
-
-          <div className="bg-white rounded-xl shadow-md p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Market Sentiment</h3>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Bullish</span>
-                  <span>65%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-green-600 h-2 rounded-full" style={{ width: '65%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Bearish</span>
-                  <span>25%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-red-600 h-2 rounded-full" style={{ width: '25%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Neutral</span>
-                  <span>10%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-gray-600 h-2 rounded-full" style={{ width: '10%' }}></div>
-                </div>
-              </div>
+        </div>
+        <div className="bg-purple-50 p-4 rounded-lg">
+          <div className="flex items-center">
+            <span className="text-2xl mr-2">📊</span>
+            <div>
+              <p className="text-sm text-gray-600">Volume</p>
+              <p className="text-lg font-bold text-purple-600">13.6M</p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Recent Data Points */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Data Points</h3>
+        <div className="space-y-2">
+          {chartData.slice(-5).map((data, index) => (
+            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center">
+                <span className="text-lg mr-3">⏰</span>
+                <div>
+                  <p className="font-medium text-gray-900">{data.time}</p>
+                  <p className="text-sm text-gray-600">Volume: {data.volume.toLocaleString()}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="font-semibold text-gray-900">₹{data.price.toLocaleString()}</p>
+                <p className={`text-sm ${
+                  index > 0 && data.price > chartData[index - 1].price ? 'text-green-600' : 'text-red-600'
+                }`}>
+                  {index > 0 ? (data.price > chartData[index - 1].price ? '↗' : '↘') : ''}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Chart Controls */}
+      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+        <h4 className="font-semibold text-gray-900 mb-3">Chart Controls</h4>
+        <div className="flex flex-wrap gap-2">
+          <button className="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50">
+            <span className="mr-1">📊</span>Candlestick
+          </button>
+          <button className="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50">
+            <span className="mr-1">📈</span>Line
+          </button>
+          <button className="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50">
+            <span className="mr-1">📉</span>Area
+          </button>
+          <button className="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50">
+            <span className="mr-1">📊</span>Volume
+          </button>
         </div>
       </div>
     </div>
