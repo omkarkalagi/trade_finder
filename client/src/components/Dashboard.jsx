@@ -4,7 +4,6 @@ import BotPerformance from './BotPerformance';
 import PortfolioSummary from './PortfolioSummary';
 import TradingPanel from './TradingPanel';
 import MarketNews from './MarketNews';
-import RiskMonitor from './RiskMonitor';
 
 const Dashboard = () => {
   return (
