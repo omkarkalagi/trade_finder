@@ -5,7 +5,6 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import reactPlugin from 'eslint-plugin-react';
 
 export default [
-  // JS/JSX configuration
   {
     files: ['**/*.js', '**/*.jsx'],
     ...js.configs.recommended,
@@ -25,6 +24,11 @@ export default [
         ...globals.node,
       },
     },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
     rules: {
       ...reactPlugin.configs.recommended.rules,
       'no-unused-vars': 'warn',
@@ -33,7 +37,6 @@ export default [
       'react/prop-types': 'off',
     },
   },
-  // TS/TSX configuration
   {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: {
@@ -53,6 +56,11 @@ export default [
       globals: {
         ...globals.browser,
         ...globals.node,
+      },
+    },
+    settings: {
+      react: {
+        version: 'detect',
       },
     },
     rules: {
