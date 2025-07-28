@@ -5,22 +5,33 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import reactPlugin from 'eslint-plugin-react';
 
 export default [
-  // JavaScript configuration
+  // JS/JSX configuration
   {
     files: ['**/*.js', '**/*.jsx'],
     ...js.configs.recommended,
+    plugins: {
+      'react': reactPlugin,
+    },
     languageOptions: {
+      parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
       },
     },
     rules: {
+      ...reactPlugin.configs.recommended.rules,
       'no-unused-vars': 'warn',
       'no-console': 'off',
     },
   },
-  // TypeScript configuration
+  // TS/TSX configuration
   {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: {
@@ -30,6 +41,8 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        ecmaVersion: 2022,
+        sourceType: 'module',
         ecmaFeatures: {
           jsx: true,
         },
@@ -43,7 +56,8 @@ export default [
     rules: {
       ...tsPlugin.configs['eslint-recommended'].rules,
       ...tsPlugin.configs['recommended'].rules,
-      'no-unused-vars': 'off', // Turn off the base rule and use the TypeScript rule
+      ...reactPlugin.configs.recommended.rules,
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'no-console': 'off',
     },
