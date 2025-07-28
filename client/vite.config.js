@@ -6,7 +6,16 @@ import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
   base: '/',
-  plugins: [react()],
+  plugins: [
+    react({
+      jsxRuntime: 'classic',
+      babel: {
+        plugins: [
+          ['@babel/plugin-transform-react-jsx', { runtime: 'classic' }]
+        ]
+      }
+    })
+  ],
   css: {
     postcss: {
       plugins: [
