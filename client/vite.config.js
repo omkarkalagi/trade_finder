@@ -1,17 +1,17 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react'; // Add this import
+import react from '@vitejs/plugin-react';
 import path from 'path';
-import tailwindcss from 'tailwindcss'; // Add this import
-import autoprefixer from 'autoprefixer'; // Add this import
+import tailwindcss from 'tailwindcss';
+import autoprefixer from 'autoprefixer';
 
 export default defineConfig({
   base: '/',
-  plugins: [react()], // Add this plugin
+  plugins: [react()],
   css: {
     postcss: {
       plugins: [
-        tailwindcss(), // Use as ES module
-        autoprefixer() // Use as ES module
+        tailwindcss(),
+        autoprefixer()
       ]
     }
   },
@@ -24,7 +24,7 @@ export default defineConfig({
         assetFileNames: 'assets/[name].[ext]'
       }
     },
-    chunkSizeWarningLimit: 600, // Slightly increase the limit
+    chunkSizeWarningLimit: 600,
   },
   server: {
     port: 3000,
