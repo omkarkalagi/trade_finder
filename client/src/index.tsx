@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
 import './index.css';
-import ErrorBoundary from './ErrorBoundary';
 import * as Sentry from '@sentry/react';
 
 Sentry.init({
@@ -19,11 +18,9 @@ if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <React.StrictMode>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
+      <App />
     </React.StrictMode>
-  ); // FIXED: Removed extra parenthesis
+  );
 } else {
   console.error('Root element not found!');
 }
