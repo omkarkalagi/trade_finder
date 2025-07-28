@@ -12,15 +12,7 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState({ isAuthenticated: true }); // Always authenticated
-
-  return (
-    <AuthContext.Provider value={{ user, setUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+// Remove the unused AuthProvider export
 
 // Create a custom hook to use the auth context
 export const useAuth = () => {

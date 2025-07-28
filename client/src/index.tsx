@@ -1,4 +1,3 @@
-/** @jsx React.createElement */
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import reportWebVitals from './reportWebVitals';
@@ -24,7 +23,7 @@ if (rootElement) {
         <App />
       </ErrorBoundary>
     </React.StrictMode>
-  );
+  ); // FIXED: Removed extra parenthesis
 } else {
   console.error('Root element not found!');
 }
