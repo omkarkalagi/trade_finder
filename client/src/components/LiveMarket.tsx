@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
-const LiveMarket = () => {
-  const [marketData, setMarketData] = useState([]);
+interface MarketDataItem {
+  symbol: string;
+  price: number;
+  timestamp: Date;
+}
+
+const LiveMarket: React.FC = () => {
+  const [marketData, setMarketData] = useState<MarketDataItem[]>([]);
 
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:8081');
@@ -10,7 +16,7 @@ const LiveMarket = () => {
       const data = JSON.parse(event.data);
       setMarketData(prev => [
         { symbol: data.symbol, price: data.price, timestamp: new Date(data.timestamp) },
-        ...prev.slice(0, 50) // Keep last 50 updates
+        ...prev.slice(0, 50)
       ]);
     };
 
