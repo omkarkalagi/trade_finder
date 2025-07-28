@@ -29,8 +29,8 @@ export default defineConfig({
     assetsDir: 'assets',
     emptyOutDir: true,
     rollupOptions: {
-      output: {
-        assetFileNames: 'assets/[name].[ext]'
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
       }
     },
     chunkSizeWarningLimit: 600,
