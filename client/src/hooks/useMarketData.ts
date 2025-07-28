@@ -7,7 +7,7 @@ interface MarketData {
 }
 
 const useMarketData = (symbols: string[]): MarketData[] => {
-  const [marketData, setMarketData] = useState<MarketData[]>([]);
+  const [marketData] = useState<MarketData[]>([]);
 
   useEffect(() => {
     // Fetch logic here

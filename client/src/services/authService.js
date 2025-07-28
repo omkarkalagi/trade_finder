@@ -5,7 +5,7 @@ import axios from 'axios';
 const API_URL = "https://trade-finder-uebi.onrender.com/api/auth";
 
 // And add this base URL:
-const API_BASE = "https://trade-finder-uebi.onrender.com";
+// const API_BASE = "https://trade-finder-uebi.onrender.com";
 
 export const loginWithEmail = async (email, password) => {
   try {

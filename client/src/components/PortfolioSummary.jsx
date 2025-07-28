@@ -10,7 +10,7 @@ const PortfolioSummary = ({ data }) => {
           <p className="text-2xl font-bold">₹{data.totalValue.toLocaleString()}</p>
         </div>
         <div>
-          <p className="text-gray-600">Today's P&L</p>
+          <p className="text-sm text-gray-600">Today&#39;s Profit & Loss</p>
           <p className={`text-xl font-bold ${data.dailyPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
             {data.dailyPnL >= 0 ? '+' : ''}₹{data.dailyPnL.toLocaleString()}
           </p>
