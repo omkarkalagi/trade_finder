@@ -1,21 +1,11 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "jsx": "react-jsx",
+    "target": "ES2020",
     "module": "ESNext",
-    "skipLibCheck": true,
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react",
-    "allowJs": true, // Allow JavaScript files
-    "checkJs": true, // Check JavaScript files
-    "noImplicitAny": false // Temporarily allow implicit any
-  },
-  "include": ["src"]
+    "strict": true,
+    "skipLibCheck": true
+  }
 }

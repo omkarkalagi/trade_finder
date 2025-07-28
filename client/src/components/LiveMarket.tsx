@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
-interface MarketDataItem {
+type MarketDataItem = {
   symbol: string;
   price: number;
-  timestamp: Date;
-}
+};
 
 const LiveMarket: React.FC = () => {
   const [marketData, setMarketData] = useState<MarketDataItem[]>([]);

@@ -8,11 +8,9 @@ export default defineConfig({
   base: '/',
   plugins: [
     react({
-      jsxRuntime: 'classic',
+      include: '**/*.tsx', // Explicitly process TSX files
       babel: {
-        plugins: [
-          ['@babel/plugin-transform-react-jsx', { runtime: 'classic' }]
-        ]
+        presets: ['@babel/preset-typescript'], // Add TypeScript preset
       }
     })
   ],
