@@ -8,7 +8,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "vite",
-    "verify": "node ./scripts/verify-components.js"
+    "verify": "node ./scripts/verify-components.js",
+    "lint": "eslint src --ext .js,.jsx",
+    "prebuild": "npm run lint"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
