@@ -1,25 +1,24 @@
 import React from 'react';
 
-const MarketSummary = () => {
+const MarketSummary = ({ data }) => {
+  if (!data) return null;
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl p-4 text-white">
-        <h3 className="font-bold">NIFTY 50</h3>
-        <div className="text-2xl font-bold mt-2">18,200.15</div>
-        <div className="text-green-300">+45.30 (0.25%)</div>
-      </div>
-      <div className="bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl p-4 text-white">
-        <h3 className="font-bold">SENSEX</h3>
-        <div className="text-2xl font-bold mt-2">61,350.45</div>
-        <div className="text-green-300">+120.75 (0.20%)</div>
-      </div>
-      <div className="bg-gradient-to-r from-red-500 to-orange-500 rounded-xl p-4 text-white">
-        <h3 className="font-bold">BANK NIFTY</h3>
-        <div className="text-2xl font-bold mt-2">39,500.75</div>
-        <div className="text-green-300">+95.50 (0.24%)</div>
+    <div className="bg-white rounded-xl shadow-md p-6">
+      <h2 className="text-xl font-bold text-gray-900 mb-4">📊 Market Summary</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {Object.entries(data).map(([key, value]) => (
+          <div key={key} className="bg-gray-50 p-4 rounded-lg">
+            <h3 className="font-medium text-gray-900">{key.toUpperCase()}</h3>
+            <p className="text-2xl font-bold mt-2">₹{value.price.toLocaleString()}</p>
+            <p className={`mt-1 ${value.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {value.change >= 0 ? '↑' : '↓'} {Math.abs(value.change)} ({value.changePercent}%)
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
-export default MarketSummary; 
+export default MarketSummary;

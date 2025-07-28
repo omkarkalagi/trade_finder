@@ -6,6 +6,10 @@ import { createClient } from 'redis';
 
 const PORT = process.env.PORT || 10000;
 
+// Add near the top
+require('dotenv').config();
+require('./services/marketSocket'); // Start WebSocket server
+
 // Import routes at the top level (outside conditionals)
 import authRouter from './routes/auth.js';
 

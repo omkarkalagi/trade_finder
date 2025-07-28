@@ -1,49 +1,39 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
-export default function useMarketData() {
-  const [marketData, setMarketData] = useState({});
-  const [loading, setLoading] = useState(true);
-  const workerRef = useRef(null);
-  
+export const useMarketData = () => {
+  const [marketData, setMarketData] = useState(null);
+  const [portfolioData, setPortfolioData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    // Initialize Web Worker
-    workerRef.current = new Worker(new URL('../workers/dataProcessor.worker.js', import.meta.url));
-    
-    const handleWorkerMessage = (event) => {
-      if (event.data.type === 'marketDataProcessed') {
-        setMarketData(event.data.data);
-        setLoading(false);
-      }
-    };
-    
-    workerRef.current.addEventListener('message', handleWorkerMessage);
-    
-    // Fetch initial data
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/market/data');
-        const rawData = await response.json();
-        
-        // Send to worker for processing
-        workerRef.current.postMessage({
-          type: 'processMarketData',
-          data: rawData
-        });
+        const [marketRes, portfolioRes] = await Promise.all([
+          fetch('/api/market'),
+          fetch('/api/portfolio')
+        ]);
+
+        setMarketData(await marketRes.json());
+        setPortfolioData(await portfolioRes.json());
       } catch (error) {
-        console.error('Failed to load market data', error);
-        setLoading(false);
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
-    
+
     fetchData();
-    
-    // Cleanup
-    return () => {
-      if (workerRef.current) {
-        workerRef.current.terminate();
-      }
+
+    // Set up real-time updates
+    const ws = new WebSocket('wss://yourserver.com/live');
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      setMarketData(prev => ({ ...prev, ...data.market }));
+      setPortfolioData(prev => ({ ...prev, ...data.portfolio }));
     };
+
+    return () => ws.close();
   }, []);
-  
-  return { marketData, loading };
-} 
+
+  return { marketData, portfolioData, isLoading };
+};

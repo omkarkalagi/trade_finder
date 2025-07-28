@@ -1,111 +1,81 @@
-const KiteConnect = require('kiteconnect').KiteConnect;
 const WebSocket = require('ws');
-const Stock = require('../models/Stock');
+const Alpaca = require('@alpacahq/alpaca-trade-api');
+const { createClient } = require('redis');
 
-const apiKey = process.env.ZERODHA_API_KEY;
-const apiSecret = process.env.ZERODHA_API_SECRET;
+// Initialize services
+const redisClient = createClient();
+const alpaca = new Alpaca({
+  keyId: process.env.ALPACA_API_KEY,
+  secretKey: process.env.ALPACA_API_SECRET,
+  paper: true,
+  baseUrl: process.env.ALPACA_BASE_URL
+});
 
-let kite = null;
-let ws = null;
+// Connect to Redis
+redisClient.on('error', err => console.log('Redis Client Error', err));
+redisClient.connect();
 
-// Initialize WebSocket connection
-exports.initMarketDataStream = async (userId) => {
-  try {
-    const user = await User.findById(userId);
-    if (!user || !user.zerodhaAccess) {
-      throw new Error('User or Kite connection not found');
-    }
-    
-    kite = new KiteConnect({
-      api_key: apiKey,
-      access_token: user.zerodhaAccess.accessToken
-    });
-    
-    // Get WebSocket URL
-    const wsUrl = kite.getWSURL();
-    
-    // Connect to WebSocket
-    ws = new WebSocket(wsUrl);
-    
-    ws.on('open', () => {
-      console.log('Market data WebSocket connected');
-      
-      // Subscribe to Nifty 50 and top 20 stocks
-      const instruments = [
-        256265, // NIFTY 50
-        738561, // RELIANCE
-        779521, // HDFCBANK
-        408065, // INFY
-        2953217, // TCS
-        3465729, // HINDUNILVR
-        897537, // ICICIBANK
-        2714625, // KOTAKBANK
-        1346049, // AXISBANK
-        177665, // SBIN
-        140033, // BAJFINANCE
-        4267265, // BHARTIARTL
-        424961, // LT
-        2939649, // MARUTI
-        2815745, // ASIANPAINT
-        633601, // HCLTECH
-        1850625, // WIPRO
-        3431425, // ONGC
-        2977281, // NTPC
-        225537, // ITC
-        108033, // SUNPHARMA
-      ];
-      
-      ws.send(JSON.stringify({
-        "a": "subscribe",
-        "v": instruments
-      }));
-    });
-    
-    ws.on('message', (data) => {
-      const message = JSON.parse(data);
-      
-      // Process ticks
-      if (message.t) {
-        message.t.forEach(tick => {
-          // Update stock prices in database
-          Stock.updateOne(
-            { instrument_token: tick.i },
-            { 
-              last_price: tick.lp,
-              volume: tick.v,
-              ohlc: {
-                open: tick.oi,
-                high: tick.h,
-                low: tick.l,
-                close: tick.c
-              }
-            },
-            { upsert: true }
-          ).exec();
-        });
-      }
-    });
-    
-    ws.on('error', (error) => {
-      console.error('WebSocket error:', error);
-    });
-    
-    ws.on('close', () => {
-      console.log('Market data WebSocket disconnected');
-    });
-    
-  } catch (error) {
-    console.error('Market data initialization error:', error);
-  }
+// WebSocket server for dashboard clients
+const wss = new WebSocket.Server({ port: 8080 });
+
+// Market data processing
+const processMarketData = (data) => {
+  // Add technical indicators
+  data.rsi = calculateRSI(data.historical);
+  data.macd = calculateMACD(data.historical);
+  return data;
 };
 
-// Get real-time data for dashboard
-exports.getRealtimeData = async () => {
-  const stocks = await Stock.find().limit(20);
-  return stocks.map(stock => ({
-    symbol: stock.symbol,
-    price: stock.last_price,
-    change: stock.last_price - stock.ohlc.open,
-    changePercent: ((stock.last_price - stock.ohlc.open) / stock.ohlc.open) * 100
-  }));
-}; 
+// Main market data handler
+alpaca.data_ws.onConnect(() => {
+  console.log('Alpaca market data connected');
+  alpaca.data_ws.subscribeForQuotes(['AAPL', 'MSFT', 'TSLA', 'GOOG', 'AMZN']);
+  alpaca.data_ws.subscribeForTrades(['*']);
+});
+
+alpaca.data_ws.onStockTrade((trade) => {
+  const processed = processMarketData(trade);
+
+  // Store in Redis
+  redisClient.hSet('market:latest', trade.S, JSON.stringify(processed));
+
+  // Broadcast to dashboard clients
+  wss.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({
+        type: 'trade',
+        symbol: trade.S,
+        price: trade.p,
+        size: trade.s,
+        timestamp: trade.t
+      }));
+    }
+  });
+});
+
+// Trading bot integration
+wss.on('connection', (ws) => {
+  console.log('New dashboard client connected');
+
+  ws.on('message', (message) => {
+    const { type, symbol, action } = JSON.parse(message);
+
+    if (type === 'execute-trade') {
+      executeTrade(symbol, action);
+    }
+  });
+
+  // Send initial market state
+  redisClient.hGetAll('market:latest', (err, data) => {
+    if (!err) {
+      ws.send(JSON.stringify({
+        type: 'snapshot',
+        data: Object.fromEntries(
+          Object.entries(data).map(([k, v]) => [k, JSON.parse(v)])
+        )
+      }));
+    }
+  });
+});
+
+module.exports = wss;

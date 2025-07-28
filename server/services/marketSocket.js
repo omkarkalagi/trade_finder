@@ -1,30 +1,37 @@
+const Alpaca = require('@alpacahq/alpaca-trade-api');
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 8080 });
 
-// Mock market data generator
-function generateMarketData() {
-  const symbols = ['NIFTY', 'BANKNIFTY', 'RELIANCE', 'TATASTEEL', 'HDFCBANK', 'INFY'];
-  return symbols.map(symbol => ({
-    symbol,
-    price: (Math.random() * 1000 + 1000).toFixed(2),
-    change: (Math.random() * 10 - 5).toFixed(2),
-    changePercent: (Math.random() * 2 - 1).toFixed(2)
-  }));
-}
+const alpaca = new Alpaca({
+  keyId: process.env.ALPACA_API_KEY,
+  secretKey: process.env.ALPACA_API_SECRET,
+  paper: true,
+  baseUrl: process.env.ALPACA_BASE_URL
+});
 
-wss.on('connection', (ws) => {
-  console.log('New client connected');
-  
-  // Send market data every second
-  const interval = setInterval(() => {
-    const marketData = generateMarketData();
-    ws.send(JSON.stringify(marketData));
-  }, 1000);
-  
-  ws.on('close', () => {
-    console.log('Client disconnected');
-    clearInterval(interval);
+// Initialize WebSocket server
+const wss = new WebSocket.Server({ port: 8081 });
+
+// Connect to Alpaca streaming
+const alpacaStream = alpaca.data_ws;
+
+alpacaStream.onConnect(() => {
+  console.log('Connected to Alpaca stream');
+  alpacaStream.subscribe(['trade_updates', 'AM.*']); // Subscribe to all stocks
+});
+
+alpacaStream.onStockTrade((trade) => {
+  // Broadcast to all connected clients
+  wss.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify({
+        symbol: trade.S,
+        price: trade.p,
+        timestamp: trade.t
+      }));
+    }
   });
 });
 
-console.log('WebSocket server running on port 8080'); 
+alpacaStream.connect();
+
+module.exports = wss;
