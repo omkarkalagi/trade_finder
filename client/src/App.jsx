@@ -4,9 +4,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Layout             from './components/Layout';
 import Loader             from './components/Loader';
 
-// Use the Dashboard component from components directory
-import Dashboard          from './components/Dashboard';
-import Portfolio          from './components/Portfolio';
+// Dynamically import only the components you use
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const Portfolio = React.lazy(() => import('./pages/Portfolio'));
 import AlgoTrading        from './pages/AlgoTrading';
 import AutoTrading        from './pages/AutoTrading';
 import MarketChart        from './components/MarketChart';
@@ -15,7 +15,7 @@ import AIPredictionBot    from './components/AIPredictionBot';
 import Placeholder        from './components/Placeholder';
 import ErrorBoundary      from './components/ErrorBoundary';
 
-export default function App() {
+function App() {
   console.log('App component rendering');
 
   return (
@@ -23,7 +23,7 @@ export default function App() {
       <div style={{ padding: '20px', backgroundColor: 'white', minHeight: '100vh' }}>
         <h1 style={{ color: 'red', fontSize: '24px' }}>TEST - If you see this, React is working!</h1>
         <Router>
-          <Suspense fallback={<Loader fullscreen />}>
+          <Suspense fallback={<Loader />}>
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
@@ -47,3 +47,5 @@ export default function App() {
     </ErrorBoundary>
   );
 }
+
+export default App;

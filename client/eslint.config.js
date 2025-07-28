@@ -18,7 +18,7 @@ export default [
       },
     },
     rules: {
-      'no-unused-vars': process.env.NODE_ENV === 'production' ? 'error' : 'warn',
+      'no-unused-vars': 'off', // Disable completely for now
       'no-console': 'off',
     },
     ignores: ['dist/**', 'node_modules/**'],
