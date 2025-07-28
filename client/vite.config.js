@@ -23,7 +23,8 @@ export default defineConfig({
       output: {
         assetFileNames: 'assets/[name].[ext]'
       }
-    }
+    },
+    chunkSizeWarningLimit: 600, // Slightly increase the limit
   },
   server: {
     port: 3000,
