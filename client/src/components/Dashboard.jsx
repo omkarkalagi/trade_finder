@@ -1,5 +1,4 @@
 import React from 'react';
-import { Grid } from '@mui/material';
 import LiveMarket from './LiveMarket';
 import BotPerformance from './BotPerformance';
 import PortfolioSummary from './PortfolioSummary';

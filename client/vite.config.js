@@ -42,4 +42,7 @@ export default defineConfig({
     include: /src\/.*\.jsx?$/,
     exclude: [],
   },
+  optimizeDeps: {
+    include: ['@mui/material']
+  }
 });
