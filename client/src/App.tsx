@@ -5,7 +5,7 @@ import Layout             from './components/Layout';
 import Loader             from './components/Loader';
 
 // Dynamically import pages to reduce bundle size
-const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const Dashboard = React.lazy(() => import('./components/Dashboard'));
 const Portfolio = React.lazy(() => import('./pages/Portfolio'));
 import AlgoTrading        from './pages/AlgoTrading';
 import AutoTrading        from './pages/AutoTrading';
