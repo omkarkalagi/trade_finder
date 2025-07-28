@@ -1,5 +1,6 @@
 const Alpaca = require('@alpacahq/alpaca-trade-api');
 const WebSocket = require('ws');
+const jwt = require('jsonwebtoken');
 
 const alpaca = new Alpaca({
   keyId: process.env.ALPACA_API_KEY,
@@ -34,4 +35,30 @@ alpacaStream.onStockTrade((trade) => {
 
 alpacaStream.connect();
 
-module.exports = wss;
+const verifyToken = (token) => {
+  if (!token) return false;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return !!decoded.userId;
+  } catch (error) {
+    return false;
+  }
+};
+
+module.exports = {
+  verifyToken,
+};
+
+wss.on('connection', (ws, req) => {
+  // Get token from query parameters
+  const token = new URL(req.url, 'http://localhost').searchParams.get('token');
+
+  if (!verifyToken(token)) {
+    console.log('WebSocket connection rejected: Invalid token');
+    return ws.close(1008, 'Unauthorized');
+  }
+
+  // Successful connection
+  ws.on('error', console.error);
+});

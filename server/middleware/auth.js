@@ -1,5 +1,16 @@
 const jwt = require('jsonwebtoken');
 
+const verifyToken = (token) => {
+  if (!token) return false;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    return !!decoded.userId;
+  } catch (error) {
+    return false;
+  }
+};
+
 exports.authenticate = (req, res, next) => {
   const token = req.header('Authorization')?.replace('Bearer ', '');
   if (!token) {
@@ -12,4 +23,4 @@ exports.authenticate = (req, res, next) => {
   } catch (error) {
     res.status(400).json({ error: 'Invalid token' });
   }
-}; 
+};
