@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.jsx';
+import reportWebVitals from './reportWebVitals';
+import App from './App';
 import './index.css';
 import ErrorBoundary from './ErrorBoundary';
 
@@ -19,3 +20,5 @@ if (rootElement) {
 } else {
   console.error('Root element not found!');
 }
+
+reportWebVitals(console.log);
