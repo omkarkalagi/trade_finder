@@ -7,42 +7,43 @@ import MarketNews from './MarketNews';
 
 const Dashboard = () => {
   return (
-    <div className="p-6">
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
+    <div className="container mx-auto p-4">
+      <div className="grid grid-cols-12 gap-4">
+        <div className="col-span-12">
           <h1 className="text-3xl font-bold mb-6">🚀 AI Trading Dashboard</h1>
-        </Grid>
+        </div>
 
         {/* Real-time Market */}
-        <Grid item xs={12} lg={8}>
+        <div className="col-span-12 lg:col-span-8">
           <LiveMarket />
-        </Grid>
+        </div>
 
         {/* Portfolio Summary */}
-        <Grid item xs={12} lg={4}>
+        <div className="col-span-12 lg:col-span-4">
           <PortfolioSummary />
-        </Grid>
+        </div>
 
         {/* Bot Performance */}
-        <Grid item xs={12}>
+        <div className="col-span-12">
           <BotPerformance />
-        </Grid>
+        </div>
 
         {/* Trading Panel */}
-        <Grid item xs={12} md={6}>
+        <div className="col-span-12 md:col-span-6">
           <TradingPanel />
-        </Grid>
+        </div>
 
         {/* Risk Monitor */}
-        <Grid item xs={12} md={6}>
-          <RiskMonitor />
-        </Grid>
+        <div className="col-span-12 md:col-span-6">
+          {/* Remove RiskMonitor or replace with custom component */}
+          <div className="bg-white p-4 rounded shadow">Risk Monitor Placeholder</div>
+        </div>
 
         {/* Market News */}
-        <Grid item xs={12}>
+        <div className="col-span-12">
           <MarketNews />
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </div>
   );
 };

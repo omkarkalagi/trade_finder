@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import * as authService from '../services/authService';
 import axios from 'axios'; // Added axios import
+import React from 'react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -32,13 +33,13 @@ const Login = () => {
       navigate('/dashboard');
     } catch (error) {
       let errorMessage = 'Login failed';
-      
+
       if (error.message === 'Network Error') {
         errorMessage = 'Backend server not running. Start server with: node index.js';
       } else if (error.response) {
         errorMessage = error.response.data.error || 'Invalid credentials';
       }
-      
+
       setError(errorMessage);
       console.error('Login error details:', error);
     }
@@ -63,7 +64,7 @@ const Login = () => {
     setMessage('');
     try {
       const response = await authService.verifyOTP(phone, otp);
-      
+
       if (response.success && response.token) {
         login(response.user, response.token);
         navigate('/dashboard');
@@ -79,7 +80,7 @@ const Login = () => {
     setMessage('');
     try {
       const response = await authService.register({ name, email, password });
-      
+
       if (response.success) {
         setMessage('Signup successful! You can now login.');
         setName('');
@@ -98,8 +99,8 @@ const Login = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-500 via-purple-600 to-red-500 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white mb-2 tracking-wider" 
-              style={{ 
+          <h1 className="text-5xl font-bold text-white mb-2 tracking-wider"
+              style={{
                 fontFamily: "'Montserrat', sans-serif",
                 textShadow: '0 2px 10px rgba(0,0,0,0.2)',
                 letterSpacing: '1px'
@@ -113,8 +114,8 @@ const Login = () => {
           <button
             onClick={() => setIsSignup(false)}
             className={`px-6 py-2 font-semibold rounded-l-lg transition-colors ${
-              !isSignup 
-                ? 'bg-white text-blue-600 shadow-md' 
+              !isSignup
+                ? 'bg-white text-blue-600 shadow-md'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
@@ -123,8 +124,8 @@ const Login = () => {
           <button
             onClick={() => setIsSignup(true)}
             className={`px-6 py-2 font-semibold rounded-r-lg transition-colors ${
-              isSignup 
-                ? 'bg-white text-blue-600 shadow-md' 
+              isSignup
+                ? 'bg-white text-blue-600 shadow-md'
                 : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
             }`}
           >
@@ -279,8 +280,8 @@ const Login = () => {
 
             {message && (
               <p className={`mt-4 text-center p-3 rounded-lg ${
-                message.includes('success') || message.includes('sent') 
-                  ? 'bg-green-100 text-green-700' 
+                message.includes('success') || message.includes('sent')
+                  ? 'bg-green-100 text-green-700'
                   : 'bg-red-100 text-red-700'
               }`}>
                 {message}
@@ -307,4 +308,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;

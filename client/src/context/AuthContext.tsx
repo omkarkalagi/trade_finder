@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import React from 'react';
 
 // Create and export the context
 export const AuthContext = createContext({
@@ -9,8 +10,11 @@ export const AuthContext = createContext({
   logout: () => {}
 }); // Add default values
 
-// Simplify AuthProvider to always be authenticated
-export const AuthProvider = ({ children }) => {
+interface AuthProviderProps {
+  children: React.ReactNode;
+}
+
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState({ isAuthenticated: true }); // Always authenticated
 
   return (

@@ -29,6 +29,8 @@ export default [
       ...reactPlugin.configs.recommended.rules,
       'no-unused-vars': 'warn',
       'no-console': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
     },
   },
   // TS/TSX configuration
@@ -60,6 +62,8 @@ export default [
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
       'no-console': 'off',
+      'react/react-in-jsx-scope': 'off',
+      'react/prop-types': 'off',
     },
   },
 ];
