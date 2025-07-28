@@ -18,7 +18,14 @@ export default [
       },
     },
     rules: {
-      'no-unused-vars': 'off', // Disable completely for now
+      'no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_'
+        }
+      ],
       'no-console': 'off',
     },
     ignores: ['dist/**', 'node_modules/**'],

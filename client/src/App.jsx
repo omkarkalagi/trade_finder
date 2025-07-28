@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Layout             from './components/Layout';
 import Loader             from './components/Loader';
 
-// Dynamically import only the components you use
+// Dynamically import pages to reduce bundle size
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
 const Portfolio = React.lazy(() => import('./pages/Portfolio'));
 import AlgoTrading        from './pages/AlgoTrading';
