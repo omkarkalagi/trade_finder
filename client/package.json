@@ -30,6 +30,7 @@
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
+    "@types/react": "^19.1.8",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.14",
     "eslint": "^9.32.0",
