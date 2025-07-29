@@ -36,7 +36,16 @@ if (process.env.REDIS_URL) {
     url: process.env.REDIS_URL,
     socket: {
       tls: true,
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      secureProtocol: 'TLSv1_2_method',
+      connectTimeout: 5000, // 5 seconds timeout
+      reconnectStrategy: (retries) => {
+        if (retries > 5) {
+          console.log('Too many retries. Redis connection terminated.');
+          return new Error('Too many retries');
+        }
+        return Math.min(retries * 100, 3000);
+      }
     }
   });
 
