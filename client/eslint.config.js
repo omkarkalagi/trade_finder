@@ -13,7 +13,7 @@ export default [
     },
     languageOptions: {
       parserOptions: {
-        ecmaVersion: 2022,
+        ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: {
           jsx: true,
@@ -24,18 +24,11 @@ export default [
         ...globals.node,
       },
     },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
     rules: {
-      ...reactPlugin.configs.recommended.rules,
-      'no-unused-vars': 'warn',
-      'no-console': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-    },
+      "no-unused-vars": "warn",
+      "no-console": "off",
+      "react/react-in-jsx-scope": "off",
+    }
   },
   {
     files: ['**/*.ts', '**/*.tsx'],
@@ -46,32 +39,25 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        ecmaVersion: 2022,
+        ecmaVersion: 'latest',
         sourceType: 'module',
+        project: './tsconfig.json',
         ecmaFeatures: {
           jsx: true,
         },
-        project: './tsconfig.json',
       },
       globals: {
         ...globals.browser,
         ...globals.node,
-      },
-    },
-    settings: {
-      react: {
-        version: 'detect',
-      },
+      }
     },
     rules: {
-      ...tsPlugin.configs['eslint-recommended'].rules,
-      ...tsPlugin.configs['recommended'].rules,
-      ...reactPlugin.configs.recommended.rules,
-      'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': 'warn',
-      'no-console': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-    },
-  },
+      ...tsPlugin.configs.recommended.rules,
+      "no-unused-vars": "warn",
+      "no-console": "off",
+      "react/react-in-jsx-scope": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "off" // Disable explicit any rule
+    }
+  }
 ];

@@ -187,14 +187,7 @@ const LiveMarket = () => {
             connectionStatus === 'error' || connectionStatus === 'failed' ? 'bg-red-500' : 'bg-yellow-500'
           }`}></span>
           <span>
-            {connectionStatus === 'connecting' && 'Connecting to market data...'}
-            {connectionStatus === 'authenticating' && 'Authenticating with Alpaca...'}
-            {connectionStatus === 'subscribing' && 'Subscribing to market data...'}
-            {connectionStatus === 'connected' && 'Connected to live market'}
-            {connectionStatus === 'reconnecting' && 'Reconnecting to market data...'}
-            {connectionStatus === 'disconnected' && 'Connection lost. Reconnecting...'}
-            {connectionStatus === 'error' && 'Connection error. Reconnecting...'}
-            {connectionStatus === 'failed' && 'Connection failed. Please refresh the page.'}
+            {statusMessages[connectionStatus as keyof typeof statusMessages]}
           </span>
         </div>
         {connectionStatus === 'failed' && (
@@ -202,7 +195,7 @@ const LiveMarket = () => {
             className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
             onClick={() => {
               reconnectAttempts.current = 0;
-              connectWebSocket();
+              setForceRefresh(prev => prev + 1);
             }}
           >
             Retry Connection

@@ -31,6 +31,7 @@ export default function LiveMarket() {
 
         if (Array.isArray(messages)) {
           messages.forEach(message => {
+            // Handle authentication success
             if (message.T === 'success' && message.msg === 'authenticated') {
               setConnectionStatus('connected');
               ws.send(JSON.stringify({
@@ -39,7 +40,13 @@ export default function LiveMarket() {
               }));
             }
 
-            if (message.T === 't') {
+            // Handle subscription confirmation
+            if (message.T === 'subscription') {
+              console.log('Subscription confirmed:', message);
+            }
+
+            // Handle trade updates - UPDATED CONDITION
+            if (message.T === 't' || message.T === 'trade') {
               const { S: symbol, p: price, s: size, t: timestamp } = message;
               setMarketData(prev => ({
                 ...prev,
@@ -78,6 +85,13 @@ export default function LiveMarket() {
         <div className="flex items-center">
           <LoadingSpinner />
           <span className="ml-2">Connecting to live market...</span>
+        </div>
+      )}
+
+      {connectionStatus === 'connected' && Object.keys(marketData).length === 0 && (
+        <div className="text-center py-8">
+          <LoadingSpinner />
+          <p className="mt-2 text-gray-500">Waiting for market data...</p>
         </div>
       )}
 
