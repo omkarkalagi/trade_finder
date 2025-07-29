@@ -6,5 +6,15 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true
-  }
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets', // Ensure assets are in assets directory
+    rollupOptions: {
+      input: {
+        main: './index.html' // Explicitly define entry point
+      }
+    }
+  },
+  base: './' // Use relative paths for deployment
 });
