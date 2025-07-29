@@ -24,6 +24,39 @@ const LiveMarket = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Real-time Alpaca WebSocket integration
+  useEffect(() => {
+    const ws = new WebSocket('wss://stream.data.alpaca.markets/v2/iex');
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        action: 'auth',
+        key: import.meta.env.VITE_ALPACA_API_KEY,
+        secret: import.meta.env.VITE_ALPACA_API_SECRET
+      }));
+
+      ws.send(JSON.stringify({
+        action: 'subscribe',
+        quotes: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']
+      }));
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data[0].msg === 'connected' || data[0].msg === 'authenticated') return;
+
+      const quotes = data.filter(item => item.T === 'q');
+      setMarketData(quotes.map(quote => ({
+        symbol: quote.S,
+        price: quote.ap,
+        change: quote.ap - (quote.pc || quote.ap), // Handle missing pc property
+        changePercent: quote.pc ? ((quote.ap - quote.pc) / quote.pc) * 100 : 0
+      })));
+    };
+
+    return () => ws.close();
+  }, []);
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg">
       <h2 className="text-xl font-bold text-gray-800 mb-4">📈 Live Market</h2>
