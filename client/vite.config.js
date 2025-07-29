@@ -8,10 +8,7 @@ export default defineConfig({
   base: '/',
   plugins: [
     react({
-      include: '**/*.tsx', // Explicitly process TSX files
-      babel: {
-        presets: ['@babel/preset-typescript'], // Add TypeScript preset
-      }
+      jsxRuntime: 'classic' // Force classic runtime
     })
   ],
   css: {
@@ -46,10 +43,8 @@ export default defineConfig({
     }
   },
   esbuild: {
-    loader: 'jsx',
-    include: /src\/.*\.jsx?$/,
-    exclude: [],
-    jsxInject: `import React from 'react'` // Ensure React is in scope
+    jsx: 'automatic',
+    jsxInject: `import React from 'react'`
   },
   optimizeDeps: {
     include: ['@mui/material']

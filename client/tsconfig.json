@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "jsx": "react-jsx",
+    "jsxFactory": "React.createElement",
+    "jsxFragmentFactory": "React.Fragment",
     "target": "ES2020",
     "module": "ESNext",
     "esModuleInterop": true,
