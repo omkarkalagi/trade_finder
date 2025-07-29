@@ -26,33 +26,36 @@ export default function LiveMarket() {
 
     ws.onmessage = (event) => {
       console.log('Raw WebSocket message:', event.data);
-      const messages = JSON.parse(event.data);
+      try {
+        const messages = JSON.parse(event.data);
 
-      messages.forEach(message => {
-        if (message.T === 'success' && message.msg === 'authenticated') {
-          setConnectionStatus('connected');
-          // Subscribe to symbols after authentication
-          ws.send(JSON.stringify({
-            action: 'subscribe',
-            trades: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA'],
-            quotes: [],  // Add if you need quotes
-            bars: []     // Add if you need bars
-          }));
-        }
+        if (Array.isArray(messages)) {
+          messages.forEach(message => {
+            if (message.T === 'success' && message.msg === 'authenticated') {
+              setConnectionStatus('connected');
+              ws.send(JSON.stringify({
+                action: 'subscribe',
+                trades: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']
+              }));
+            }
 
-        if (message.T === 't') { // Trade update
-          const { S: symbol, p: price, s: size, t: timestamp } = message;
-          setMarketData(prev => ({
-            ...prev,
-            [symbol]: { price, size, timestamp }
-          }));
+            if (message.T === 't') {
+              const { S: symbol, p: price, s: size, t: timestamp } = message;
+              setMarketData(prev => ({
+                ...prev,
+                [symbol]: { price, size, timestamp }
+              }));
+            }
+          });
         }
-      });
+      } catch (error) {
+        console.error('Error parsing WebSocket message:', error);
+      }
     };
 
     ws.onerror = (error) => {
       setConnectionStatus('error');
-      setError(error.message);
+      setError(error.message || 'WebSocket connection error');
       console.error('WebSocket error:', error);
     };
 
@@ -60,10 +63,13 @@ export default function LiveMarket() {
       setConnectionStatus('disconnected');
     };
 
-    return () => ws.close();
+    return () => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.close();
+      }
+    };
   }, []);
 
-  // Render market data
   return (
     <div className="p-4 bg-white rounded-lg shadow">
       <h2 className="text-lg font-semibold mb-4">Live Market Data</h2>
@@ -88,8 +94,9 @@ export default function LiveMarket() {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {Object.entries(marketData).map(([symbol, data]) => {
-                // Skip if data is incomplete
-                if (!data || !data.price || !data.size || !data.timestamp) return null;
+                if (!data || data.price === undefined || data.size === undefined || !data.timestamp) {
+                  return null;
+                }
 
                 return (
                   <tr key={symbol}>
