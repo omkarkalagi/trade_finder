@@ -3,6 +3,7 @@ import globals from 'globals';
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import reactPlugin from 'eslint-plugin-react';
+import path from 'path'; // Add this import
 
 export default [
   {
@@ -41,7 +42,7 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: './tsconfig.json',  // Ensure this points to your tsconfig
+        project: path.resolve(__dirname, 'tsconfig.json'), // Use absolute path
         ecmaFeatures: {
           jsx: true,
         },
