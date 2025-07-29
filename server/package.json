@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "install": "npm ci --only=production"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -20,7 +20,10 @@
     "express-rate-limit": "^7.1.4",
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.16.5"
+    "mongoose": "^8.16.5",
+    "rimraf": "^5.0.5",
+    "glob": "^10.3.10",
+    "eslint": "^9.0.0"
   },
   "imports": {
     "#middleware/*": "./middleware/*.js"
