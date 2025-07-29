@@ -15,13 +15,16 @@ const LiveMarket = () => {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [connectionStatus, setConnectionStatus] = useState('connecting');
   const wsRef = useRef<WebSocket | null>(null);
-  const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectAttempts = useRef(0);
+  const maxReconnectAttempts = 5;
+  const reconnectDelay = 5000; // 5 seconds
+  const [forceRefresh, setForceRefresh] = useState(0);
 
   const connectWebSocket = () => {
-    // Clear any previous reconnect attempts
-    if (reconnectTimerRef.current) {
-      clearTimeout(reconnectTimerRef.current);
-      reconnectTimerRef.current = null;
+    if (reconnectAttempts.current >= maxReconnectAttempts) {
+      setError('Failed to connect after multiple attempts. Please refresh the page.');
+      setConnectionStatus('failed');
+      return;
     }
 
     setConnectionStatus('connecting');
@@ -34,6 +37,7 @@ const LiveMarket = () => {
     ws.onopen = () => {
       console.log('WebSocket connected');
       setConnectionStatus('authenticating');
+      reconnectAttempts.current = 0;
 
       ws.send(JSON.stringify({
         action: 'auth',
@@ -46,7 +50,7 @@ const LiveMarket = () => {
       const data = JSON.parse(event.data);
 
       // Handle authentication response
-      if (data[0].msg === 'authenticated') {
+      if (data[0]?.msg === 'authenticated') {
         setConnectionStatus('subscribing');
         console.log('Authentication successful');
 
@@ -58,10 +62,15 @@ const LiveMarket = () => {
       }
 
       // Handle subscription success
-      if (data[0].msg === 'subscribed') {
+      if (data[0]?.msg === 'subscribed') {
         setConnectionStatus('connected');
         setLoading(false);
         console.log('Subscription successful');
+        return;
+      }
+
+      // Handle pong
+      if (data[0]?.msg === 'pong') {
         return;
       }
 
@@ -98,24 +107,17 @@ const LiveMarket = () => {
       console.error('WebSocket error:', error);
       setError('Connection error. Reconnecting...');
       setConnectionStatus('error');
-      reconnect();
     };
 
-    ws.onclose = () => {
-      console.log('WebSocket closed');
+    ws.onclose = (event) => {
+      console.log(`WebSocket closed: ${event.code} - ${event.reason}`);
       setConnectionStatus('disconnected');
-      reconnect();
+
+      if (event.code !== 1000) { // 1000 = normal closure
+        reconnectAttempts.current += 1;
+        setTimeout(connectWebSocket, reconnectDelay);
+      }
     };
-  };
-
-  const reconnect = () => {
-    if (reconnectTimerRef.current) return;
-
-    setConnectionStatus('reconnecting');
-    reconnectTimerRef.current = setTimeout(() => {
-      console.log('Attempting to reconnect...');
-      connectWebSocket();
-    }, 5000);
   };
 
   useEffect(() => {
@@ -123,13 +125,10 @@ const LiveMarket = () => {
 
     return () => {
       if (wsRef.current) {
-        wsRef.current.close();
-      }
-      if (reconnectTimerRef.current) {
-        clearTimeout(reconnectTimerRef.current);
+        wsRef.current.close(1000, 'Component unmounted');
       }
     };
-  }, []);
+  }, [forceRefresh]);
 
   const sortedData = [...marketData].sort((a, b) => b.volume - a.volume);
 
@@ -141,7 +140,8 @@ const LiveMarket = () => {
     connected: 'Connected to live market',
     reconnecting: 'Reconnecting to market data...',
     disconnected: 'Connection lost. Reconnecting...',
-    error: 'Connection error. Reconnecting...'
+    error: 'Connection error. Reconnecting...',
+    failed: 'Failed to connect to market data.'
   };
 
   return (
@@ -159,10 +159,30 @@ const LiveMarket = () => {
         <div className="flex items-center text-sm">
           <span className={`inline-block w-3 h-3 rounded-full mr-2 ${
             connectionStatus === 'connected' ? 'bg-green-500' :
-            connectionStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'
+            connectionStatus === 'error' || connectionStatus === 'failed' ? 'bg-red-500' : 'bg-yellow-500'
           }`}></span>
-          <span>{statusMessages[connectionStatus]}</span>
+          <span>
+            {connectionStatus === 'connecting' && 'Connecting to market data...'}
+            {connectionStatus === 'authenticating' && 'Authenticating with Alpaca...'}
+            {connectionStatus === 'subscribing' && 'Subscribing to market data...'}
+            {connectionStatus === 'connected' && 'Connected to live market'}
+            {connectionStatus === 'reconnecting' && 'Reconnecting to market data...'}
+            {connectionStatus === 'disconnected' && 'Connection lost. Reconnecting...'}
+            {connectionStatus === 'error' && 'Connection error. Reconnecting...'}
+            {connectionStatus === 'failed' && 'Connection failed. Please refresh the page.'}
+          </span>
         </div>
+        {connectionStatus === 'failed' && (
+          <button
+            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            onClick={() => {
+              reconnectAttempts.current = 0;
+              connectWebSocket();
+            }}
+          >
+            Retry Connection
+          </button>
+        )}
       </div>
 
       {loading ? (
