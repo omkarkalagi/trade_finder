@@ -8,8 +8,8 @@ const __dirname = path.dirname(__filename);
 const distDir = path.join(__dirname, 'dist');
 const requiredPatterns = [
   /index\.html$/, // Should match index.html
-  /assets\/index\.[a-zA-Z0-9]+\.css$/, // Match any alphanumeric hash
-  /assets\/index\.[a-zA-Z0-9]+\.js$/   // Match any alphanumeric hash
+  /assets\/index-[a-zA-Z0-9]+\.css$/, // Match dash after index
+  /assets\/index-[a-zA-Z0-9]+\.js$/   // Match dash after index
 ];
 
 // Check if dist directory exists
