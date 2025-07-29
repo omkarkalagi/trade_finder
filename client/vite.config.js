@@ -49,6 +49,7 @@ export default defineConfig({
     loader: 'jsx',
     include: /src\/.*\.jsx?$/,
     exclude: [],
+    jsxInject: `import React from 'react'` // Ensure React is in scope
   },
   optimizeDeps: {
     include: ['@mui/material']
