@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 interface StockData {
   symbol: string;
@@ -13,31 +13,59 @@ const LiveMarket = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  const [connectionTime, setConnectionTime] = useState(0);
-  const [isSlowConnection, setIsSlowConnection] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState('connecting');
+  const wsRef = useRef<WebSocket | null>(null);
+  const reconnectTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // WebSocket connection management
-  const connectWebSocket = useCallback(() => {
+  const connectWebSocket = () => {
+    // Clear any previous reconnect attempts
+    if (reconnectTimerRef.current) {
+      clearTimeout(reconnectTimerRef.current);
+      reconnectTimerRef.current = null;
+    }
+
+    setConnectionStatus('connecting');
+    setLoading(true);
+    setError(null);
+
     const ws = new WebSocket('wss://stream.data.alpaca.markets/v2/iex');
+    wsRef.current = ws;
 
     ws.onopen = () => {
       console.log('WebSocket connected');
+      setConnectionStatus('authenticating');
+
       ws.send(JSON.stringify({
         action: 'auth',
         key: import.meta.env.VITE_ALPACA_API_KEY,
         secret: import.meta.env.VITE_ALPACA_API_SECRET
       }));
-
-      ws.send(JSON.stringify({
-        action: 'subscribe',
-        quotes: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'JPM', 'V', 'DIS']
-      }));
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data[0].msg === 'connected' || data[0].msg === 'authenticated') return;
 
+      // Handle authentication response
+      if (data[0].msg === 'authenticated') {
+        setConnectionStatus('subscribing');
+        console.log('Authentication successful');
+
+        ws.send(JSON.stringify({
+          action: 'subscribe',
+          quotes: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'JPM', 'V', 'DIS']
+        }));
+        return;
+      }
+
+      // Handle subscription success
+      if (data[0].msg === 'subscribed') {
+        setConnectionStatus('connected');
+        setLoading(false);
+        console.log('Subscription successful');
+        return;
+      }
+
+      // Process market data
       const quotes = data.filter((item: any) => item.T === 'q');
       if (quotes.length > 0) {
         setMarketData(prev => {
@@ -69,45 +97,52 @@ const LiveMarket = () => {
     ws.onerror = (error) => {
       console.error('WebSocket error:', error);
       setError('Connection error. Reconnecting...');
-      setLoading(true);
+      setConnectionStatus('error');
+      reconnect();
     };
 
     ws.onclose = () => {
-      console.log('WebSocket closed. Reconnecting...');
-      setTimeout(connectWebSocket, 3000);
+      console.log('WebSocket closed');
+      setConnectionStatus('disconnected');
+      reconnect();
     };
+  };
 
-    return ws;
+  const reconnect = () => {
+    if (reconnectTimerRef.current) return;
+
+    setConnectionStatus('reconnecting');
+    reconnectTimerRef.current = setTimeout(() => {
+      console.log('Attempting to reconnect...');
+      connectWebSocket();
+    }, 5000);
+  };
+
+  useEffect(() => {
+    connectWebSocket();
+
+    return () => {
+      if (wsRef.current) {
+        wsRef.current.close();
+      }
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+      }
+    };
   }, []);
 
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    if (loading) {
-      timer = setInterval(() => {
-        setConnectionTime(prev => prev + 1);
-      }, 1000);
-
-      // Show warning after 5 seconds
-      if (connectionTime > 5) {
-        setIsSlowConnection(true);
-      }
-    } else {
-      setConnectionTime(0);
-      setIsSlowConnection(false);
-    }
-
-    return () => clearInterval(timer);
-  }, [loading, connectionTime]);
-
-  useEffect(() => {
-    const ws = connectWebSocket();
-    return () => {
-      if (ws) ws.close();
-    };
-  }, [connectWebSocket]);
-
-  // Sort by most active
   const sortedData = [...marketData].sort((a, b) => b.volume - a.volume);
+
+  // Connection status messages
+  const statusMessages = {
+    connecting: 'Connecting to market data...',
+    authenticating: 'Authenticating with Alpaca...',
+    subscribing: 'Subscribing to market data...',
+    connected: 'Connected to live market',
+    reconnecting: 'Reconnecting to market data...',
+    disconnected: 'Connection lost. Reconnecting...',
+    error: 'Connection error. Reconnecting...'
+  };
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg">
@@ -120,11 +155,21 @@ const LiveMarket = () => {
         )}
       </div>
 
+      <div className="mb-4">
+        <div className="flex items-center text-sm">
+          <span className={`inline-block w-3 h-3 rounded-full mr-2 ${
+            connectionStatus === 'connected' ? 'bg-green-500' :
+            connectionStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'
+          }`}></span>
+          <span>{statusMessages[connectionStatus]}</span>
+        </div>
+      </div>
+
       {loading ? (
         <div className="flex flex-col items-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <span className="mt-2">Connecting to live market...</span>
-          {isSlowConnection && (
+          <span className="mt-2">Loading market data...</span>
+          {connectionStatus === 'reconnecting' && (
             <p className="text-sm text-yellow-600 mt-2">
               Taking longer than usual. Please check your network connection.
             </p>
