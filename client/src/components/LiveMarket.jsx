@@ -1,16 +1,15 @@
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${Number(data.price).toFixed(2)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.size}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(data.timestamp).toLocaleTimeString()}
-                  </td>
-                </tr>
+import React, { useState, useEffect } from 'react';
+import LoadingSpinner from './common/LoadingSpinner';
+
+export default function LiveMarket() {
+  const [marketData, setMarketData] = useState({
+    AAPL: { price: 0, size: 0, timestamp: null },
     MSFT: { price: 0, size: 0, timestamp: null },
     GOOGL: { price: 0, size: 0, timestamp: null },
     AMZN: { price: 0, size: 0, timestamp: null },
     TSLA: { price: 0, size: 0, timestamp: null }
   });
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
-import React, { useState, useEffect } from 'react';
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -26,7 +25,7 @@ import React, { useState, useEffect } from 'react';
     };
 
     ws.onmessage = (event) => {
-      console.log('Raw WebSocket message:', event.data); // Add this line
+      console.log('Raw WebSocket message:', event.data);
       const messages = JSON.parse(event.data);
 
       messages.forEach(message => {
@@ -96,7 +95,7 @@ import React, { useState, useEffect } from 'react';
                   <tr key={symbol}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{symbol}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {`$${data.price.toFixed(2)}`}
+                      {`$${Number(data.price).toFixed(2)}`}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.size}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
