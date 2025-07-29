@@ -9,10 +9,7 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'assets',
-    rollupOptions: {
-      input: './index.html' // Correct input path
-    }
+    assetsDir: 'assets'
   },
   base: '/'
 });
