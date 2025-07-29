@@ -6,10 +6,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const distDir = path.join(__dirname, 'dist');
-const requiredFiles = [
-  'index.html',
-  'assets/index.css',
-  'assets/index.js'
+const requiredPatterns = [
+  /index\.html$/,
+  /assets\/index\.[a-f0-9]+\.css$/,
+  /assets\/index\.[a-f0-9]+\.js$/
 ];
 
 // Check if dist directory exists
@@ -18,20 +18,36 @@ if (!fs.existsSync(distDir)) {
   process.exit(1);
 }
 
-// Check for required files
+// Get all files in dist directory
+const allFiles = [];
+const walkDir = (dir) => {
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      walkDir(filePath);
+    } else {
+      allFiles.push(path.relative(distDir, filePath).replace(/\\/g, '/'));
+    }
+  }
+};
+walkDir(distDir);
+
+// Check for required file patterns
 let missingFiles = [];
-requiredFiles.forEach(file => {
-  const filePath = path.join(distDir, file);
-  if (!fs.existsSync(filePath)) {
-    missingFiles.push(file);
+requiredPatterns.forEach(pattern => {
+  if (!allFiles.some(file => pattern.test(file))) {
+    missingFiles.push(pattern.toString());
   }
 });
 
 if (missingFiles.length > 0) {
-  console.error('❌ Build incomplete. Missing files:');
-  missingFiles.forEach(file => console.error(`- ${file}`));
+  console.error('❌ Build incomplete. Missing files matching patterns:');
+  missingFiles.forEach(pattern => console.error(`- ${pattern}`));
+  console.log('Found files:', allFiles);
   process.exit(1);
 }
 
 console.log('✅ Build verified successfully');
+console.log('Found files:', allFiles);
 process.exit(0);
