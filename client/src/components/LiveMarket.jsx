@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import LoadingSpinner from './common/LoadingSpinner';
-
-export default function LiveMarket() {
-  const [marketData, setMarketData] = useState({});
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${data.price.toFixed(2)}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.size}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(data.timestamp).toLocaleTimeString()}
+                  </td>
+                </tr>
+    MSFT: { price: 0, size: 0, timestamp: null },
+    GOOGL: { price: 0, size: 0, timestamp: null },
+    AMZN: { price: 0, size: 0, timestamp: null },
+    TSLA: { price: 0, size: 0, timestamp: null }
+  });
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
+import React, { useState, useEffect } from 'react';
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -19,24 +26,29 @@ export default function LiveMarket() {
     };
 
     ws.onmessage = (event) => {
-      const message = JSON.parse(event.data);
+      console.log('Raw WebSocket message:', event.data); // Add this line
+      const messages = JSON.parse(event.data);
 
-      if (message[0].T === 'success' && message[0].msg === 'authenticated') {
-        setConnectionStatus('connected');
-        // Subscribe to symbols after authentication
-        ws.send(JSON.stringify({
-          action: 'subscribe',
-          trades: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA'] // Add your symbols here
-        }));
-      }
+      messages.forEach(message => {
+        if (message.T === 'success' && message.msg === 'authenticated') {
+          setConnectionStatus('connected');
+          // Subscribe to symbols after authentication
+          ws.send(JSON.stringify({
+            action: 'subscribe',
+            trades: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA'],
+            quotes: [],  // Add if you need quotes
+            bars: []     // Add if you need bars
+          }));
+        }
 
-      if (message[0].T === 't') { // Trade update
-        const { S: symbol, p: price, s: size, t: timestamp } = message[0];
-        setMarketData(prev => ({
-          ...prev,
-          [symbol]: { price, size, timestamp }
-        }));
-      }
+        if (message.T === 't') { // Trade update
+          const { S: symbol, p: price, s: size, t: timestamp } = message;
+          setMarketData(prev => ({
+            ...prev,
+            [symbol]: { price, size, timestamp }
+          }));
+        }
+      });
     };
 
     ws.onerror = (error) => {
@@ -76,16 +88,21 @@ export default function LiveMarket() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {Object.entries(marketData).map(([symbol, data]) => (
-                <tr key={symbol}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{symbol}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${data.price.toFixed(2)}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.size}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(data.timestamp).toLocaleTimeString()}
-                  </td>
-                </tr>
-              ))}
+              {Object.entries(marketData).map(([symbol, data]) => {
+                // Skip if data is incomplete
+                if (!data || !data.price || !data.size || !data.timestamp) return null;
+
+                return (
+                  <tr key={symbol}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{symbol}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${data.price.toFixed(2)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.size}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {new Date(data.timestamp).toLocaleTimeString()}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
