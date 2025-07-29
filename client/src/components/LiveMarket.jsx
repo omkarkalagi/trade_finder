@@ -95,7 +95,9 @@ import React, { useState, useEffect } from 'react';
                 return (
                   <tr key={symbol}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{symbol}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${data.price.toFixed(2)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      ${data.price.toFixed(2)}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{data.size}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(data.timestamp).toLocaleTimeString()}
