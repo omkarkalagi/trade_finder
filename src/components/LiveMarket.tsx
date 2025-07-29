@@ -18,17 +18,35 @@ const LiveMarket = () => {
 
   // Simulate live updates
   useEffect(() => {
-    const interval = setInterval(() => {
-      setMarketData(prevData =>
-        prevData.map(stock => ({
-          ...stock,
-          price: parseFloat((stock.price + (Math.random() - 0.5)).toFixed(2)),
-          change: parseFloat((stock.change + (Math.random() - 0.5)).toFixed(2))
-        }))
-      );
-    }, 2000);
+    const ws = new WebSocket('wss://stream.data.alpaca.markets/v2/iex');
 
-    return () => clearInterval(interval);
+    ws.onopen = () => {
+      ws.send(JSON.stringify({
+        action: 'auth',
+        key: import.meta.env.VITE_ALPACA_API_KEY,
+        secret: import.meta.env.VITE_ALPACA_API_SECRET
+      }));
+
+      ws.send(JSON.stringify({
+        action: 'subscribe',
+        quotes: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']
+      }));
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data[0].msg === 'connected' || data[0].msg === 'authenticated') return;
+
+      const quotes = data.filter(item => item.T === 'q');
+      setMarketData(quotes.map(quote => ({
+        symbol: quote.S,
+        price: quote.ap,
+        change: quote.ap - quote.pc,
+        changePercent: ((quote.ap - quote.pc) / quote.pc) * 100
+      })));
+    };
+
+    return () => ws.close();
   }, []);
 
   return (
