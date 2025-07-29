@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "install": "npm ci --only=production"
+    "install": "echo 'Skipping install script'",
+    "prod-install": "npm ci --only=production"
   },
   "engines": {
     "node": ">=18.0.0"
