@@ -6,4 +6,5 @@ router.post('/login', (req, res) => {
   res.json({ message: 'Login successful' });
 });
 
+// Ensure default export
 export default router;

@@ -6,5 +6,5 @@ router.get('/data', (req, res) => {
   res.json({ message: 'Market data' });
 });
 
-// Add this default export
+// Ensure default export
 export default router;

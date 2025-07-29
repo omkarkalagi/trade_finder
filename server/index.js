@@ -9,6 +9,11 @@ import tradeRoutes from './routes/tradeRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 import { createClient } from 'redis';
 
+// Debug: Log imported routes
+console.log('AuthRoutes:', authRoutes);
+console.log('MarketRoutes:', marketRoutes);
+console.log('TradeRoutes:', tradeRoutes);
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
