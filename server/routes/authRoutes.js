@@ -1,11 +1,9 @@
-const express = require('express');
+import express from 'express';
 const router = express.Router();
-const authController = require('../controllers/authController');
 
-router.post('/register', authController.register);
-router.post('/login', authController.login);
-router.post('/send-otp', authController.sendOTP);
-router.post('/verify-otp', authController.verifyOTP);
-router.get('/verify', authController.verifyToken);
+// Add your authentication routes here
+router.post('/login', (req, res) => {
+  res.json({ message: 'Login successful' });
+});
 
-module.exports = router; 
+export default router;

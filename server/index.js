@@ -44,10 +44,13 @@ app.use('/api/auth', authRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/trade', tradeRoutes);
 
+// Health check endpoint
+app.get('/health', (req, res) => res.json({ status: 'OK' }));
+
 // Error handling middleware
 app.use(errorHandler);
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on port ${PORT}`);
 });
