@@ -10,10 +10,17 @@
   ],
   "routes": [
     {
-      "src": "/assets/(.*)",
+      "src": "/assets/(.*\\.css)",
       "headers": {
         "Cache-Control": "public, max-age=31536000, immutable",
         "Content-Type": "text/css"
+      }
+    },
+    {
+      "src": "/assets/(.*\\.js)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable",
+        "Content-Type": "application/javascript"
       }
     },
     {
