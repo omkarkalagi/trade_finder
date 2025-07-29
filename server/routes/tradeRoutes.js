@@ -1,9 +1,15 @@
+import express from 'express';
 const router = express.Router();
 
 // Add your trade routes here
 router.post('/execute', (req, res) => {
-  res.json({ message: 'Trade executed' });
+  try {
+    // Your trade execution logic here
+    res.json({ message: 'Trade executed' });
+  } catch (error) {
+    console.error('Trade execution error:', error);
+    res.status(500).json({ error: 'Failed to execute trade' });
+  }
 });
 
-// Ensure this is the last line in the file
 export default router;
