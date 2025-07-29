@@ -39,6 +39,18 @@ const LiveMarket = () => {
       setConnectionStatus('authenticating');
       reconnectAttempts.current = 0;
 
+      // Send a heartbeat every 15 seconds
+      const heartbeatInterval = setInterval(() => {
+        if (ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ action: 'ping' }));
+        }
+      }, 15000);
+
+      // Clear interval on close
+      ws.onclose = () => {
+        clearInterval(heartbeatInterval);
+      };
+
       ws.send(JSON.stringify({
         action: 'auth',
         key: import.meta.env.VITE_ALPACA_API_KEY,
@@ -49,11 +61,24 @@ const LiveMarket = () => {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
+      // Handle initial connection
+      if (data[0]?.msg === 'connected') {
+        console.log('Connected to Alpaca WebSocket');
+        // After connected, we send authentication
+        ws.send(JSON.stringify({
+          action: 'auth',
+          key: import.meta.env.VITE_ALPACA_API_KEY,
+          secret: import.meta.env.VITE_ALPACA_API_SECRET
+        }));
+        return;
+      }
+
       // Handle authentication response
       if (data[0]?.msg === 'authenticated') {
         setConnectionStatus('subscribing');
         console.log('Authentication successful');
 
+        // After authentication, subscribe to quotes
         ws.send(JSON.stringify({
           action: 'subscribe',
           quotes: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'JPM', 'V', 'DIS']
@@ -69,9 +94,9 @@ const LiveMarket = () => {
         return;
       }
 
-      // Handle pong
+      // Handle pong (heartbeat response)
       if (data[0]?.msg === 'pong') {
-        return;
+        return; // Ignore pong responses
       }
 
       // Process market data

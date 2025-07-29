@@ -45,7 +45,9 @@ app.use('/api/market', marketRoutes);
 app.use('/api/trade', tradeRoutes);
 
 // Health check endpoint
-app.get('/health', (req, res) => res.json({ status: 'OK' }));
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date() });
+});
 
 // Error handling middleware
 app.use(errorHandler);
