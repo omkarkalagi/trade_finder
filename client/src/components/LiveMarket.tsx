@@ -13,6 +13,8 @@ const LiveMarket = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [connectionTime, setConnectionTime] = useState(0);
+  const [isSlowConnection, setIsSlowConnection] = useState(false);
 
   // WebSocket connection management
   const connectWebSocket = useCallback(() => {
@@ -79,6 +81,25 @@ const LiveMarket = () => {
   }, []);
 
   useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (loading) {
+      timer = setInterval(() => {
+        setConnectionTime(prev => prev + 1);
+      }, 1000);
+
+      // Show warning after 5 seconds
+      if (connectionTime > 5) {
+        setIsSlowConnection(true);
+      }
+    } else {
+      setConnectionTime(0);
+      setIsSlowConnection(false);
+    }
+
+    return () => clearInterval(timer);
+  }, [loading, connectionTime]);
+
+  useEffect(() => {
     const ws = connectWebSocket();
     return () => {
       if (ws) ws.close();
@@ -100,9 +121,14 @@ const LiveMarket = () => {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-8">
+        <div className="flex flex-col items-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <span className="ml-2">Connecting to live market...</span>
+          <span className="mt-2">Connecting to live market...</span>
+          {isSlowConnection && (
+            <p className="text-sm text-yellow-600 mt-2">
+              Taking longer than usual. Please check your network connection.
+            </p>
+          )}
         </div>
       ) : error ? (
         <div className="text-red-500 p-4 bg-red-50 rounded">{error}</div>
