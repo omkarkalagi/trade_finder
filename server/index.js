@@ -14,6 +14,12 @@ console.log('AuthRoutes:', authRoutes);
 console.log('MarketRoutes:', marketRoutes);
 console.log('TradeRoutes:', tradeRoutes);
 
+// Add this immediately after loading dotenv
+console.log('Environment variables loaded:');
+console.log('MONGO_URI:', process.env.MONGO_URI ? 'Set' : 'Not set');
+console.log('ALPACA_API_KEY:', process.env.ALPACA_API_KEY ? 'Set' : 'Not set');
+console.log('REDIS_URL:', process.env.REDIS_URL ? 'Set' : 'Not set');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
