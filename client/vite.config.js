@@ -9,12 +9,17 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    assetsDir: 'assets', // Ensure assets are in assets directory
+    assetsDir: 'assets',
     rollupOptions: {
       input: {
-        main: './index.html' // Explicitly define entry point
+        main: './index.html'
+      },
+      output: {
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`
       }
     }
   },
-  base: './' // Use relative paths for deployment
+  base: '/'
 });
