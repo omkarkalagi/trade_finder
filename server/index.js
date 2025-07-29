@@ -7,7 +7,6 @@ import authRoutes from './routes/authRoutes.js';
 import marketRoutes from './routes/marketRoutes.js';
 import tradeRoutes from './routes/tradeRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
-import { createClient } from 'redis';
 
 // Debug: Log imported routes
 console.log('AuthRoutes:', authRoutes);
@@ -28,36 +27,6 @@ await connectDB();
 
 // Middleware
 app.use(express.json());
-
-// Redis connection
-let redisClient;
-if (process.env.REDIS_URL) {
-  redisClient = createClient({
-    url: process.env.REDIS_URL,
-    socket: {
-      tls: true,
-      rejectUnauthorized: false,
-      secureProtocol: 'TLSv1_2_method',
-      connectTimeout: 5000, // 5 seconds timeout
-      reconnectStrategy: (retries) => {
-        if (retries > 5) {
-          console.log('Too many retries. Redis connection terminated.');
-          return new Error('Too many retries');
-        }
-        return Math.min(retries * 100, 3000);
-      }
-    }
-  });
-
-  redisClient.on('error', err => console.error('Redis error:', err));
-
-  try {
-    await redisClient.connect();
-    console.log('✅ Redis connected');
-  } catch (err) {
-    console.error('❌ Redis connection failed:', err);
-  }
-}
 
 // Routes
 app.use('/api/auth', authRoutes);
