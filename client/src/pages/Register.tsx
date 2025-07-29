@@ -15,11 +15,11 @@ const Register = () => {
 
   const { name, email, password, confirmPassword } = formData;
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
       setError('Passwords do not match');
@@ -36,8 +36,8 @@ const Register = () => {
       });
       console.log('Registration successful', response.data);
       navigate('/login');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed');
+    } catch (error: any) {
+      setError(error.response?.data?.error || 'Registration failed');
     } finally {
       setLoading(false);
     }
@@ -134,4 +134,4 @@ const Register = () => {
   );
 };
 
-export default Register; 
+export default Register;

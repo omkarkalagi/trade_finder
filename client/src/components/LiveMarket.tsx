@@ -8,6 +8,13 @@ interface StockData {
   volume: number;
 }
 
+interface ImportMeta {
+  env: {
+    VITE_ALPACA_API_KEY: string;
+    VITE_ALPACA_API_SECRET: string;
+  };
+}
+
 const LiveMarket = () => {
   const [marketData, setMarketData] = useState<StockData[]>([]);
   const [loading, setLoading] = useState(true);

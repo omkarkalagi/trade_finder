@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import * as authService from '../services/authService';
 import axios from 'axios'; // Added axios import
 import React from 'react';
+import { FormEvent } from 'react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -20,7 +21,7 @@ const Login = () => {
   const [name, setName] = useState('');
   const [error, setError] = useState(''); // Added error state
 
-  const handleLogin = async (e) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setMessage('');
     try {
@@ -31,7 +32,7 @@ const Login = () => {
       );
       auth.login(response.data.user, response.data.token);
       navigate('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       let errorMessage = 'Login failed';
 
       if (error.message === 'Network Error') {
@@ -55,7 +56,7 @@ const Login = () => {
       } else {
         setMessage('Failed to send OTP. Please try again.');
       }
-    } catch (error) {
+    } catch (error: any) {
       setMessage(error.message || 'An error occurred. Please try again.');
     }
   };
@@ -71,7 +72,7 @@ const Login = () => {
       } else {
         setMessage(response.error || 'OTP verification failed. Please try again.');
       }
-    } catch (error) {
+    } catch (error: any) {
       setMessage(error.message || 'An error occurred. Please try again.');
     }
   };
@@ -90,7 +91,7 @@ const Login = () => {
       } else {
         setMessage(response.error || 'Signup failed. Please try again.');
       }
-    } catch (error) {
+    } catch (error: any) {
       setMessage(error.message || 'An error occurred. Please try again.');
     }
   };
