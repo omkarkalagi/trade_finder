@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.js';
 import marketRoutes from './routes/marketRoutes.js';
 import tradeRoutes from './routes/tradeRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
+import mongoose from 'mongoose'; // Added for health check
 
 // Debug: Log imported routes
 console.log('AuthRoutes:', authRoutes);
@@ -28,15 +29,39 @@ await connectDB();
 // Middleware
 app.use(express.json());
 
+// Add this after initializing the app but before other routes
+app.get('/', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+});
+
+// Optional: More detailed health check including MongoDB
+app.get('/health', async (req, res) => {
+  try {
+    // Check MongoDB connection
+    await mongoose.connection.db.admin().ping();
+    res.status(200).json({
+      status: 'healthy',
+      db: 'connected',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'unhealthy',
+      db: 'disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/trade', tradeRoutes);
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date() });
-});
 
 // Error handling middleware
 app.use(errorHandler);
