@@ -3,12 +3,10 @@ import LiveMarket from './LiveMarket';
 
 const Dashboard = () => {
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">🚀 AI Trading Dashboard</h1>
-      <div className="bg-white p-4 rounded-lg shadow-lg mb-6">
-        <LiveMarket />
-      </div>
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <LiveMarket />
+      <div className="mt-6 bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Trading Insights</h2>
         <p className="text-gray-600">
           Real-time market data and AI-powered insights will appear here once fully integrated.

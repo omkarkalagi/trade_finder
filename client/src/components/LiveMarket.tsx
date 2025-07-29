@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
+interface StockData {
+  symbol: string;
+  price: number;
+  change: number;
+  changePercent: number;
+}
+
 const LiveMarket = () => {
-  const [marketData, setMarketData] = useState([
+  const [marketData, setMarketData] = useState<StockData[]>([
     { symbol: 'AAPL', price: 182.52, change: 1.24, changePercent: 0.68 },
     { symbol: 'MSFT', price: 328.79, change: 2.35, changePercent: 0.72 },
     { symbol: 'GOOGL', price: 135.21, change: -0.42, changePercent: -0.31 },
@@ -9,52 +16,59 @@ const LiveMarket = () => {
     { symbol: 'TSLA', price: 234.50, change: 5.32, changePercent: 2.32 },
   ]);
 
-  // Simulate live updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setMarketData(prevData =>
-        prevData.map(stock => ({
-          ...stock,
-          price: parseFloat((stock.price + (Math.random() - 0.5)).toFixed(2)),
-          change: parseFloat((stock.change + (Math.random() - 0.5)).toFixed(2))
-        }))
-      );
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   // Real-time Alpaca WebSocket integration
   useEffect(() => {
-    const ws = new WebSocket('wss://stream.data.alpaca.markets/v2/iex');
+    let ws: WebSocket | null = null;
+    let reconnectInterval: NodeJS.Timeout;
 
-    ws.onopen = () => {
-      ws.send(JSON.stringify({
-        action: 'auth',
-        key: import.meta.env.VITE_ALPACA_API_KEY,
-        secret: import.meta.env.VITE_ALPACA_API_SECRET
-      }));
+    const connect = () => {
+      ws = new WebSocket('wss://stream.data.alpaca.markets/v2/iex');
 
-      ws.send(JSON.stringify({
-        action: 'subscribe',
-        quotes: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']
-      }));
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+        ws?.send(JSON.stringify({
+          action: 'auth',
+          key: import.meta.env.VITE_ALPACA_API_KEY,
+          secret: import.meta.env.VITE_ALPACA_API_SECRET
+        }));
+
+        ws?.send(JSON.stringify({
+          action: 'subscribe',
+          quotes: ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA']
+        }));
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data[0].msg === 'connected' || data[0].msg === 'authenticated') return;
+
+        const quotes = data.filter((item: any) => item.T === 'q');
+        setMarketData(quotes.map((quote: any) => ({
+          symbol: quote.S,
+          price: quote.ap,
+          change: quote.ap - (quote.pc || quote.ap),
+          changePercent: quote.pc ? ((quote.ap - quote.pc) / quote.pc) * 100 : 0
+        })));
+      };
+
+      ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+
+      ws.onclose = () => {
+        console.log('WebSocket closed. Reconnecting in 3 seconds...');
+        reconnectInterval = setTimeout(connect, 3000);
+      };
     };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data[0].msg === 'connected' || data[0].msg === 'authenticated') return;
+    connect();
 
-      const quotes = data.filter(item => item.T === 'q');
-      setMarketData(quotes.map(quote => ({
-        symbol: quote.S,
-        price: quote.ap,
-        change: quote.ap - (quote.pc || quote.ap), // Handle missing pc property
-        changePercent: quote.pc ? ((quote.ap - quote.pc) / quote.pc) * 100 : 0
-      })));
+    return () => {
+      if (ws) {
+        ws.close();
+      }
+      clearTimeout(reconnectInterval);
     };
-
-    return () => ws.close();
   }, []);
 
   return (
