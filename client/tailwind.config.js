@@ -16,7 +16,5 @@ module.exports = {
       }
     },
   },
-  plugins: [
-    require('tailwindcss/nesting')
-  ],
+  plugins: [], // Remove the nesting plugin
 }
