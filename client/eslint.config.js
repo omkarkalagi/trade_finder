@@ -1,18 +1,17 @@
 import js from '@eslint/js';
 import globals from 'globals';
-import ts from 'typescript-eslint';
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import reactRecommended from 'eslint-plugin-react/configs/recommended.js';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default [
   js.configs.recommended,
-  ...ts.configs.recommended,
   reactRecommended,
   {
-    // Process both JS and TS files
-    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
-      parser: ts.parser,
+      parser: tsParser,
       parserOptions: {
         sourceType: 'module',
         project: './tsconfig.json',
@@ -24,9 +23,11 @@ export default [
       },
     },
     plugins: {
+      '@typescript-eslint': tsPlugin,
       'react-hooks': reactHooks,
     },
     rules: {
+      ...tsPlugin.configs.recommended.rules,
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'react/react-in-jsx-scope': 'off',
