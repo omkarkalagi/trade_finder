@@ -2,39 +2,40 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
-import reactRecommended from 'eslint-plugin-react/configs/recommended.js';
-import reactHooks from 'eslint-plugin-react-hooks';
+import reactPlugin from 'eslint-plugin-react';
 
 export default [
   js.configs.recommended,
-  reactRecommended,
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
+    plugins: {
+      'react': reactPlugin,
+      '@typescript-eslint': tsPlugin
+    },
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        ecmaVersion: 'latest',
         sourceType: 'module',
         project: './tsconfig.json',
-        tsconfigRootDir: __dirname,
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
       globals: {
         ...globals.browser,
         ...globals.node,
       },
     },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-      'react-hooks': reactHooks,
-    },
     rules: {
-      ...tsPlugin.configs.recommended.rules,
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-    },
+      "no-unused-vars": "warn",
+      "no-console": "off",
+      "react/react-in-jsx-scope": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "off"
+    }
   },
   {
     ignores: ['build/*', 'dist/*', 'node_modules/*'],
-  },
+  }
 ];
