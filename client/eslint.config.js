@@ -3,14 +3,14 @@ import globals from 'globals';
 import ts from 'typescript-eslint';
 import reactRecommended from 'eslint-plugin-react/configs/recommended.js';
 import reactHooks from 'eslint-plugin-react-hooks';
-import prettierConfig from 'eslint-config-prettier';
 
 export default [
   js.configs.recommended,
   ...ts.configs.recommended,
   reactRecommended,
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    // Process both JS and TS files
+    files: ['**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: ts.parser,
       parserOptions: {
@@ -27,7 +27,6 @@ export default [
       'react-hooks': reactHooks,
     },
     rules: {
-      ...prettierConfig.rules,
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
       'react/react-in-jsx-scope': 'off',

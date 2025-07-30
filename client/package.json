@@ -6,11 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "prebuild": "eslint src --ext .ts,.tsx --config eslint.config.js --ignore-pattern 'build/*' --quiet",
+    "prebuild": "eslint src --config eslint.config.js --ignore-pattern 'build/*' --quiet",
     "verify": "node verify-build.mjs",
     "preview": "vite preview",
     "start": "vite preview --port 3000",
-    "lint": "eslint src --ext .ts,.tsx --config eslint.config.js",
+    "lint": "eslint src --config eslint.config.js",
     "deploy": "npm run build && npx vercel --prod"
   },
   "dependencies": {
