@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from "react-router-dom";
 
 const Sidebar = ({ preloadRoute }) => {
   const navItems = [
@@ -23,12 +23,12 @@ const Sidebar = ({ preloadRoute }) => {
         <ul className="space-y-2">
           {navItems.map((item) => (
             <li key={item.path}>
-              <NavLink 
+              <NavLink
                 to={item.path}
-                className={({isActive}) => 
+                className={({isActive}) =>
                   `flex items-center p-3 rounded-lg transition ${
-                    isActive 
-                      ? 'bg-white text-purple-800' 
+                    isActive
+                      ? 'bg-white text-purple-800'
                       : 'hover:bg-purple-700'
                   }`
                 }
@@ -45,4 +45,4 @@ const Sidebar = ({ preloadRoute }) => {
   );
 };
 
-export default React.memo(Sidebar); 
+export default React.memo(Sidebar);
