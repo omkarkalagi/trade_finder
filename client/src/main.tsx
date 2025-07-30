@@ -1,21 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom'; // Add this
 import App from './App';
 import './index.css';
 
-const rootElement = document.getElementById('root');
-if (!rootElement) {
-  document.body.innerHTML = `
-    <div style="padding: 2rem; text-align: center; font-family: sans-serif;">
-      <h1>Critical Error</h1>
-      <p>Root element not found. Please check your HTML structure.</p>
-    </div>
-  `;
-} else {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <React.StrictMode>
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
+    <BrowserRouter> {/* Wrap App with BrowserRouter */}
       <App />
-    </React.StrictMode>
-  );
-}
+    </BrowserRouter>
+  </React.StrictMode>
+);
