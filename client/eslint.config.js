@@ -5,6 +5,17 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import reactPlugin from 'eslint-plugin-react';
 import path from 'path'; // Add this import
 
+// Resolve tsconfig path dynamically
+const resolveTsConfigPath = () => {
+  try {
+    // Try Vercel's absolute path first
+    return path.resolve('/vercel/path0/client/tsconfig.json');
+  } catch {
+    // Fallback to local development path
+    return path.resolve(__dirname, 'tsconfig.json');
+  }
+};
+
 export default [
   {
     files: ['**/*.js', '**/*.jsx'],
@@ -42,7 +53,7 @@ export default [
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        project: path.resolve(__dirname, 'tsconfig.json'), // Use absolute path
+        project: resolveTsConfigPath(), // Use dynamic resolution
         ecmaFeatures: {
           jsx: true,
         },

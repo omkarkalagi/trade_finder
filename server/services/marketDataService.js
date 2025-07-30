@@ -1,6 +1,7 @@
 const WebSocket = require('ws');
 const Alpaca = require('@alpacahq/alpaca-trade-api');
 const { createClient } = require('redis');
+const config = require('../config/db');
 
 // Initialize services
 const redisClient = createClient();
@@ -8,11 +9,10 @@ const ALPACA_API_KEY = process.env.ALPACA_API_KEY || 'PKXPAVGS6AX2HLSJNICR';
 const ALPACA_API_SECRET = process.env.ALPACA_API_SECRET || 'HhaZ17k2hRKT7lmacu07QboTzzULp0WKZECeNSDa';
 
 const alpaca = new Alpaca({
-  keyId: ALPACA_API_KEY,
-  secretKey: ALPACA_API_SECRET,
-  paper: true,
-  usePolygon: false,
-  baseUrl: process.env.ALPACA_BASE_URL
+  keyId: config.ALPACA_API_KEY,
+  secretKey: config.ALPACA_API_SECRET,
+  baseUrl: config.ALPACA_API_BASE_URL,
+  paper: true
 });
 
 // Connect to Redis
