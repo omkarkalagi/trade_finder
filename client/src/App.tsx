@@ -1,7 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import LiveMarket from './components/LiveMarket';
-// Import other components
+// Import other components as needed
 
 function App() {
   return (
