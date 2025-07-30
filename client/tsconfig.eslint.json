@@ -1,15 +1,12 @@
 {
-  "compilerOptions": {
-    "allowJs": true,
-    "checkJs": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx"
-  },
+  "extends": "./tsconfig.json",
   "include": [
     "src/**/*.js",
     "src/**/*.jsx",
     "src/**/*.ts",
-    "src/**/*.tsx"
-  ]
+    "src/**/*.tsx",
+    "src/**/*.d.ts",
+    "vite.config.js"
+  ],
+  "exclude": ["node_modules", "dist"]
 }
