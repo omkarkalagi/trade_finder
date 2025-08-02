@@ -6,13 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build-no-lint": "vite build",
-    "prebuild": "eslint src --quiet",
+    "build-with-lint": "eslint src --quiet && vite build",
     "verify": "node verify-build.mjs",
     "preview": "vite preview",
     "start": "vite preview --port 3000",
     "lint": "eslint src",
-    "deploy": "npm run build-no-lint && npx vercel --prod"
+    "deploy": "npm run build && npx vercel --prod"
   },
   "dependencies": {
     "@alpacahq/alpaca-trade-api": "^3.1.3",
