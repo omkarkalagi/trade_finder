@@ -9,7 +9,7 @@ const MarketNews = () => {
     const fetchNews = async () => {
       try {
         const response = await axios.get(
-          `https://newsapi.org/v2/top-headlines?q=stock+market&apiKey=${process.env.REACT_APP_NEWS_API_KEY}`
+          `https://newsapi.org/v2/top-headlines?q=stock+market&apiKey=${import.meta.env.VITE_NEWS_API_KEY}`
         );
         setNews(response.data.articles.slice(0, 5));
       } catch (error) {
@@ -69,4 +69,4 @@ const MarketNews = () => {
   );
 };
 
-export default MarketNews; 
+export default MarketNews;

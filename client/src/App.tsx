@@ -1,6 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
 import Dashboard from './components/Dashboard';
 import LiveMarket from './components/LiveMarket';
+import { Routes, Route } from 'react-router-dom';
 // Import other components as needed
 
 function App() {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import LiveMarket from './LiveMarket';
+import PortfolioSummary from './PortfolioSummary.tsx';
 
 const Dashboard = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
@@ -49,6 +50,10 @@ const Dashboard = () => {
       </div>
 
       <LiveMarket />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+        <PortfolioSummary data={{ totalValue: 100000, dailyPnL: 500, totalPnL: 2000 }} />
+      </div>
 
       <div className="mt-6 bg-white p-6 rounded-lg shadow-lg">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Trading Insights</h2>
