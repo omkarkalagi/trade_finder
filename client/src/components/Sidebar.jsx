@@ -10,6 +10,7 @@ const Sidebar = () => {
     { path: '/strategy-builder', label: 'Strategy Builder', icon: '⚙️' },
     { path: '/strategy-lab', label: 'Strategy Lab', icon: '🧪' },
     { path: '/alternative-data', label: 'Alternative Data', icon: '📊' },
+    { path: '/community-education', label: 'Community & Education', icon: '👥' },
     { path: '/algo-trading', label: 'NSE Algo Trading', icon: '🤖' },
     { path: '/auto-trading', label: 'NSE Auto Trading', icon: '🚀' },
     { path: '/social-trading', label: 'Social Trading', icon: '👥' }

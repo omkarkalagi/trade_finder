@@ -50,6 +50,15 @@ export default function FeatureHighlights() {
     },
     {
       id: 6,
+      title: 'Community & Education',
+      description: 'Learn from experts, share knowledge, and access premium trading strategies',
+      icon: '👥',
+      path: '/community-education',
+      color: 'bg-orange-50 border-orange-200',
+      iconColor: 'bg-orange-100 text-orange-600'
+    },
+    {
+      id: 7,
       title: 'Social Trading',
       description: 'Copy trades from top-performing traders and share your own strategies',
       icon: '👥',

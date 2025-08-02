@@ -879,7 +879,7 @@ export default function PortfolioAnalytics() {
             <div className="space-y-3">
               <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
                 <div>
-                  <div className="text-sm font-medium">ICICIBANK > ₹950</div>
+                  <div className="text-sm font-medium">ICICIBANK &gt; ₹950</div>
                   <div className="text-xs text-gray-500">Current: ₹945.30</div>
                 </div>
                 <div className="flex space-x-2">
@@ -899,7 +899,7 @@ export default function PortfolioAnalytics() {
               </div>
               <div className="flex justify-between items-center p-2 bg-gray-50 rounded">
                 <div>
-                  <div className="text-sm font-medium">MARUTI > ₹9500</div>
+                  <div className="text-sm font-medium">MARUTI &gt; ₹9500</div>
                   <div className="text-xs text-gray-500">Current: ₹9450.25</div>
                 </div>
                 <div className="flex space-x-2">
