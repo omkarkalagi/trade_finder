@@ -4,15 +4,16 @@ import { NavLink } from "react-router-dom";
 const Sidebar = () => {
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/market', label: 'Live Market', icon: '📈' },
-    { path: '/algo-trading', label: 'Algo Trading', icon: '🤖' },
-    { path: '/auto-trading', label: 'Auto Trading', icon: '🚀' }
+    { path: '/market', label: 'NSE Market', icon: '📈' },
+    { path: '/algo-trading', label: 'NSE Algo Trading', icon: '🤖' },
+    { path: '/auto-trading', label: 'NSE Auto Trading', icon: '🚀' }
   ];
 
   return (
     <div className="bg-gradient-to-b from-blue-600 to-purple-800 text-white w-64 min-h-screen p-4">
       <div className="p-4 mb-8">
-        <h1 className="text-2xl font-bold">Trade Finder</h1>
+        <h1 className="text-2xl font-bold">NSE Trade Finder</h1>
+        <p className="text-xs text-blue-200 mt-1">Indian Market Analytics</p>
       </div>
       <nav>
         <ul className="space-y-2">

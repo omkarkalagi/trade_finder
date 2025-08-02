@@ -7,11 +7,11 @@ const Header = () => {
   // Get the current page title based on the path
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path.includes('dashboard')) return 'Dashboard';
-    if (path.includes('market')) return 'Live Market';
-    if (path.includes('algo-trading')) return 'Algorithmic Trading';
-    if (path.includes('auto-trading')) return 'Automated Trading';
-    return 'Dashboard';
+    if (path.includes('dashboard')) return 'NSE Dashboard';
+    if (path.includes('market')) return 'NSE Live Market';
+    if (path.includes('algo-trading')) return 'NSE Algorithmic Trading';
+    if (path.includes('auto-trading')) return 'NSE Automated Trading';
+    return 'NSE Dashboard';
   };
 
   return (

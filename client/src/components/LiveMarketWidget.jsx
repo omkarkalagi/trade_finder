@@ -6,13 +6,13 @@ export default function LiveMarketWidget() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initial data load
-    setMarketData(getMockMarketData());
+    // Initial data load - using Indian market data
+    setMarketData(getMockMarketData('indian'));
     setLoading(false);
 
     // Set up interval to update data every 5 seconds
     const intervalId = setInterval(() => {
-      setMarketData(getMockMarketData());
+      setMarketData(getMockMarketData('indian'));
     }, 5000);
 
     return () => clearInterval(intervalId);
@@ -32,7 +32,7 @@ export default function LiveMarketWidget() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold mb-4">Live Market</h2>
+      <h2 className="text-lg font-semibold mb-4">NSE Live Market</h2>
 
       {loading ? (
         <div className="text-center py-4">
@@ -52,7 +52,7 @@ export default function LiveMarketWidget() {
               {Object.entries(marketData).slice(0, 5).map(([symbol, data]) => (
                 <tr key={symbol} className="hover:bg-gray-50">
                   <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{symbol}</td>
-                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">${data.price.toFixed(2)}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">₹{data.price.toFixed(2)}</td>
                   <td className="px-3 py-2 whitespace-nowrap text-sm">
                     {renderPriceChange(data.change, data.percentChange)}
                   </td>
