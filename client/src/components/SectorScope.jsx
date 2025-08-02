@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PageLayout from './PageLayout';
 
 const SectorScope = () => {
   const [selectedSector, setSelectedSector] = useState(null);
@@ -117,20 +118,30 @@ const SectorScope = () => {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
-            <span className="mr-3">🎯</span>
-            Sector Scope
-          </h2>
-          <p className="text-gray-600 mt-1">Analyze sector performance and explore stocks</p>
+    <PageLayout
+      title="🎯 Sector Scope"
+      subtitle="Analyze sector performance and explore stocks by sector"
+    >
+      <div className="space-y-6">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+            <div className="text-2xl font-bold text-blue-600">12</div>
+            <div className="text-sm text-gray-600">Active Sectors</div>
+          </div>
+          <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+            <div className="text-2xl font-bold text-green-600">+2.3%</div>
+            <div className="text-sm text-gray-600">Avg Performance</div>
+          </div>
+          <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+            <div className="text-2xl font-bold text-purple-600">₹45.2L Cr</div>
+            <div className="text-sm text-gray-600">Total Market Cap</div>
+          </div>
+          <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
+            <div className="text-2xl font-bold text-orange-600">{new Date().toLocaleTimeString()}</div>
+            <div className="text-sm text-gray-600">Last Updated</div>
+          </div>
         </div>
-        <div className="text-sm text-gray-500">
-          Last updated: {new Date().toLocaleTimeString()}
-        </div>
-      </div>
 
       {/* Sector Performance Chart */}
       <div className="bg-white rounded-xl shadow-lg p-6">
@@ -269,7 +280,8 @@ const SectorScope = () => {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PageLayout>
   );
 };
 

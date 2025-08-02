@@ -1,5 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import NotificationBell from './NotificationBell';
+import ProfileSection from './ProfileSection';
 
 const Header = () => {
   const location = useLocation();
@@ -7,36 +9,54 @@ const Header = () => {
   // Get the current page title based on the path
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path.includes('dashboard')) return 'NSE Dashboard';
-    if (path.includes('market')) return 'NSE Live Market';
-    if (path.includes('algo-trading')) return 'NSE Algorithmic Trading';
-    if (path.includes('auto-trading')) return 'NSE Automated Trading';
-    return 'NSE Dashboard';
+    if (path.includes('dashboard')) return 'Dashboard';
+    if (path.includes('market')) return 'Live Market';
+    if (path.includes('algo-trading')) return 'Algorithmic Trading';
+    if (path.includes('auto-trading')) return 'Automated Trading';
+    if (path.includes('sector-scope')) return 'Sector Scope';
+    if (path.includes('portfolio-analytics')) return 'Portfolio Analytics';
+    if (path.includes('trade-discovery')) return 'Trade Discovery';
+    if (path.includes('strategy-builder')) return 'Strategy Builder';
+    if (path.includes('strategy-lab')) return 'Strategy Lab';
+    if (path.includes('social-trading')) return 'Social Trading';
+    if (path.includes('alternative-data')) return 'Alternative Data';
+    if (path.includes('community-education')) return 'Community & Education';
+    return 'Dashboard';
   };
 
   return (
-    <header className="bg-white shadow">
-      <div className="flex items-center justify-between px-4 py-3">
+    <header className="bg-white shadow-lg border-b border-gray-200">
+      <div className="flex items-center justify-between px-6 py-4">
         <div className="flex items-center">
-          <h1 className="text-xl font-bold text-gray-800">{getPageTitle()}</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            {getPageTitle()}
+          </h1>
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="relative">
-            <button className="p-2 rounded-full bg-gray-200 text-gray-600 hover:bg-gray-300 transition">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-              </svg>
-              <span className="absolute top-0 right-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
-                3
-              </span>
-            </button>
+
+        <div className="flex items-center space-x-6">
+          {/* Search Bar */}
+          <div className="hidden md:flex items-center bg-gray-100 rounded-full px-4 py-2 w-64">
+            <svg className="w-4 h-4 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Search stocks, sectors..."
+              className="bg-transparent outline-none text-sm flex-1"
+            />
           </div>
-          <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
-              T
-            </div>
-            <span className="text-sm font-medium text-gray-700 hidden md:inline">Trader</span>
+
+          {/* Market Status */}
+          <div className="hidden lg:flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-full">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium text-green-700">Market Open</span>
           </div>
+
+          {/* Notification Bell */}
+          <NotificationBell />
+
+          {/* Profile Section */}
+          <ProfileSection />
         </div>
       </div>
     </header>

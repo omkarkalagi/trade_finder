@@ -6,42 +6,89 @@ interface PortfolioData {
   totalPnL: number;
 }
 
-const PortfolioSummary = () => {
+interface PortfolioSummaryProps {
+  isConnected?: boolean;
+  portfolioSummary?: any;
+}
+
+const PortfolioSummary: React.FC<PortfolioSummaryProps> = ({ isConnected, portfolioSummary }) => {
   const [data, setData] = useState<PortfolioData | null>(null);
 
   useEffect(() => {
-    fetchPortfolioData().then(setData);
-  }, []);
+    if (isConnected && portfolioSummary) {
+      // Use Zerodha data
+      setData({
+        totalValue: parseFloat(portfolioSummary.currentValue),
+        dailyPnL: parseFloat(portfolioSummary.totalPnL) * 0.1, // Simulate daily P&L
+        totalPnL: parseFloat(portfolioSummary.totalPnL),
+      });
+    } else {
+      // Use mock data
+      fetchPortfolioData().then(setData);
+    }
+  }, [isConnected, portfolioSummary]);
 
   if (!data) {
     return <LoadingSpinner />;
   }
 
-  console.log('PortfolioSummary data:', data); // Add console log to inspect data
-    // Minor change to force re-transpilation
-    return (
-        <div className="bg-white rounded-xl shadow-md p-6 h-full">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">💰 Portfolio Summary</h2>
-            <div className="space-y-4">
-                <div>
-                    <p className="text-gray-600">Total Value</p>
-                    <p className="text-2xl font-bold">₹{data.totalValue.toLocaleString()}</p>
-                </div>
-                <div>
-                    <p className="text-sm text-gray-600">Today&#39;s Profit & Loss</p>
-                    <p className={`text-xl font-bold ${(data?.dailyPnL ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {(data?.dailyPnL ?? 0) >= 0 ? '+' : ''}₹{(data?.dailyPnL ?? 0).toLocaleString()}
-                    </p>
-                </div>
-                <div>
-                    <p className="text-gray-600">Total P&L</p>
-                    <p className={`text-xl font-bold ${(data?.totalPnL ?? 0) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {(data?.totalPnL ?? 0) >= 0 ? '+' : ''}₹{(data?.totalPnL ?? 0).toLocaleString()}
-                    </p>
-                </div>
-            </div>
+  return (
+    <div className="h-full">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-xl font-bold text-gray-900 flex items-center">
+          <span className="mr-2">💰</span>
+          Portfolio Summary
+        </h2>
+        {isConnected && (
+          <div className="flex items-center space-x-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            <span>Live</span>
+          </div>
+        )}
+      </div>
+
+      <div className="space-y-4">
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4">
+          <p className="text-gray-600 text-sm">Total Portfolio Value</p>
+          <p className="text-3xl font-bold text-gray-900">₹{data.totalValue.toLocaleString()}</p>
+          {isConnected && portfolioSummary && (
+            <p className="text-xs text-gray-500 mt-1">
+              {portfolioSummary.stockCount} stocks • Investment: ₹{parseFloat(portfolioSummary.totalInvestment).toLocaleString()}
+            </p>
+          )}
         </div>
-    );
+
+        <div className="grid grid-cols-2 gap-3">
+          <div className={`rounded-lg p-3 ${data.dailyPnL >= 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+            <p className="text-xs text-gray-600">Today's P&L</p>
+            <p className={`text-lg font-bold ${data.dailyPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {data.dailyPnL >= 0 ? '+' : ''}₹{Math.abs(data.dailyPnL).toLocaleString()}
+            </p>
+          </div>
+
+          <div className={`rounded-lg p-3 ${data.totalPnL >= 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+            <p className="text-xs text-gray-600">Total P&L</p>
+            <p className={`text-lg font-bold ${data.totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {data.totalPnL >= 0 ? '+' : ''}₹{Math.abs(data.totalPnL).toLocaleString()}
+            </p>
+            {isConnected && portfolioSummary && (
+              <p className={`text-xs ${data.totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                ({portfolioSummary.totalPnLPercentage}%)
+              </p>
+            )}
+          </div>
+        </div>
+
+        {!isConnected && (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+            <p className="text-xs text-orange-700 text-center">
+              📊 Connect to Zerodha for live portfolio data
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default PortfolioSummary;

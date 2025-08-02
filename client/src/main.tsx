@@ -14,6 +14,7 @@ import StrategyLab from './components/StrategyLab';
 import AlternativeData from './components/AlternativeData';
 import PortfolioAnalytics from './components/PortfolioAnalytics';
 import CommunityEducation from './components/CommunityEducation';
+import SectorScope from './components/SectorScope';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { index: true, element: <Dashboard /> }, // Default route
       { path: "dashboard", element: <Dashboard /> },
       { path: "market", element: <LiveMarket /> },
+      { path: "sector-scope", element: <SectorScope /> },
       { path: "auto-trading", element: <AutoTrading /> },
       { path: "algo-trading", element: <AlgoTrading /> },
       { path: "trade-discovery", element: <TradeDiscovery /> },
