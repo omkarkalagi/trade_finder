@@ -32,6 +32,11 @@ export default [
         ...globals.node,
       },
     },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
     rules: {
       ...tsPlugin.configs.recommended.rules,
       ...reactPlugin.configs.recommended.rules,
@@ -44,6 +49,8 @@ export default [
         'warn',
         { allowConstantExport: true },
       ],
+      'react/prop-types': 'off',
+      '@typescript-eslint/no-var-requires': 'off'
     }
   },
   {
