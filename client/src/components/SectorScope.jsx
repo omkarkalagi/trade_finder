@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import PageLayout from './PageLayout';
+import alpacaService from '../services/alpacaService';
+import notificationService from '../services/notificationService';
 
 const SectorScope = () => {
   const [selectedSector, setSelectedSector] = useState(null);
   const [sectorData, setSectorData] = useState([]);
   const [sectorStocks, setSectorStocks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [isAlpacaConnected, setIsAlpacaConnected] = useState(false);
+  const [orderQuantity, setOrderQuantity] = useState(1);
+  const [watchlist, setWatchlist] = useState([]);
 
   // Mock sector data
   const mockSectorData = [
@@ -101,12 +107,80 @@ const SectorScope = () => {
   ];
 
   useEffect(() => {
+    // Initialize data and check Alpaca connection
     setSectorData(mockSectorData);
+    setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+
+    // Subscribe to Alpaca updates
+    const unsubscribe = alpacaService.subscribe((data) => {
+      setIsAlpacaConnected(data.connected);
+    });
+
+    // Simulate real-time price updates
+    const priceUpdateInterval = setInterval(() => {
+      setSectorData(prevData =>
+        prevData.map(sector => ({
+          ...sector,
+          performance: sector.performance + (Math.random() - 0.5) * 0.1,
+          topStocks: sector.topStocks.map(stock => ({
+            ...stock,
+            price: stock.price + (Math.random() - 0.5) * 10,
+            change: stock.change + (Math.random() - 0.5) * 0.2
+          }))
+        }))
+      );
+    }, 5000); // Update every 5 seconds
+
+    setLoading(false);
+
+    return () => {
+      unsubscribe();
+      clearInterval(priceUpdateInterval);
+    };
   }, []);
 
   const handleSectorClick = (sector) => {
     setSelectedSector(sector);
     setSectorStocks(sector.topStocks);
+  };
+
+  // Trading functions
+  const handleBuyStock = async (stock) => {
+    try {
+      if (!isAlpacaConnected) {
+        notificationService.notifySystem('Please connect to Alpaca first', 'medium');
+        return;
+      }
+
+      await alpacaService.placeBuyOrder(stock.symbol, orderQuantity, 'market');
+      notificationService.notifyTrade(`Buy order placed for ${orderQuantity} shares of ${stock.symbol}`, 'success');
+    } catch (error) {
+      notificationService.notifyTrade(`Failed to place buy order for ${stock.symbol}`, 'error');
+    }
+  };
+
+  const handleSellStock = async (stock) => {
+    try {
+      if (!isAlpacaConnected) {
+        notificationService.notifySystem('Please connect to Alpaca first', 'medium');
+        return;
+      }
+
+      await alpacaService.placeSellOrder(stock.symbol, orderQuantity, 'market');
+      notificationService.notifyTrade(`Sell order placed for ${orderQuantity} shares of ${stock.symbol}`, 'success');
+    } catch (error) {
+      notificationService.notifyTrade(`Failed to place sell order for ${stock.symbol}`, 'error');
+    }
+  };
+
+  const handleWatchStock = (stock) => {
+    if (watchlist.includes(stock.symbol)) {
+      setWatchlist(prev => prev.filter(s => s !== stock.symbol));
+      notificationService.notifySystem(`${stock.symbol} removed from watchlist`, 'low');
+    } else {
+      setWatchlist(prev => [...prev, stock.symbol]);
+      alpacaService.addToWatchlist(stock.symbol);
+    }
   };
 
   const getPerformanceColor = (performance) => {
@@ -234,16 +308,61 @@ const SectorScope = () => {
                   </div>
                 </div>
 
-                <div className="mt-3 flex space-x-2">
-                  <button className="flex-1 bg-green-500 text-white py-1 px-3 rounded text-sm hover:bg-green-600 transition">
-                    Buy
-                  </button>
-                  <button className="flex-1 bg-red-500 text-white py-1 px-3 rounded text-sm hover:bg-red-600 transition">
-                    Sell
-                  </button>
-                  <button className="flex-1 bg-blue-500 text-white py-1 px-3 rounded text-sm hover:bg-blue-600 transition">
-                    Watch
-                  </button>
+                <div className="mt-4 space-y-2">
+                  {/* Quantity Selector */}
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-600">Quantity:</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="1000"
+                      value={orderQuantity}
+                      onChange={(e) => setOrderQuantity(parseInt(e.target.value) || 1)}
+                      className="w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center"
+                    />
+                  </div>
+
+                  {/* Trading Buttons */}
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleBuyStock(stock)}
+                      disabled={!isAlpacaConnected}
+                      className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                        isAlpacaConnected
+                          ? 'bg-green-500 text-white hover:bg-green-600 hover:shadow-lg'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      💰 Buy
+                    </button>
+                    <button
+                      onClick={() => handleSellStock(stock)}
+                      disabled={!isAlpacaConnected}
+                      className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                        isAlpacaConnected
+                          ? 'bg-red-500 text-white hover:bg-red-600 hover:shadow-lg'
+                          : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      📉 Sell
+                    </button>
+                    <button
+                      onClick={() => handleWatchStock(stock)}
+                      className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
+                        watchlist.includes(stock.symbol)
+                          ? 'bg-yellow-500 text-white hover:bg-yellow-600'
+                          : 'bg-blue-500 text-white hover:bg-blue-600 hover:shadow-lg'
+                      }`}
+                    >
+                      {watchlist.includes(stock.symbol) ? '⭐ Watching' : '👁️ Watch'}
+                    </button>
+                  </div>
+
+                  {!isAlpacaConnected && (
+                    <div className="text-xs text-orange-600 text-center mt-1">
+                      Connect to Alpaca to enable trading
+                    </div>
+                  )}
                 </div>
               </div>
             ))}

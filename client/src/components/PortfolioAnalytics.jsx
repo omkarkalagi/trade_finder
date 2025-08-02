@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import Header from './Header';
-import Sidebar from './Sidebar';
+import React, { useState, useEffect } from 'react';
+import PageLayout from './PageLayout';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
+import alpacaService from '../services/alpacaService';
+import zerodhaService from '../services/zerodhaService';
 
 // Mock portfolio data
 const PORTFOLIO_DATA = {
@@ -238,6 +240,79 @@ export default function PortfolioAnalytics() {
   const [timeframe, setTimeframe] = useState('1M');
   const [selectedHolding, setSelectedHolding] = useState(null);
   const [showAddTransaction, setShowAddTransaction] = useState(false);
+  const [portfolioData, setPortfolioData] = useState(PORTFOLIO_DATA);
+  const [isAlpacaConnected, setIsAlpacaConnected] = useState(false);
+  const [isZerodhaConnected, setIsZerodhaConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check connection status
+    setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+    setIsZerodhaConnected(zerodhaService.isConnected());
+
+    // Subscribe to updates
+    const alpacaUnsubscribe = alpacaService.subscribe((data) => {
+      if (data.connected && data.portfolio) {
+        updatePortfolioFromAlpaca(data);
+      }
+      setIsAlpacaConnected(data.connected);
+    });
+
+    const zerodhaUnsubscribe = zerodhaService.subscribe((data) => {
+      if (data.connected && data.portfolioSummary) {
+        updatePortfolioFromZerodha(data);
+      }
+      setIsZerodhaConnected(data.connected);
+    });
+
+    setLoading(false);
+
+    return () => {
+      alpacaUnsubscribe();
+      zerodhaUnsubscribe();
+    };
+  }, []);
+
+  const updatePortfolioFromAlpaca = (alpacaData) => {
+    // Update portfolio data with Alpaca information
+    const updatedData = {
+      ...portfolioData,
+      summary: {
+        ...portfolioData.summary,
+        totalValue: alpacaData.portfolio.totalValue,
+        dayChange: alpacaData.portfolio.dayChange,
+        dayChangePercent: parseFloat(alpacaData.portfolio.dayChangePercent),
+        cash: alpacaData.portfolio.cash
+      },
+      holdings: alpacaData.positions.map(pos => ({
+        symbol: pos.symbol,
+        name: pos.symbol,
+        shares: parseFloat(pos.qty),
+        avgPrice: parseFloat(pos.avg_entry_price || 0),
+        currentPrice: parseFloat(pos.current_price || pos.avg_entry_price || 0),
+        value: parseFloat(pos.market_value || 0),
+        dayChange: 0, // Calculate from price data
+        totalReturn: parseFloat(pos.unrealized_plpc || 0) * 100,
+        weight: 0, // Calculate based on total portfolio
+        sector: 'Unknown'
+      }))
+    };
+    setPortfolioData(updatedData);
+  };
+
+  const updatePortfolioFromZerodha = (zerodhaData) => {
+    // Update portfolio data with Zerodha information
+    const updatedData = {
+      ...portfolioData,
+      summary: {
+        ...portfolioData.summary,
+        totalValue: parseFloat(zerodhaData.portfolioSummary.currentValue),
+        totalReturn: parseFloat(zerodhaData.portfolioSummary.totalPnL),
+        totalReturnPercent: parseFloat(zerodhaData.portfolioSummary.totalPnLPercentage)
+      }
+    };
+    setPortfolioData(updatedData);
+  };
 
   // Format currency
   const formatCurrency = (value) => {
