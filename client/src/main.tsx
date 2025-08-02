@@ -7,6 +7,11 @@ import Dashboard from './components/Dashboard';
 import LiveMarket from './components/LiveMarket';
 import AutoTrading from './components/AutoTrading';
 import AlgoTrading from './components/AlgoTrading';
+import TradeDiscovery from './components/TradeDiscovery';
+import StrategyBuilder from './components/StrategyBuilder';
+import SocialTrading from './components/SocialTrading';
+import StrategyLab from './components/StrategyLab';
+import AlternativeData from './components/AlternativeData';
 
 const router = createBrowserRouter([
   {
@@ -18,6 +23,11 @@ const router = createBrowserRouter([
       { path: "market", element: <LiveMarket /> },
       { path: "auto-trading", element: <AutoTrading /> },
       { path: "algo-trading", element: <AlgoTrading /> },
+      { path: "trade-discovery", element: <TradeDiscovery /> },
+      { path: "strategy-builder", element: <StrategyBuilder /> },
+      { path: "strategy-lab", element: <StrategyLab /> },
+      { path: "social-trading", element: <SocialTrading /> },
+      { path: "alternative-data", element: <AlternativeData /> },
       { path: "*", element: <Dashboard /> }, // Fallback route
     ],
   },

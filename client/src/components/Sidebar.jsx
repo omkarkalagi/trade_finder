@@ -5,8 +5,13 @@ const Sidebar = () => {
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/market', label: 'NSE Market', icon: '📈' },
+    { path: '/trade-discovery', label: 'Trade Discovery', icon: '🔍' },
+    { path: '/strategy-builder', label: 'Strategy Builder', icon: '⚙️' },
+    { path: '/strategy-lab', label: 'Strategy Lab', icon: '🧪' },
+    { path: '/alternative-data', label: 'Alternative Data', icon: '📊' },
     { path: '/algo-trading', label: 'NSE Algo Trading', icon: '🤖' },
-    { path: '/auto-trading', label: 'NSE Auto Trading', icon: '🚀' }
+    { path: '/auto-trading', label: 'NSE Auto Trading', icon: '🚀' },
+    { path: '/social-trading', label: 'Social Trading', icon: '👥' }
   ];
 
   return (

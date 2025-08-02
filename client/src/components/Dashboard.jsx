@@ -7,6 +7,7 @@ import LiveMarketWidget from './LiveMarketWidget';
 import MarketChart from './MarketChart';
 import MarketNews from './MarketNews';
 import BotPerformance from './BotPerformance';
+import FeatureHighlights from './FeatureHighlights';
 
 export default function Dashboard() {
   return (
@@ -47,6 +48,11 @@ export default function Dashboard() {
             {/* Market News */}
             <div className="bg-white rounded-xl shadow-md p-6">
               <MarketNews />
+            </div>
+
+            {/* Feature Highlights */}
+            <div className="bg-white rounded-xl shadow-md p-6 md:col-span-2">
+              <FeatureHighlights />
             </div>
           </div>
         </main>
