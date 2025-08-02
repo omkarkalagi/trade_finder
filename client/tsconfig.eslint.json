@@ -6,6 +6,10 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.d.ts",
+    "src/components/Dashboard.jsx",
+    "src/components/LiveMarket.jsx",
+    "src/main.tsx",
+    "src/pages/Register.tsx",
     "vite.config.js"
   ],
   "exclude": ["node_modules", "dist"]
