@@ -1,15 +1,12 @@
-import Dashboard from './components/Dashboard';
-import LiveMarket from './components/LiveMarket';
-import { Routes, Route } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 // Import other components as needed
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/market" element={<LiveMarket />} />
-      {/* Add other routes */}
-    </Routes>
+    <div>
+      {/* You can add common layout elements here, like a header or sidebar */}
+      <Outlet /> {/* This will render the matched child route component */}
+    </div>
   );
 }
 
