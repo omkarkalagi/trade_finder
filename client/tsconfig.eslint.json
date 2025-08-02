@@ -1,15 +1,7 @@
 {
   "extends": "./tsconfig.json",
   "include": [
-    "src/**/*.js",
-    "src/**/*.jsx",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.d.ts",
-    "src/components/Dashboard.jsx",
-    "src/components/LiveMarket.jsx",
-    "src/main.tsx",
-    "src/pages/Register.tsx",
+    "src",
     "vite.config.js"
   ],
   "exclude": ["node_modules", "dist"]
