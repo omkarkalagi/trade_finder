@@ -1,6 +1,7 @@
 import React from 'react';
 import { NavLink } from "react-router-dom";
 import Logo from './Logo';
+import MarketStatusIndicator from './MarketStatusIndicator';
 
 const Sidebar = () => {
   const navItems = [
@@ -56,7 +57,7 @@ const Sidebar = () => {
         </ul>
       </nav>
 
-      {/* Quick Stats */}
+      {/* Market Status */}
       <div className="p-4 mt-4">
         <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-xl p-4 border border-green-500/30">
           <h3 className="text-sm font-semibold mb-3 flex items-center">
@@ -88,11 +89,7 @@ const Sidebar = () => {
             Trading Hours
           </h3>
           <div className="text-xs text-gray-300">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span>Market Open</span>
-            </div>
-            <div className="mt-1">09:15 AM - 03:30 PM IST</div>
+            <MarketStatusIndicator />
           </div>
         </div>
       </div>

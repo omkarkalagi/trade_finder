@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 const MarketChart = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('1D');
+  const [chartData, setChartData] = useState([]);
+  const [chartType, setChartType] = useState('line');
+  const [loading, setLoading] = useState(true);
 
   const timeframes = [
     { id: '1D', name: '1 Day', icon: '📅' },
@@ -11,22 +15,82 @@ const MarketChart = () => {
     { id: '1Y', name: '1 Year', icon: '📊' }
   ];
 
-  const chartData = [
-    { time: '09:00', price: 19200, volume: 1200 },
-    { time: '10:00', price: 19250, volume: 1500 },
-    { time: '11:00', price: 19300, volume: 1800 },
-    { time: '12:00', price: 19280, volume: 1400 },
-    { time: '13:00', price: 19350, volume: 2000 },
-    { time: '14:00', price: 19400, volume: 2200 },
-    { time: '15:00', price: 19380, volume: 1900 },
-    { time: '16:00', price: 19420, volume: 1600 }
-  ];
+  // Generate realistic market data
+  const generateMarketData = (timeframe) => {
+    const basePrice = 19845.65;
+    const dataPoints = timeframe === '1D' ? 24 : timeframe === '1W' ? 7 : timeframe === '1M' ? 30 : timeframe === '3M' ? 90 : 365;
+    const data = [];
+
+    let currentPrice = basePrice;
+    const now = new Date();
+
+    for (let i = dataPoints - 1; i >= 0; i--) {
+      const date = new Date(now);
+      if (timeframe === '1D') {
+        date.setHours(date.getHours() - i);
+      } else if (timeframe === '1W') {
+        date.setDate(date.getDate() - i);
+      } else if (timeframe === '1M') {
+        date.setDate(date.getDate() - i);
+      } else if (timeframe === '3M') {
+        date.setDate(date.getDate() - i);
+      } else {
+        date.setDate(date.getDate() - i);
+      }
+
+      // Add some realistic price movement
+      const change = (Math.random() - 0.5) * 200; // Random change between -100 to +100
+      currentPrice += change;
+
+      data.push({
+        time: timeframe === '1D' ? date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : date.toLocaleDateString('en-IN'),
+        price: Math.round(currentPrice * 100) / 100,
+        volume: Math.floor(Math.random() * 5000000) + 1000000, // Random volume between 1M to 6M
+        high: Math.round((currentPrice + Math.random() * 50) * 100) / 100,
+        low: Math.round((currentPrice - Math.random() * 50) * 100) / 100,
+        open: Math.round((currentPrice + (Math.random() - 0.5) * 30) * 100) / 100
+      });
+    }
+
+    return data;
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    // Simulate API call delay
+    setTimeout(() => {
+      const data = generateMarketData(selectedTimeframe);
+      setChartData(data);
+      setLoading(false);
+    }, 500);
+  }, [selectedTimeframe]);
+
+  const currentData = chartData[chartData.length - 1] || {};
+  const previousData = chartData[chartData.length - 2] || {};
+  const priceChange = currentData.price - previousData.price;
+  const priceChangePercent = previousData.price ? ((priceChange / previousData.price) * 100).toFixed(2) : 0;
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
+    <div className="h-full">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">Market Chart</h2>
-        <span className="text-2xl">📈</span>
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 flex items-center">
+            <span className="mr-2">📈</span>
+            Market Chart
+          </h2>
+          <div className="flex items-center space-x-4 mt-2">
+            <span className="text-2xl font-bold text-gray-900">
+              ₹{currentData.price?.toLocaleString() || '19,845.65'}
+            </span>
+            <span className={`text-sm font-medium ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+              {priceChange >= 0 ? '+' : ''}₹{Math.abs(priceChange).toFixed(2)} ({priceChange >= 0 ? '+' : ''}{priceChangePercent}%)
+            </span>
+          </div>
+        </div>
+        <div className="flex items-center space-x-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span>Live</span>
+        </div>
       </div>
 
       {/* Timeframe Selector */}
@@ -35,10 +99,10 @@ const MarketChart = () => {
           <button
             key={timeframe.id}
             onClick={() => setSelectedTimeframe(timeframe.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
               selectedTimeframe === timeframe.id
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
             }`}
           >
             <span className="mr-1">{timeframe.icon}</span>
@@ -47,52 +111,138 @@ const MarketChart = () => {
         ))}
       </div>
 
-      {/* Chart Placeholder */}
-      <div className="bg-gray-50 rounded-lg p-6 mb-6">
-        <div className="h-64 flex items-center justify-center">
-          <div className="text-center">
-            <span className="text-4xl mb-4 block">📊</span>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Interactive Chart</h3>
-            <p className="text-gray-600">Chart data for {selectedTimeframe} timeframe</p>
+      {/* Chart */}
+      <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 mb-6 border border-gray-200">
+        {loading ? (
+          <div className="h-64 flex items-center justify-center">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading chart data...</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              {chartType === 'area' ? (
+                <AreaChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                  <XAxis
+                    dataKey="time"
+                    stroke="#6b7280"
+                    fontSize={12}
+                    tickFormatter={(value) => selectedTimeframe === '1D' ? value : value.split('/')[0] + '/' + value.split('/')[1]}
+                  />
+                  <YAxis
+                    stroke="#6b7280"
+                    fontSize={12}
+                    tickFormatter={(value) => `₹${value.toLocaleString()}`}
+                  />
+                  <Tooltip
+                    formatter={(value) => [`₹${value.toLocaleString()}`, 'Price']}
+                    labelStyle={{ color: '#374151' }}
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="price"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    fill="url(#colorPrice)"
+                  />
+                  <defs>
+                    <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                    </linearGradient>
+                  </defs>
+                </AreaChart>
+              ) : (
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                  <XAxis
+                    dataKey="time"
+                    stroke="#6b7280"
+                    fontSize={12}
+                    tickFormatter={(value) => selectedTimeframe === '1D' ? value : value.split('/')[0] + '/' + value.split('/')[1]}
+                  />
+                  <YAxis
+                    stroke="#6b7280"
+                    fontSize={12}
+                    tickFormatter={(value) => `₹${value.toLocaleString()}`}
+                  />
+                  <Tooltip
+                    formatter={(value) => [`₹${value.toLocaleString()}`, 'Price']}
+                    labelStyle={{ color: '#374151' }}
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                    }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="price"
+                    stroke="#3b82f6"
+                    strokeWidth={3}
+                    dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
+                    activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: 'white' }}
+                  />
+                </LineChart>
+              )}
+            </ResponsiveContainer>
+          </div>
+        )}
       </div>
 
       {/* Price Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-green-50 p-4 rounded-lg">
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
-            <span className="text-2xl mr-2">📈</span>
+            <span className="text-2xl mr-3">📈</span>
             <div>
               <p className="text-sm text-gray-600">High</p>
-              <p className="text-lg font-bold text-green-600">₹19,420</p>
+              <p className="text-lg font-bold text-green-600">
+                ₹{Math.max(...chartData.map(d => d.high)).toLocaleString() || '19,420'}
+              </p>
             </div>
           </div>
         </div>
-        <div className="bg-red-50 p-4 rounded-lg">
+        <div className="bg-gradient-to-br from-red-50 to-rose-50 p-4 rounded-xl border border-red-200 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
-            <span className="text-2xl mr-2">📉</span>
+            <span className="text-2xl mr-3">📉</span>
             <div>
               <p className="text-sm text-gray-600">Low</p>
-              <p className="text-lg font-bold text-red-600">₹19,200</p>
+              <p className="text-lg font-bold text-red-600">
+                ₹{Math.min(...chartData.map(d => d.low)).toLocaleString() || '19,200'}
+              </p>
             </div>
           </div>
         </div>
-        <div className="bg-blue-50 p-4 rounded-lg">
+        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
-            <span className="text-2xl mr-2">💰</span>
+            <span className="text-2xl mr-3">💰</span>
             <div>
               <p className="text-sm text-gray-600">Open</p>
-              <p className="text-lg font-bold text-blue-600">₹19,250</p>
+              <p className="text-lg font-bold text-blue-600">
+                ₹{chartData[0]?.open?.toLocaleString() || '19,250'}
+              </p>
             </div>
           </div>
         </div>
-        <div className="bg-purple-50 p-4 rounded-lg">
+        <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-4 rounded-xl border border-purple-200 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
-            <span className="text-2xl mr-2">📊</span>
+            <span className="text-2xl mr-3">📊</span>
             <div>
               <p className="text-sm text-gray-600">Volume</p>
-              <p className="text-lg font-bold text-purple-600">13.6M</p>
+              <p className="text-lg font-bold text-purple-600">
+                {((chartData.reduce((sum, d) => sum + d.volume, 0) / 1000000).toFixed(1) || '13.6')}M
+              </p>
             </div>
           </div>
         </div>
@@ -125,20 +275,37 @@ const MarketChart = () => {
       </div>
 
       {/* Chart Controls */}
-      <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-        <h4 className="font-semibold text-gray-900 mb-3">Chart Controls</h4>
+      <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl border border-gray-200">
+        <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
+          <span className="mr-2">🎛️</span>
+          Chart Controls
+        </h4>
         <div className="flex flex-wrap gap-2">
-          <button className="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50">
-            <span className="mr-1">📊</span>Candlestick
+          <button
+            onClick={() => setChartType('line')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              chartType === 'line'
+                ? 'bg-blue-500 text-white shadow-lg'
+                : 'bg-white border border-gray-300 hover:bg-gray-50 hover:shadow-md'
+            }`}
+          >
+            <span className="mr-1">📈</span>Line Chart
           </button>
-          <button className="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50">
-            <span className="mr-1">📈</span>Line
+          <button
+            onClick={() => setChartType('area')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              chartType === 'area'
+                ? 'bg-blue-500 text-white shadow-lg'
+                : 'bg-white border border-gray-300 hover:bg-gray-50 hover:shadow-md'
+            }`}
+          >
+            <span className="mr-1">📉</span>Area Chart
           </button>
-          <button className="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50">
-            <span className="mr-1">📉</span>Area
-          </button>
-          <button className="px-3 py-1 bg-white border border-gray-300 rounded text-sm hover:bg-gray-50">
+          <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 hover:shadow-md transition-all">
             <span className="mr-1">📊</span>Volume
+          </button>
+          <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm hover:bg-gray-50 hover:shadow-md transition-all">
+            <span className="mr-1">🔍</span>Zoom
           </button>
         </div>
       </div>
