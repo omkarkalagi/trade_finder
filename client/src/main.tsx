@@ -13,10 +13,12 @@ const router = createBrowserRouter([
     path: "/",
     element: <App />,
     children: [
+      { index: true, element: <Dashboard /> }, // Default route
       { path: "dashboard", element: <Dashboard /> },
       { path: "market", element: <LiveMarket /> },
       { path: "auto-trading", element: <AutoTrading /> },
       { path: "algo-trading", element: <AlgoTrading /> },
+      { path: "*", element: <Dashboard /> }, // Fallback route
     ],
   },
 ], {

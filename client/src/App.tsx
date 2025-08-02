@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
-// Import other components as needed
+import './index.css';
 
 function App() {
   return (
-    <div>
-      {/* You can add common layout elements here, like a header or sidebar */}
-      <Outlet /> {/* This will render the matched child route component */}
+    <div className="app-container">
+      {/* The Outlet component will render the matched child route */}
+      <Outlet />
     </div>
   );
 }
