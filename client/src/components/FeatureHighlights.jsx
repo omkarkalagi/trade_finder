@@ -14,6 +14,15 @@ export default function FeatureHighlights() {
     },
     {
       id: 2,
+      title: 'Portfolio Analytics',
+      description: 'Track performance, assess risk, and optimize your investment portfolio',
+      icon: '📈',
+      path: '/portfolio-analytics',
+      color: 'bg-teal-50 border-teal-200',
+      iconColor: 'bg-teal-100 text-teal-600'
+    },
+    {
+      id: 3,
       title: 'Strategy Builder',
       description: 'Create, backtest, and deploy custom trading strategies without coding',
       icon: '⚙️',
@@ -22,7 +31,7 @@ export default function FeatureHighlights() {
       iconColor: 'bg-purple-100 text-purple-600'
     },
     {
-      id: 3,
+      id: 4,
       title: 'Strategy Lab',
       description: 'Test strategies against historical data with AI-enhanced simulations',
       icon: '🧪',
@@ -31,7 +40,7 @@ export default function FeatureHighlights() {
       iconColor: 'bg-yellow-100 text-yellow-600'
     },
     {
-      id: 4,
+      id: 5,
       title: 'Alternative Data',
       description: 'Access unique insights from sentiment analysis, insider trading, and more',
       icon: '📊',
@@ -40,7 +49,7 @@ export default function FeatureHighlights() {
       iconColor: 'bg-indigo-100 text-indigo-600'
     },
     {
-      id: 5,
+      id: 6,
       title: 'Social Trading',
       description: 'Copy trades from top-performing traders and share your own strategies',
       icon: '👥',

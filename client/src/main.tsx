@@ -12,6 +12,7 @@ import StrategyBuilder from './components/StrategyBuilder';
 import SocialTrading from './components/SocialTrading';
 import StrategyLab from './components/StrategyLab';
 import AlternativeData from './components/AlternativeData';
+import PortfolioAnalytics from './components/PortfolioAnalytics';
 
 const router = createBrowserRouter([
   {
@@ -28,6 +29,7 @@ const router = createBrowserRouter([
       { path: "strategy-lab", element: <StrategyLab /> },
       { path: "social-trading", element: <SocialTrading /> },
       { path: "alternative-data", element: <AlternativeData /> },
+      { path: "portfolio-analytics", element: <PortfolioAnalytics /> },
       { path: "*", element: <Dashboard /> }, // Fallback route
     ],
   },
