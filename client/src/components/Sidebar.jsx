@@ -4,12 +4,7 @@ import { NavLink } from "react-router-dom";
 const Sidebar = () => {
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/portfolio', label: 'Portfolio', icon: '💼' },
-    { path: '/trade', label: 'Trade', icon: '💱' },
-    { path: '/market', label: 'Market', icon: '📈' },
-    { path: '/insights', label: 'Insights', icon: '🔍' },
-    { path: '/activity', label: 'Activity', icon: '📝' },
-    { path: '/settings', label: 'Settings', icon: '⚙️' },
+    { path: '/market', label: 'Live Market', icon: '📈' },
     { path: '/algo-trading', label: 'Algo Trading', icon: '🤖' },
     { path: '/auto-trading', label: 'Auto Trading', icon: '🚀' }
   ];

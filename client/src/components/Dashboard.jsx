@@ -3,7 +3,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import MarketSummary from './MarketSummary';
 import PortfolioSummary from './PortfolioSummary';
-import LiveMarket from './LiveMarket';
+import LiveMarketWidget from './LiveMarketWidget';
 import MarketChart from './MarketChart';
 import MarketNews from './MarketNews';
 import BotPerformance from './BotPerformance';
@@ -29,9 +29,9 @@ export default function Dashboard() {
               <PortfolioSummary />
             </div>
 
-            {/* Live Market */}
+            {/* Live Market Widget */}
             <div className="bg-white rounded-xl shadow-md p-6 md:col-span-2 lg:col-span-1">
-              <LiveMarket />
+              <LiveMarketWidget />
             </div>
 
             {/* Market Chart */}
