@@ -1,8 +1,7 @@
 import React from 'react';
-import { NavLink, useRouter } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
-  const router = useRouter();
   const navItems = [
     { path: '/dashboard', label: 'Dashboard', icon: '📊' },
     { path: '/portfolio', label: 'Portfolio', icon: '💼' },
@@ -33,9 +32,6 @@ const Sidebar = () => {
                       : 'hover:bg-purple-700'
                   }`
                 }
-                onMouseEnter={() => {
-                  router.preloadCode(item.path);
-                }}
               >
                 <span className="mr-3 text-xl">{item.icon}</span>
                 {item.label}

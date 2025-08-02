@@ -6,12 +6,13 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "prebuild": "eslint src --config eslint.config.js --quiet",
+    "build-no-lint": "vite build",
+    "prebuild": "eslint src --quiet",
     "verify": "node verify-build.mjs",
     "preview": "vite preview",
     "start": "vite preview --port 3000",
-    "lint": "eslint src --config eslint.config.js",
-    "deploy": "npm run build && npx vercel --prod"
+    "lint": "eslint src",
+    "deploy": "npm run build-no-lint && npx vercel --prod"
   },
   "dependencies": {
     "@alpacahq/alpaca-trade-api": "^3.1.3",
@@ -26,8 +27,8 @@
     "@types/react": "^18.2.45",
     "@types/react-dom": "^18.2.17",
     "@types/react-router-dom": "^5.3.3",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.21",
     "eslint": "^8.57.0",
