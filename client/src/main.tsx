@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import './index.css';
+import LoginPage from './components/LoginPage';
 import Dashboard from './components/Dashboard';
 import LiveMarket from './components/LiveMarket';
 import AutoTrading from './components/AutoTrading';
@@ -18,10 +19,14 @@ import SectorScope from './components/SectorScope';
 
 const router = createBrowserRouter([
   {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
     path: "/",
     element: <App />,
     children: [
-      { index: true, element: <Dashboard /> }, // Default route
+      { index: true, element: <LoginPage /> }, // Redirect to login first
       { path: "dashboard", element: <Dashboard /> },
       { path: "market", element: <LiveMarket /> },
       { path: "sector-scope", element: <SectorScope /> },
@@ -34,7 +39,7 @@ const router = createBrowserRouter([
       { path: "alternative-data", element: <AlternativeData /> },
       { path: "portfolio-analytics", element: <PortfolioAnalytics /> },
       { path: "community-education", element: <CommunityEducation /> },
-      { path: "*", element: <Dashboard /> }, // Fallback route
+      { path: "*", element: <LoginPage /> }, // Fallback to login
     ],
   },
 ], {

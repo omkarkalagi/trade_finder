@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import NotificationBell from './NotificationBell';
 import ProfileSection from './ProfileSection';
 import SearchBar from './SearchBar';
 import MarketStatusIndicator from './MarketStatusIndicator';
+import Logo from './Logo';
 
-const Header = () => {
+const Header = ({ onMenuClick }) => {
   const location = useLocation();
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   // Get the current page title based on the path
   const getPageTitle = () => {
@@ -27,33 +29,94 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white shadow-lg border-b border-gray-200">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div className="flex items-center">
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-            {getPageTitle()}
-          </h1>
+    <>
+      <header className="bg-gradient-to-r from-dark-900 via-dark-800 to-dark-900 shadow-2xl border-b border-slate-700/30 sticky top-0 z-30 backdrop-blur-xl">
+        <div className="flex items-center justify-between px-4 lg:px-6 py-4">
+          {/* Left side - Mobile menu + Title */}
+          <div className="flex items-center space-x-4">
+            {/* Mobile Menu Button */}
+            <button
+              onClick={onMenuClick}
+              className="lg:hidden p-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors touch-manipulation"
+            >
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+
+            {/* Mobile Logo - Only show on mobile */}
+            <div className="lg:hidden">
+              <Logo size="sm" showText={false} />
+            </div>
+
+            {/* Page Title - Hidden on small mobile */}
+            <div className="hidden sm:block">
+              <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                {getPageTitle()}
+              </h1>
+            </div>
+          </div>
+
+          {/* Right side - Actions */}
+          <div className="flex items-center space-x-2 lg:space-x-4">
+            {/* Mobile Search Toggle */}
+            <button
+              onClick={() => setShowMobileSearch(!showMobileSearch)}
+              className="md:hidden p-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors touch-manipulation"
+            >
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+
+            {/* Desktop Search Bar */}
+            <div className="hidden md:block w-48 lg:w-64">
+              <SearchBar />
+            </div>
+
+            {/* Market Status - Desktop only */}
+            <div className="hidden xl:flex items-center space-x-2 glass-light px-3 py-2 rounded-full border border-green-500/20">
+              <MarketStatusIndicator />
+            </div>
+
+            {/* Notification Bell */}
+            <div className="hidden sm:block">
+              <NotificationBell />
+            </div>
+
+            {/* Profile Section */}
+            <ProfileSection />
+          </div>
         </div>
 
-        <div className="flex items-center space-x-6">
-          {/* Search Bar */}
-          <div className="hidden md:block w-64">
+        {/* Mobile Search Bar */}
+        {showMobileSearch && (
+          <div className="md:hidden px-4 pb-4 border-t border-slate-700/30">
             <SearchBar />
           </div>
+        )}
+      </header>
 
-          {/* Market Status */}
-          <div className="hidden lg:flex items-center space-x-2 bg-green-50 px-3 py-2 rounded-full">
-            <MarketStatusIndicator />
+      {/* Mobile Market Status Bar */}
+      <div className="lg:hidden bg-gradient-to-r from-dark-800 to-dark-900 px-4 py-2 border-b border-slate-700/30">
+        <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-1">
+              <span className="text-slate-400">NIFTY</span>
+              <span className="text-green-400 font-medium">+0.85%</span>
+            </div>
+            <div className="flex items-center space-x-1">
+              <span className="text-slate-400">SENSEX</span>
+              <span className="text-green-400 font-medium">+1.12%</span>
+            </div>
           </div>
-
-          {/* Notification Bell */}
-          <NotificationBell />
-
-          {/* Profile Section */}
-          <ProfileSection />
+          <div className="flex items-center space-x-2">
+            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+            <span className="text-green-400 font-medium">Live</span>
+          </div>
         </div>
       </div>
-    </header>
+    </>
   );
 };
 

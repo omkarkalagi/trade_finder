@@ -65,11 +65,11 @@ const NotificationBell = () => {
 
   const getPriorityColor = (priority) => {
     const colors = {
-      high: 'border-l-red-500 bg-red-50',
-      medium: 'border-l-yellow-500 bg-yellow-50',
-      low: 'border-l-blue-500 bg-blue-50'
+      high: 'border-l-red-400 bg-red-500/10',
+      medium: 'border-l-yellow-400 bg-yellow-500/10',
+      low: 'border-l-blue-400 bg-blue-500/10'
     };
-    return colors[priority] || 'border-l-gray-500 bg-gray-50';
+    return colors[priority] || 'border-l-slate-400 bg-slate-500/10';
   };
 
   const formatTime = (timestamp) => {
@@ -88,15 +88,15 @@ const NotificationBell = () => {
       {/* Bell Button */}
       <button
         onClick={handleBellClick}
-        className={`relative p-2 rounded-full transition-all duration-200 ${
+        className={`relative p-2 rounded-full transition-all duration-200 touch-manipulation ${
           unreadCount > 0
-            ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg animate-pulse'
-            : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+            ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/25 animate-pulse'
+            : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 hover:text-white'
         }`}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className={`h-6 w-6 ${unreadCount > 0 ? 'animate-bounce' : ''}`}
+          className={`h-5 w-5 lg:h-6 lg:w-6 ${unreadCount > 0 ? 'animate-bounce' : ''}`}
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -111,7 +111,7 @@ const NotificationBell = () => {
 
         {/* Notification Count Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-600 rounded-full text-xs text-white flex items-center justify-center font-bold animate-pulse">
+          <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-bold animate-pulse shadow-lg shadow-red-500/50">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -119,14 +119,14 @@ const NotificationBell = () => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-80 lg:w-96 glass dark-card border border-slate-700/30 rounded-xl shadow-2xl z-50 max-h-96 overflow-hidden">
           {/* Header */}
-          <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
+          <div className="p-4 border-b border-slate-700/30 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-lg font-semibold text-white">
                 Notifications
                 {unreadCount > 0 && (
-                  <span className="ml-2 text-sm bg-red-500 text-white px-2 py-1 rounded-full">
+                  <span className="ml-2 text-sm bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">
                     {unreadCount} new
                   </span>
                 )}
@@ -134,7 +134,7 @@ const NotificationBell = () => {
               {notifications.length > 0 && (
                 <button
                   onClick={handleClearAll}
-                  className="text-sm text-red-500 hover:text-red-700 font-medium"
+                  className="text-sm text-red-400 hover:text-red-300 font-medium transition-colors"
                 >
                   Clear All
                 </button>
@@ -145,41 +145,42 @@ const NotificationBell = () => {
           {/* Notifications List */}
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-8 text-center text-gray-500">
+              <div className="p-8 text-center text-slate-400">
                 <div className="text-4xl mb-2">🔔</div>
                 <p>No notifications yet</p>
+                <p className="text-xs mt-1 text-slate-500">You'll see trading alerts and updates here</p>
               </div>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`p-4 border-l-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                  className={`p-4 border-l-4 cursor-pointer hover:bg-slate-700/30 transition-all duration-200 ${
                     getPriorityColor(notification.priority)
-                  } ${!notification.read ? 'bg-blue-50' : ''}`}
+                  } ${!notification.read ? 'bg-blue-500/10' : ''}`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className="text-2xl">
+                    <div className="text-2xl flex-shrink-0">
                       {notification.icon || getNotificationIcon(notification.type)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <p className={`text-sm font-medium ${
-                          !notification.read ? 'text-gray-900' : 'text-gray-700'
+                          !notification.read ? 'text-white' : 'text-slate-300'
                         }`}>
                           {notification.title}
                         </p>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-slate-500 flex-shrink-0 ml-2">
                           {formatTime(notification.timestamp)}
                         </span>
                       </div>
                       <p className={`text-sm mt-1 ${
-                        !notification.read ? 'text-gray-800' : 'text-gray-600'
+                        !notification.read ? 'text-slate-200' : 'text-slate-400'
                       }`}>
                         {notification.message}
                       </p>
                       {!notification.read && (
-                        <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 animate-pulse"></div>
                       )}
                     </div>
                   </div>
@@ -190,8 +191,8 @@ const NotificationBell = () => {
 
           {/* Footer */}
           {notifications.length > 0 && (
-            <div className="p-3 border-t border-gray-200 bg-gray-50">
-              <button className="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium">
+            <div className="p-3 border-t border-slate-700/30 bg-slate-800/30">
+              <button className="w-full text-center text-sm text-blue-400 hover:text-blue-300 font-medium transition-colors">
                 View All Notifications
               </button>
             </div>

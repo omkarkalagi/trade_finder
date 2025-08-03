@@ -149,10 +149,10 @@ const SearchBar = () => {
           value={query}
           onChange={handleInputChange}
           placeholder="Search stocks, sectors, features..."
-          className="w-full bg-gray-100 rounded-full px-4 py-2 pl-10 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+          className="w-full dark-input rounded-full px-4 py-2 pl-10 text-sm outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
         />
         <svg
-          className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500"
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -162,16 +162,16 @@ const SearchBar = () => {
 
         {loading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-500"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-400"></div>
           </div>
         )}
       </div>
 
       {/* Search Results Dropdown */}
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 glass dark-card rounded-xl shadow-2xl border border-slate-700/30 z-50 max-h-96 overflow-y-auto">
           <div className="p-2">
-            <div className="text-xs text-gray-500 px-3 py-2 border-b border-gray-100">
+            <div className="text-xs text-slate-400 px-3 py-2 border-b border-slate-700/30">
               {results.length} result{results.length !== 1 ? 's' : ''} found
             </div>
 
@@ -179,27 +179,27 @@ const SearchBar = () => {
               <button
                 key={index}
                 onClick={() => handleResultClick(result)}
-                className="w-full text-left p-3 hover:bg-gray-50 rounded-lg transition-colors flex items-center space-x-3"
+                className="w-full text-left p-3 hover:bg-slate-700/30 rounded-lg transition-all duration-200 flex items-center space-x-3 touch-manipulation"
               >
-                <span className="text-xl">{getResultIcon(result)}</span>
+                <span className="text-xl flex-shrink-0">{getResultIcon(result)}</span>
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium text-gray-900 truncate">
+                  <div className="font-medium text-white truncate">
                     {result.type === 'stock' ? result.symbol : result.name}
                   </div>
                   {result.type === 'stock' && (
-                    <div className="text-sm text-gray-600 truncate">{result.name}</div>
+                    <div className="text-sm text-slate-300 truncate">{result.name}</div>
                   )}
                   <div className={`text-sm ${
-                    result.type === 'stock' && result.change < 0 ? 'text-red-600' :
-                    result.type === 'stock' && result.change > 0 ? 'text-green-600' :
-                    result.type === 'sector' && result.performance < 0 ? 'text-red-600' :
-                    result.type === 'sector' && result.performance > 0 ? 'text-green-600' :
-                    'text-gray-500'
+                    result.type === 'stock' && result.change < 0 ? 'text-red-400' :
+                    result.type === 'stock' && result.change > 0 ? 'text-green-400' :
+                    result.type === 'sector' && result.performance < 0 ? 'text-red-400' :
+                    result.type === 'sector' && result.performance > 0 ? 'text-green-400' :
+                    'text-slate-400'
                   }`}>
                     {getResultSubtext(result)}
                   </div>
                 </div>
-                <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
@@ -210,11 +210,11 @@ const SearchBar = () => {
 
       {/* No Results */}
       {isOpen && results.length === 0 && query.trim() && !loading && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-200 z-50">
+        <div className="absolute top-full left-0 right-0 mt-2 glass dark-card rounded-xl shadow-2xl border border-slate-700/30 z-50">
           <div className="p-6 text-center">
             <span className="text-4xl mb-2 block">🔍</span>
-            <p className="text-gray-500">No results found for "{query}"</p>
-            <p className="text-sm text-gray-400 mt-1">Try searching for stocks, sectors, or features</p>
+            <p className="text-slate-300">No results found for "{query}"</p>
+            <p className="text-sm text-slate-500 mt-1">Try searching for stocks, sectors, or features</p>
           </div>
         </div>
       )}

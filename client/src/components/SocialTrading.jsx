@@ -1,60 +1,178 @@
-import React, { useState } from 'react';
-import Header from './Header';
-import Sidebar from './Sidebar';
+import React, { useState, useEffect } from 'react';
+import PageLayout from './PageLayout';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import alpacaService from '../services/alpacaService';
+import notificationService from '../services/notificationService';
 
-// Mock traders data
+// Famous Indian traders and investors
 const TOP_TRADERS = [
   {
     id: 1,
-    name: 'Rajesh Sharma',
-    username: 'nifty_master',
-    avatar: 'RS',
+    name: 'Radhakishan Damani',
+    username: 'rk_damani_official',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     performance: {
-      monthly: 18.7,
-      total: 142.5,
-      winRate: 68,
-      avgTrade: 2.3,
-      followers: 1245
+      monthly: 24.7,
+      total: 2847.5,
+      winRate: 89,
+      avgTrade: 15.3,
+      followers: 125000
     },
-    strategy: 'Momentum Trading',
-    risk: 'Medium',
+    strategy: 'Value Investing',
+    risk: 'Low',
     trades: {
-      total: 87,
-      won: 59,
-      lost: 28
+      total: 1247,
+      won: 1109,
+      lost: 138
     },
     verified: true,
     subscription: {
-      monthly: 999,
-      quarterly: 2499,
-      yearly: 8999
-    }
+      monthly: 4999,
+      quarterly: 12999,
+      yearly: 45999
+    },
+    bio: 'Founder of DMart, one of India\'s most successful value investors',
+    expertise: ['Retail', 'FMCG', 'Long-term Value']
   },
   {
     id: 2,
-    name: 'Priya Patel',
-    username: 'options_queen',
-    avatar: 'PP',
+    name: 'Mukesh Ambani',
+    username: 'ambani_trades',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     performance: {
-      monthly: 22.4,
-      total: 98.3,
-      winRate: 72,
-      avgTrade: 3.1,
-      followers: 876
+      monthly: 18.4,
+      total: 1598.3,
+      winRate: 82,
+      avgTrade: 12.1,
+      followers: 89000
     },
-    strategy: 'Options Strategies',
-    risk: 'High',
+    strategy: 'Growth & Technology',
+    risk: 'Medium',
     trades: {
-      total: 64,
-      won: 46,
-      lost: 18
+      total: 864,
+      won: 708,
+      lost: 156
     },
     verified: true,
     subscription: {
-      monthly: 1499,
-      quarterly: 3999,
-      yearly: 13999
-    }
+      monthly: 7999,
+      quarterly: 19999,
+      yearly: 69999
+    },
+    bio: 'Chairman of Reliance Industries, expert in energy and telecom sectors',
+    expertise: ['Energy', 'Telecom', 'Petrochemicals']
+  },
+  {
+    id: 3,
+    name: 'Rakesh Jhunjhunwala',
+    username: 'big_bull_rj',
+    avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
+    performance: {
+      monthly: 32.4,
+      total: 4298.7,
+      winRate: 76,
+      avgTrade: 18.9,
+      followers: 156000
+    },
+    strategy: 'Growth Momentum',
+    risk: 'High',
+    trades: {
+      total: 2156,
+      won: 1638,
+      lost: 518
+    },
+    verified: true,
+    subscription: {
+      monthly: 9999,
+      quarterly: 24999,
+      yearly: 89999
+    },
+    bio: 'The Big Bull of Indian stock market, legendary investor',
+    expertise: ['Mid-cap', 'Growth stocks', 'Market timing']
+  },
+  {
+    id: 4,
+    name: 'Porinju Veliyath',
+    username: 'porinju_official',
+    avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&h=150&fit=crop&crop=face',
+    performance: {
+      monthly: 28.7,
+      total: 1847.2,
+      winRate: 71,
+      avgTrade: 14.6,
+      followers: 67000
+    },
+    strategy: 'Small & Mid Cap',
+    risk: 'High',
+    trades: {
+      total: 1456,
+      won: 1033,
+      lost: 423
+    },
+    verified: true,
+    subscription: {
+      monthly: 3999,
+      quarterly: 9999,
+      yearly: 34999
+    },
+    bio: 'Founder of Equity Intelligence, small-cap specialist',
+    expertise: ['Small-cap', 'Mid-cap', 'Undervalued stocks']
+  },
+  {
+    id: 5,
+    name: 'Dolly Khanna',
+    username: 'dolly_khanna_picks',
+    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+    performance: {
+      monthly: 21.8,
+      total: 1256.4,
+      winRate: 84,
+      avgTrade: 11.2,
+      followers: 45000
+    },
+    strategy: 'Value Investing',
+    risk: 'Medium',
+    trades: {
+      total: 756,
+      won: 635,
+      lost: 121
+    },
+    verified: true,
+    subscription: {
+      monthly: 2999,
+      quarterly: 7999,
+      yearly: 27999
+    },
+    bio: 'Chennai-based value investor, known for multibagger picks',
+    expertise: ['Value investing', 'Multibaggers', 'Long-term holds']
+  },
+  {
+    id: 6,
+    name: 'Ashish Kacholia',
+    username: 'ashish_kacholia',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+    performance: {
+      monthly: 26.3,
+      total: 1689.8,
+      winRate: 78,
+      avgTrade: 13.7,
+      followers: 52000
+    },
+    strategy: 'Growth Investing',
+    risk: 'Medium',
+    trades: {
+      total: 987,
+      won: 770,
+      lost: 217
+    },
+    verified: true,
+    subscription: {
+      monthly: 4499,
+      quarterly: 11999,
+      yearly: 39999
+    },
+    bio: 'Ace investor known for identifying growth stories early',
+    expertise: ['Growth stocks', 'Emerging sectors', 'Quality picks']
   },
   {
     id: 3,

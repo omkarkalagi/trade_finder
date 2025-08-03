@@ -327,7 +327,6 @@ class AlpacaService {
 const alpacaService = new AlpacaService();
 
 export default alpacaService;
-};
 
 // Get market calendar
 export const getMarketCalendar = async (start, end) => {

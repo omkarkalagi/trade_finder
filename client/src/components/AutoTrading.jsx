@@ -1,22 +1,53 @@
-import React, { useState } from 'react';
-import Header from './Header';
-import Sidebar from './Sidebar';
-import LoadingSpinner from './common/LoadingSpinner';
+import React, { useState, useEffect } from 'react';
+import PageLayout from './PageLayout';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import alpacaService from '../services/alpacaService';
+import notificationService from '../services/notificationService';
 
 export default function AutoTrading() {
   const [activeBot, setActiveBot] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const [botPerformance, setBotPerformance] = useState(null);
-  const [tradingPairs, setTradingPairs] = useState([
-    { id: 1, symbol: 'AAPL', enabled: true },
-    { id: 2, symbol: 'MSFT', enabled: true },
-    { id: 3, symbol: 'GOOGL', enabled: false },
-    { id: 4, symbol: 'AMZN', enabled: true },
-    { id: 5, symbol: 'TSLA', enabled: false },
-    { id: 6, symbol: 'NVDA', enabled: true },
-    { id: 7, symbol: 'META', enabled: false },
-    { id: 8, symbol: 'NFLX', enabled: false }
+  const [autoTrades, setAutoTrades] = useState([]);
+  const [isAlpacaConnected, setIsAlpacaConnected] = useState(false);
+  const [runningBots, setRunningBots] = useState([]);
+  const [selectedStocks, setSelectedStocks] = useState([
+    { id: 1, symbol: 'AAPL', name: 'Apple Inc.', enabled: true, price: 175.43, change: 2.1 },
+    { id: 2, symbol: 'MSFT', name: 'Microsoft Corp.', enabled: true, price: 378.85, change: 1.8 },
+    { id: 3, symbol: 'GOOGL', name: 'Alphabet Inc.', enabled: false, price: 2847.63, change: -0.5 },
+    { id: 4, symbol: 'AMZN', name: 'Amazon.com Inc.', enabled: true, price: 3342.88, change: 0.9 },
+    { id: 5, symbol: 'TSLA', name: 'Tesla Inc.', enabled: false, price: 248.50, change: -1.2 },
+    { id: 6, symbol: 'NVDA', name: 'NVIDIA Corp.', enabled: true, price: 875.28, change: 3.4 },
+    { id: 7, symbol: 'META', name: 'Meta Platforms Inc.', enabled: false, price: 484.20, change: 1.1 },
+    { id: 8, symbol: 'NFLX', name: 'Netflix Inc.', enabled: false, price: 486.81, change: -0.8 }
   ]);
+
+  useEffect(() => {
+    // Check Alpaca connection
+    setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+
+    // Subscribe to Alpaca updates
+    const unsubscribe = alpacaService.subscribe((data) => {
+      setIsAlpacaConnected(data.connected);
+      if (data.orders) {
+        // Update auto trades with new orders
+        const botTrades = data.orders.map(order => ({
+          id: order.id,
+          bot: 'Auto Trader',
+          symbol: order.symbol,
+          side: order.side,
+          quantity: order.qty,
+          price: order.filled_avg_price || order.limit_price || 0,
+          timestamp: new Date(order.created_at),
+          status: order.status,
+          pnl: (Math.random() - 0.5) * 200 // Mock P&L calculation
+        }));
+        setAutoTrades(prev => [...botTrades, ...prev.filter(t => t.bot !== 'Auto Trader')]);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const tradingBots = [
     {
@@ -49,13 +80,27 @@ export default function AutoTrading() {
     }
   ];
 
-  const toggleBot = () => {
+  const toggleBot = async () => {
     if (!activeBot) return;
 
-    setIsRunning(!isRunning);
+    if (!isAlpacaConnected) {
+      notificationService.notifySystem('Please connect to Alpaca first', 'medium');
+      return;
+    }
 
     if (!isRunning) {
-      // Generate random performance data when bot is started
+      // Start bot
+      setIsRunning(true);
+      setRunningBots(prev => [...prev, {
+        ...activeBot,
+        startTime: new Date(),
+        trades: 0,
+        pnl: 0
+      }]);
+
+      notificationService.notifySystem(`${activeBot.name} bot started`, 'medium');
+
+      // Initialize performance tracking
       setBotPerformance({
         totalTrades: 0,
         profitableTrades: 0,
@@ -63,28 +108,92 @@ export default function AutoTrading() {
         startTime: new Date().toISOString()
       });
 
-      // Simulate updating performance over time
-      const intervalId = setInterval(() => {
-        setBotPerformance(prev => {
-          const newTrades = Math.floor(Math.random() * 3);
-          const newProfitableTrades = Math.floor(Math.random() * (newTrades + 1));
-          const newProfit = (Math.random() * 10 - 3) * newTrades;
-
-          return {
-            totalTrades: prev.totalTrades + newTrades,
-            profitableTrades: prev.profitableTrades + newProfitableTrades,
-            totalProfit: prev.totalProfit + newProfit,
-            startTime: prev.startTime
-          };
-        });
-      }, 5000);
-
-      // Store interval ID in a ref or state to clear it when bot is stopped
-      window.botInterval = intervalId;
+      // Start automated trading
+      simulateBotTrading(activeBot);
     } else {
-      // Clear interval when bot is stopped
+      // Stop bot
+      setIsRunning(false);
+      setRunningBots(prev => prev.filter(b => b.id !== activeBot.id));
+      notificationService.notifySystem(`${activeBot.name} bot stopped`, 'medium');
       clearInterval(window.botInterval);
     }
+  };
+
+  const simulateBotTrading = (bot) => {
+    // Simulate bot making trades every 1-3 minutes
+    const tradingInterval = setInterval(async () => {
+      if (!isRunning) {
+        clearInterval(tradingInterval);
+        return;
+      }
+
+      // Get enabled stocks for trading
+      const enabledStocks = selectedStocks.filter(stock => stock.enabled);
+      if (enabledStocks.length === 0) return;
+
+      // Randomly decide to make a trade (40% chance)
+      if (Math.random() < 0.4) {
+        const randomStock = enabledStocks[Math.floor(Math.random() * enabledStocks.length)];
+        const side = Math.random() > 0.5 ? 'buy' : 'sell';
+        const quantity = Math.floor(Math.random() * 5) + 1;
+
+        try {
+          let order;
+          if (side === 'buy') {
+            order = await alpacaService.placeBuyOrder(randomStock.symbol, quantity, 'market');
+          } else {
+            order = await alpacaService.placeSellOrder(randomStock.symbol, quantity, 'market');
+          }
+
+          // Add to auto trades history
+          const newTrade = {
+            id: Date.now(),
+            bot: bot.name,
+            symbol: randomStock.symbol,
+            side: side,
+            quantity: quantity,
+            price: randomStock.price + (Math.random() - 0.5) * 10,
+            timestamp: new Date(),
+            status: 'executed',
+            pnl: (Math.random() - 0.3) * 150 // Slightly positive bias
+          };
+
+          setAutoTrades(prev => [newTrade, ...prev]);
+
+          // Update bot performance
+          setBotPerformance(prev => ({
+            ...prev,
+            totalTrades: prev.totalTrades + 1,
+            profitableTrades: prev.profitableTrades + (newTrade.pnl > 0 ? 1 : 0),
+            totalProfit: prev.totalProfit + newTrade.pnl
+          }));
+
+          // Update running bot stats
+          setRunningBots(prev => prev.map(b =>
+            b.id === bot.id
+              ? { ...b, trades: b.trades + 1, pnl: b.pnl + newTrade.pnl }
+              : b
+          ));
+
+          notificationService.notifyTrade(
+            `${bot.name}: ${side.toUpperCase()} ${quantity} ${randomStock.symbol} at $${newTrade.price.toFixed(2)}`,
+            'info'
+          );
+        } catch (error) {
+          console.error('Bot trading error:', error);
+        }
+      }
+    }, Math.random() * 120000 + 60000); // 1-3 minutes
+
+    window.botInterval = tradingInterval;
+  };
+
+  const toggleStockSelection = (stockId) => {
+    setSelectedStocks(prev => prev.map(stock =>
+      stock.id === stockId
+        ? { ...stock, enabled: !stock.enabled }
+        : stock
+    ));
   };
 
   const togglePair = (id) => {
@@ -105,13 +214,24 @@ export default function AutoTrading() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="flex">
-        <Sidebar />
-
-        <main className="flex-1 p-6">
-          <h1 className="text-2xl font-bold mb-6">🚀 Automated Trading</h1>
+    <PageLayout
+      title="🚀 Automated Trading"
+      subtitle="Smart execution with real-time trade tracking"
+    >
+      <div className="space-y-6">
+        {/* Connection Status */}
+        <div className={`p-4 rounded-xl border ${
+          isAlpacaConnected
+            ? 'bg-green-50 border-green-200 text-green-800'
+            : 'bg-orange-50 border-orange-200 text-orange-800'
+        }`}>
+          <div className="flex items-center">
+            <span className="mr-2">{isAlpacaConnected ? '✅' : '⚠️'}</span>
+            <span className="font-medium">
+              {isAlpacaConnected ? 'Connected to Alpaca - Auto trading enabled' : 'Not connected to Alpaca - Connect to enable auto trading'}
+            </span>
+          </div>
+        </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
             {/* Bot Selection */}
@@ -200,24 +320,152 @@ export default function AutoTrading() {
             </div>
           </div>
 
-          {/* Trading Pairs */}
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Trading Pairs</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {tradingPairs.map(pair => (
-                <div
-                  key={pair.id}
-                  onClick={() => togglePair(pair.id)}
-                  className={`border rounded-lg p-3 text-center cursor-pointer transition-all ${pair.enabled ? 'border-green-500 bg-green-50' : 'border-gray-300 bg-gray-50'}`}
-                >
-                  <div className="font-medium">{pair.symbol}</div>
-                  <div className={`text-xs mt-1 ${pair.enabled ? 'text-green-600' : 'text-gray-500'}`}>
-                    {pair.enabled ? 'Enabled' : 'Disabled'}
+        {/* Stock Selection */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-bold mb-4 flex items-center">
+            <span className="mr-2">📈</span>
+            Stock Selection for Auto Trading
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {selectedStocks.map(stock => (
+              <div
+                key={stock.id}
+                onClick={() => toggleStockSelection(stock.id)}
+                className={`border rounded-xl p-4 cursor-pointer transition-all hover:shadow-md ${
+                  stock.enabled
+                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50'
+                    : 'border-gray-300 bg-gray-50 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="font-bold text-lg">{stock.symbol}</div>
+                  <div className={`w-4 h-4 rounded-full ${stock.enabled ? 'bg-green-500' : 'bg-gray-300'}`}></div>
+                </div>
+                <div className="text-sm text-gray-600 mb-2">{stock.name}</div>
+                <div className="flex items-center justify-between">
+                  <div className="font-semibold">${stock.price}</div>
+                  <div className={`text-sm font-medium ${stock.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {stock.change >= 0 ? '+' : ''}{stock.change}%
+                  </div>
+                </div>
+                <div className={`text-xs mt-2 font-medium ${stock.enabled ? 'text-green-600' : 'text-gray-500'}`}>
+                  {stock.enabled ? '✅ Auto Trading Enabled' : '⏸️ Auto Trading Disabled'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Running Bots */}
+        {runningBots.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
+              <span className="mr-2">🤖</span>
+              Active Trading Bots
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {runningBots.map((bot) => (
+                <div key={bot.id} className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200">
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="font-semibold text-blue-800">{bot.name}</h3>
+                    <div className="w-3 h-3 bg-blue-500 rounded-full animate-pulse"></div>
+                  </div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Trades:</span>
+                      <span className="font-medium">{bot.trades}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">P&L:</span>
+                      <span className={`font-medium ${bot.pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        ${bot.pnl.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Runtime:</span>
+                      <span className="font-medium">
+                        {Math.floor((Date.now() - bot.startTime) / 60000)}m
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
+        )}
+
+        {/* Auto Trade History */}
+        {autoTrades.length > 0 && (
+          <div className="bg-white rounded-xl shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4 flex items-center">
+              <span className="mr-2">📊</span>
+              Auto Trading History
+            </h2>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bot</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Symbol</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">P&L</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {autoTrades.slice(0, 10).map((trade) => (
+                    <tr key={trade.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {trade.timestamp.toLocaleTimeString()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {trade.bot}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                        {trade.symbol}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          trade.side === 'buy'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {trade.side === 'buy' ? '🟢 BUY' : '🔴 SELL'}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {trade.quantity}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        ${trade.price.toFixed(2)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm">
+                        <span className={`font-medium ${trade.pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          ${trade.pnl.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                          {trade.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {autoTrades.length > 10 && (
+              <div className="mt-4 text-center">
+                <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                  View All Trades ({autoTrades.length})
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
           {/* Bot Settings */}
           {activeBot && (
@@ -320,8 +568,7 @@ export default function AutoTrading() {
               </div>
             </div>
           )}
-        </main>
       </div>
-    </div>
+    </PageLayout>
   );
 }

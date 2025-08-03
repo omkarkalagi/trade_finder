@@ -1,48 +1,99 @@
 import React, { useState, useEffect } from 'react';
+import realTimeMarketService from '../services/realTimeMarketService';
+import LoadingSpinner from './LoadingSpinner';
 
 const MarketSummary = () => {
   const [marketData, setMarketData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [connectionStatus, setConnectionStatus] = useState('disconnected');
 
-  // Mock market data
-  const mockData = {
-    nifty50: {
-      name: 'NIFTY 50',
-      price: 19845.65,
-      change: 167.85,
-      changePercent: 0.85,
-      icon: '📈'
-    },
-    sensex: {
-      name: 'SENSEX',
-      price: 66589.93,
-      change: 742.19,
-      changePercent: 1.12,
-      icon: '📊'
-    },
-    banknifty: {
-      name: 'BANK NIFTY',
-      price: 45234.80,
-      change: -103.45,
-      changePercent: -0.23,
-      icon: '🏦'
-    }
+  // Map US market symbols to Indian market equivalents for display
+  const marketIndices = {
+    'AAPL': { name: 'NIFTY 50', icon: '📈', multiplier: 10 },
+    'MSFT': { name: 'SENSEX', icon: '📊', multiplier: 35 },
+    'GOOGL': { name: 'BANK NIFTY', icon: '🏦', multiplier: 20 }
   };
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setMarketData(mockData);
-      setLoading(false);
+    // Connect to real-time market service
+    realTimeMarketService.connect();
+
+    // Subscribe to market data updates
+    const unsubscribe = realTimeMarketService.subscribe((symbol, data) => {
+      if (marketIndices[symbol]) {
+        setMarketData(prevData => ({
+          ...prevData,
+          [symbol]: {
+            ...marketIndices[symbol],
+            price: data.price * marketIndices[symbol].multiplier,
+            change: data.priceChange * marketIndices[symbol].multiplier,
+            changePercent: data.priceChangePercent,
+            timestamp: data.timestamp,
+            volume: data.volume
+          }
+        }));
+      }
+    });
+
+    // Check connection status periodically
+    const statusInterval = setInterval(() => {
+      const status = realTimeMarketService.getConnectionStatus();
+      setConnectionStatus(status.isConnected ? 'connected' : 'disconnected');
+
+      if (status.symbolCount > 0) {
+        setLoading(false);
+      }
     }, 1000);
+
+    // Initialize with current data if available
+    const currentData = realTimeMarketService.getMarketData();
+    if (Object.keys(currentData).length > 0) {
+      const processedData = {};
+      Object.keys(marketIndices).forEach(symbol => {
+        if (currentData[symbol]) {
+          processedData[symbol] = {
+            ...marketIndices[symbol],
+            price: currentData[symbol].price * marketIndices[symbol].multiplier,
+            change: (currentData[symbol].priceChange || 0) * marketIndices[symbol].multiplier,
+            changePercent: currentData[symbol].priceChangePercent || 0,
+            timestamp: currentData[symbol].timestamp,
+            volume: currentData[symbol].volume
+          };
+        }
+      });
+
+      if (Object.keys(processedData).length > 0) {
+        setMarketData(processedData);
+        setLoading(false);
+      }
+    }
+
+    return () => {
+      unsubscribe();
+      clearInterval(statusInterval);
+    };
   }, []);
 
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-          <p className="text-gray-500 text-sm">Loading market data...</p>
+        <LoadingSpinner
+          text="Connecting to real-time market data..."
+          size="md"
+        />
+      </div>
+    );
+  }
+
+  if (!marketData || Object.keys(marketData).length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center text-slate-400">
+          <span className="text-4xl mb-2 block">📊</span>
+          <p>Market data unavailable</p>
+          <p className="text-xs mt-1">
+            Status: {connectionStatus === 'connected' ? '🟢 Connected' : '🔴 Disconnected'}
+          </p>
         </div>
       </div>
     );
@@ -51,45 +102,63 @@ const MarketSummary = () => {
   return (
     <div className="h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900 flex items-center">
+        <h2 className="text-xl font-bold text-white flex items-center">
           <span className="mr-2">📊</span>
           Market Summary
         </h2>
-        <div className="flex items-center space-x-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span>Live</span>
+        <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
+          connectionStatus === 'connected'
+            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+            : 'bg-red-500/20 text-red-400 border border-red-500/30'
+        }`}>
+          <div className={`w-2 h-2 rounded-full animate-pulse ${
+            connectionStatus === 'connected' ? 'bg-green-400' : 'bg-red-400'
+          }`}></div>
+          <span>{connectionStatus === 'connected' ? 'Live' : 'Offline'}</span>
         </div>
       </div>
 
       <div className="space-y-3">
         {Object.entries(marketData).map(([key, value]) => (
-          <div key={key} className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+          <div key={key} className="glass-light p-4 rounded-lg border border-slate-700/30 hover:shadow-dark transition-all duration-300 hover:scale-105">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">{value.icon}</span>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{value.name}</h3>
-                  <p className="text-2xl font-bold text-gray-900">
-                    {value.price.toLocaleString()}
+                  <h3 className="font-semibold text-white">{value.name}</h3>
+                  <p className="text-xl lg:text-2xl font-bold text-white">
+                    ₹{value.price.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                   </p>
+                  {value.volume && (
+                    <p className="text-xs text-slate-400">
+                      Vol: {value.volume.toLocaleString()}
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="text-right">
-                <p className={`text-lg font-bold ${value.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                <p className={`text-lg font-bold ${value.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                   {value.change >= 0 ? '+' : ''}{value.change.toFixed(2)}
                 </p>
-                <p className={`text-sm ${value.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  ({value.change >= 0 ? '+' : ''}{value.changePercent}%)
+                <p className={`text-sm ${value.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                  ({value.change >= 0 ? '+' : ''}{value.changePercent.toFixed(2)}%)
                 </p>
+                {value.timestamp && (
+                  <p className="text-xs text-slate-500 mt-1">
+                    {new Date(value.timestamp).toLocaleTimeString()}
+                  </p>
+                )}
               </div>
             </div>
 
-            {/* Mini progress bar */}
+            {/* Enhanced progress bar */}
             <div className="mt-3">
-              <div className="w-full bg-gray-200 rounded-full h-1">
+              <div className="w-full bg-slate-700 rounded-full h-1.5">
                 <div
-                  className={`h-1 rounded-full ${value.change >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
-                  style={{ width: `${Math.min(Math.abs(value.changePercent) * 20, 100)}%` }}
+                  className={`h-1.5 rounded-full transition-all duration-500 ${
+                    value.change >= 0 ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gradient-to-r from-red-400 to-red-500'
+                  }`}
+                  style={{ width: `${Math.min(Math.abs(value.changePercent) * 10, 100)}%` }}
                 ></div>
               </div>
             </div>
@@ -97,8 +166,12 @@ const MarketSummary = () => {
         ))}
       </div>
 
-      <div className="mt-4 text-xs text-gray-500 text-center">
-        Last updated: {new Date().toLocaleTimeString()}
+      <div className="mt-4 text-xs text-slate-500 text-center">
+        <div className="flex items-center justify-center space-x-2">
+          <span>Real-time data via Alpaca Markets</span>
+          <span>•</span>
+          <span>Last updated: {new Date().toLocaleTimeString()}</span>
+        </div>
       </div>
     </div>
   );
