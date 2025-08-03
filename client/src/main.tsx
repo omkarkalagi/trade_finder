@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import './index.css';
-import LoginPage from './components/LoginPage';
+import Login from './components/Login';
+import ProtectedRoute from './components/ProtectedRoute';
+import { AuthProvider } from './context/AuthContext';
 import Dashboard from './components/Dashboard';
 import LiveMarket from './components/LiveMarket';
 import AutoTrading from './components/AutoTrading';
@@ -22,13 +24,13 @@ import RiskManagement from './components/RiskManagement';
 const router = createBrowserRouter([
   {
     path: "/login",
-    element: <LoginPage />,
+    element: <Login />,
   },
   {
     path: "/",
-    element: <App />,
+    element: <ProtectedRoute><App /></ProtectedRoute>,
     children: [
-      { index: true, element: <LoginPage /> }, // Redirect to login first
+      { index: true, element: <Dashboard /> }, // Default to dashboard when authenticated
       { path: "dashboard", element: <Dashboard /> },
       { path: "market", element: <LiveMarket /> },
       { path: "market-news", element: <MarketNewsPage /> },
@@ -43,7 +45,7 @@ const router = createBrowserRouter([
       { path: "portfolio-analytics", element: <PortfolioAnalytics /> },
       { path: "community-education", element: <CommunityEducation /> },
       { path: "risk-management", element: <RiskManagement /> },
-      { path: "*", element: <LoginPage /> }, // Fallback to login
+      { path: "*", element: <Dashboard /> }, // Fallback to dashboard
     ],
   },
 ], {
@@ -55,6 +57,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 );
