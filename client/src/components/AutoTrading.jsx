@@ -12,14 +12,16 @@ export default function AutoTrading() {
   const [isAlpacaConnected, setIsAlpacaConnected] = useState(false);
   const [runningBots, setRunningBots] = useState([]);
   const [selectedStocks, setSelectedStocks] = useState([
-    { id: 1, symbol: 'AAPL', name: 'Apple Inc.', enabled: true, price: 175.43, change: 2.1 },
-    { id: 2, symbol: 'MSFT', name: 'Microsoft Corp.', enabled: true, price: 378.85, change: 1.8 },
-    { id: 3, symbol: 'GOOGL', name: 'Alphabet Inc.', enabled: false, price: 2847.63, change: -0.5 },
-    { id: 4, symbol: 'AMZN', name: 'Amazon.com Inc.', enabled: true, price: 3342.88, change: 0.9 },
-    { id: 5, symbol: 'TSLA', name: 'Tesla Inc.', enabled: false, price: 248.50, change: -1.2 },
-    { id: 6, symbol: 'NVDA', name: 'NVIDIA Corp.', enabled: true, price: 875.28, change: 3.4 },
-    { id: 7, symbol: 'META', name: 'Meta Platforms Inc.', enabled: false, price: 484.20, change: 1.1 },
-    { id: 8, symbol: 'NFLX', name: 'Netflix Inc.', enabled: false, price: 486.81, change: -0.8 }
+    { id: 1, symbol: 'RELIANCE', name: 'Reliance Industries Ltd', enabled: true, price: 2567.80, change: 1.8 },
+    { id: 2, symbol: 'TCS', name: 'Tata Consultancy Services', enabled: true, price: 3845.60, change: 2.1 },
+    { id: 3, symbol: 'INFY', name: 'Infosys Ltd', enabled: false, price: 1456.30, change: -0.5 },
+    { id: 4, symbol: 'HDFCBANK', name: 'HDFC Bank Ltd', enabled: true, price: 1678.90, change: 0.9 },
+    { id: 5, symbol: 'ICICIBANK', name: 'ICICI Bank Ltd', enabled: false, price: 945.20, change: -1.2 },
+    { id: 6, symbol: 'SBIN', name: 'State Bank of India', enabled: true, price: 567.85, change: 3.4 },
+    { id: 7, symbol: 'ITC', name: 'ITC Ltd', enabled: false, price: 456.75, change: 1.1 },
+    { id: 8, symbol: 'HINDUNILVR', name: 'Hindustan Unilever Ltd', enabled: false, price: 2456.90, change: -0.8 },
+    { id: 9, symbol: 'BHARTIARTL', name: 'Bharti Airtel Ltd', enabled: true, price: 865.40, change: 2.3 },
+    { id: 10, symbol: 'KOTAKBANK', name: 'Kotak Mahindra Bank', enabled: false, price: 1789.60, change: 1.5 }
   ]);
 
   useEffect(() => {
@@ -52,31 +54,67 @@ export default function AutoTrading() {
   const tradingBots = [
     {
       id: 1,
-      name: 'Trend Follower',
-      description: 'Identifies and follows market trends using technical indicators like moving averages and MACD.',
+      name: 'Nifty Trend Master',
+      description: 'Advanced trend following bot specialized for Indian markets using EMA crossovers and momentum indicators.',
       riskLevel: 'Medium',
-      performance: { monthlyReturn: 2.8, winRate: 65, tradesPerDay: 5 }
+      performance: { monthlyReturn: 3.2, winRate: 68, tradesPerDay: 6 },
+      specialization: 'Index Trading'
     },
     {
       id: 2,
-      name: 'Volatility Breakout',
-      description: 'Capitalizes on price breakouts during periods of high volatility using Bollinger Bands and ATR.',
-      riskLevel: 'High',
-      performance: { monthlyReturn: 4.2, winRate: 58, tradesPerDay: 8 }
+      name: 'Banking Sector Pro',
+      description: 'Specialized bot for banking stocks using sector-specific indicators and news sentiment analysis.',
+      riskLevel: 'Medium',
+      performance: { monthlyReturn: 4.1, winRate: 62, tradesPerDay: 4 },
+      specialization: 'Banking Stocks'
     },
     {
       id: 3,
-      name: 'Mean Reversion',
-      description: 'Takes advantage of price reversions to the mean using RSI and stochastic oscillators.',
-      riskLevel: 'Medium',
-      performance: { monthlyReturn: 2.1, winRate: 72, tradesPerDay: 4 }
+      name: 'Intraday Scalper',
+      description: 'High-frequency trading bot for quick profits using order flow and level 2 market data.',
+      riskLevel: 'High',
+      performance: { monthlyReturn: 5.8, winRate: 55, tradesPerDay: 25 },
+      specialization: 'Scalping'
     },
     {
       id: 4,
-      name: 'Conservative Growth',
-      description: 'Focuses on stable growth with lower risk using a combination of fundamental and technical analysis.',
+      name: 'Options Wheel Strategy',
+      description: 'Conservative options trading bot using covered calls and cash-secured puts for steady income.',
       riskLevel: 'Low',
-      performance: { monthlyReturn: 1.5, winRate: 80, tradesPerDay: 2 }
+      performance: { monthlyReturn: 2.5, winRate: 85, tradesPerDay: 1 },
+      specialization: 'Options Trading'
+    },
+    {
+      id: 5,
+      name: 'AI Sentiment Trader',
+      description: 'Machine learning bot that trades based on news sentiment and social media analysis.',
+      riskLevel: 'Medium',
+      performance: { monthlyReturn: 4.7, winRate: 71, tradesPerDay: 8 },
+      specialization: 'AI/ML Trading'
+    },
+    {
+      id: 6,
+      name: 'Breakout Hunter',
+      description: 'Identifies and trades breakouts from consolidation patterns with volume confirmation.',
+      riskLevel: 'High',
+      performance: { monthlyReturn: 6.2, winRate: 58, tradesPerDay: 12 },
+      specialization: 'Breakout Trading'
+    },
+    {
+      id: 7,
+      name: 'Dividend Aristocrat',
+      description: 'Long-term bot focusing on dividend-paying stocks with consistent growth patterns.',
+      riskLevel: 'Low',
+      performance: { monthlyReturn: 1.8, winRate: 88, tradesPerDay: 0.5 },
+      specialization: 'Dividend Investing'
+    },
+    {
+      id: 8,
+      name: 'Crypto Correlation',
+      description: 'Trades stocks based on cryptocurrency market movements and correlations.',
+      riskLevel: 'High',
+      performance: { monthlyReturn: 7.1, winRate: 52, tradesPerDay: 15 },
+      specialization: 'Crypto Correlation'
     }
   ];
 

@@ -17,6 +17,7 @@ import PortfolioAnalytics from './components/PortfolioAnalytics';
 import CommunityEducation from './components/CommunityEducation';
 import SectorScope from './components/SectorScope';
 import MarketNewsPage from './components/MarketNewsPage';
+import RiskManagement from './components/RiskManagement';
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,7 @@ const router = createBrowserRouter([
       { path: "alternative-data", element: <AlternativeData /> },
       { path: "portfolio-analytics", element: <PortfolioAnalytics /> },
       { path: "community-education", element: <CommunityEducation /> },
+      { path: "risk-management", element: <RiskManagement /> },
       { path: "*", element: <LoginPage /> }, // Fallback to login
     ],
   },

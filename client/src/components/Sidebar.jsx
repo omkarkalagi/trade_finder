@@ -28,7 +28,8 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/community-education', label: 'Community & Education', icon: '👥', description: 'Learn & Share' },
     { path: '/algo-trading', label: 'Algo Trading', icon: '🤖', description: 'Automated Strategies' },
     { path: '/auto-trading', label: 'Auto Trading', icon: '🚀', description: 'Smart Execution' },
-    { path: '/social-trading', label: 'Social Trading', icon: '👥', description: 'Follow Experts' }
+    { path: '/social-trading', label: 'Social Trading', icon: '👥', description: 'Follow Experts' },
+    { path: '/risk-management', label: 'Risk Management', icon: '🛡️', description: 'Safety & Security' }
   ];
 
   const handleNavClick = () => {

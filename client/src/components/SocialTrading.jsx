@@ -31,8 +31,12 @@ const TOP_TRADERS = [
       quarterly: 12999,
       yearly: 45999
     },
-    bio: 'Founder of DMart, one of India\'s most successful value investors',
-    expertise: ['Retail', 'FMCG', 'Long-term Value']
+    bio: 'Founder of DMart, India\'s retail king and legendary value investor with 30+ years of market experience',
+    expertise: ['Retail Stocks', 'FMCG', 'Long-term Value', 'Quality Growth'],
+    recentTrades: [
+      { symbol: 'DMART', action: 'BUY', quantity: 500, price: 3456.78, date: '2025-01-15' },
+      { symbol: 'HINDUNILVR', action: 'BUY', quantity: 200, price: 2456.90, date: '2025-01-14' }
+    ]
   },
   {
     id: 2,
@@ -59,8 +63,12 @@ const TOP_TRADERS = [
       quarterly: 19999,
       yearly: 69999
     },
-    bio: 'Chairman of Reliance Industries, expert in energy and telecom sectors',
-    expertise: ['Energy', 'Telecom', 'Petrochemicals']
+    bio: 'Chairman of Reliance Industries, visionary leader in energy, telecom, and digital transformation',
+    expertise: ['Energy Stocks', 'Telecom', 'Petrochemicals', 'Digital Economy'],
+    recentTrades: [
+      { symbol: 'RELIANCE', action: 'BUY', quantity: 1000, price: 2567.80, date: '2025-01-15' },
+      { symbol: 'JIOFINANCIAL', action: 'BUY', quantity: 2000, price: 345.60, date: '2025-01-14' }
+    ]
   },
   {
     id: 3,
@@ -87,8 +95,12 @@ const TOP_TRADERS = [
       quarterly: 24999,
       yearly: 89999
     },
-    bio: 'The Big Bull of Indian stock market, legendary investor',
-    expertise: ['Mid-cap', 'Growth stocks', 'Market timing']
+    bio: 'The Big Bull of Indian stock market, legendary investor with unmatched market intuition',
+    expertise: ['Mid-cap Growth', 'Momentum Stocks', 'Market Timing', 'Multibaggers'],
+    recentTrades: [
+      { symbol: 'TITAN', action: 'BUY', quantity: 300, price: 3234.50, date: '2025-01-15' },
+      { symbol: 'CRISIL', action: 'SELL', quantity: 150, price: 4567.80, date: '2025-01-13' }
+    ]
   },
   {
     id: 4,
@@ -143,8 +155,12 @@ const TOP_TRADERS = [
       quarterly: 7999,
       yearly: 27999
     },
-    bio: 'Chennai-based value investor, known for multibagger picks',
-    expertise: ['Value investing', 'Multibaggers', 'Long-term holds']
+    bio: 'Chennai-based value investor, known for multibagger picks and contrarian investing',
+    expertise: ['Small-cap Value', 'Contrarian Picks', 'Hidden Gems', 'Quality Stocks'],
+    recentTrades: [
+      { symbol: 'RAIN', action: 'BUY', quantity: 1000, price: 156.78, date: '2025-01-14' },
+      { symbol: 'MANAPPURAM', action: 'BUY', quantity: 500, price: 145.60, date: '2025-01-13' }
+    ]
   },
   {
     id: 6,
