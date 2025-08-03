@@ -146,8 +146,37 @@ const Sidebar = ({ isOpen, onClose }) => {
           </div>
         </div>
 
+        {/* User Profile Section */}
+        <div className="p-4 mt-auto">
+          <div className="glass-light rounded-xl p-4 border border-blue-500/20 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                  {user?.phone ? user.phone.slice(-2) : 'U'}
+                </div>
+                <div className="ml-3">
+                  <div className="text-sm font-medium text-slate-200">
+                    {user?.phone ? `+91 ${user.phone.slice(-10, -6)}****${user.phone.slice(-4)}` : 'User'}
+                  </div>
+                  <div className="text-xs text-slate-400">Verified Account</div>
+                </div>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                logout();
+                navigate('/login');
+              }}
+              className="w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/30 rounded-lg transition-all duration-200"
+            >
+              <span className="mr-2">🚪</span>
+              Logout
+            </button>
+          </div>
+        </div>
+
         {/* Footer in Sidebar */}
-        <div className="p-4 mt-auto border-t border-slate-700/30">
+        <div className="p-4 border-t border-slate-700/30">
           <div className="text-center text-xs text-slate-400">
             <div className="mb-2">
               <span className="font-medium bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
