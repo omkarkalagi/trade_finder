@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PageLayout from './PageLayout';
+import Header from './Header';
 
 // Mock strategy marketplace data
 const STRATEGIES = [

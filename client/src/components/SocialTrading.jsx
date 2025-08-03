@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PageLayout from './PageLayout';
+import Header from './Header';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import alpacaService from '../services/alpacaService';
 import notificationService from '../services/notificationService';

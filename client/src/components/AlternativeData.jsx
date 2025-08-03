@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PageLayout from './PageLayout';
+import Header from './Header';
 
 // Enhanced data sources with custom images and real data
 const DATA_SOURCES = [

@@ -30,16 +30,16 @@ const Header = ({ onMenuClick }) => {
 
   return (
     <>
-      <header className="bg-gradient-to-r from-dark-900 via-dark-800 to-dark-900 shadow-2xl border-b border-slate-700/30 sticky top-0 z-30 backdrop-blur-xl">
+      <header className="bg-gradient-to-r from-white via-gray-50 to-white shadow-xl border-b border-gray-200/50 sticky top-0 z-30 backdrop-blur-xl">
         <div className="flex items-center justify-between px-4 lg:px-6 py-4">
           {/* Left side - Mobile menu + Title */}
           <div className="flex items-center space-x-4">
             {/* Mobile Menu Button */}
             <button
               onClick={onMenuClick}
-              className="lg:hidden p-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors touch-manipulation"
+              className="lg:hidden p-2 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 transition-colors touch-manipulation"
             >
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
@@ -51,9 +51,21 @@ const Header = ({ onMenuClick }) => {
 
             {/* Page Title - Hidden on small mobile */}
             <div className="hidden sm:block">
-              <h1 className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                {getPageTitle()}
-              </h1>
+              {getPageTitle() === 'Dashboard' ? (
+                <div className="flex flex-col">
+                  <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+                      style={{ fontFamily: 'Brush Script MT, cursive' }}>
+                    Trade Finder by Omkar Kalagi
+                  </h1>
+                  <p className="text-3xl lg:text-5xl font-bold text-gray-800 mt-1">
+                    DASHBOARD
+                  </p>
+                </div>
+              ) : (
+                <h1 className="text-3xl lg:text-5xl font-bold text-gray-800">
+                  {getPageTitle().toUpperCase()}
+                </h1>
+              )}
             </div>
           </div>
 
