@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import * as alpacaService from '../services/alpacaService';
+import alpacaService from '../services/alpacaService';
 
 export const useAlpaca = () => {
   const [account, setAccount] = useState(null);

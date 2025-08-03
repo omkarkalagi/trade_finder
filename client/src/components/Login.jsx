@@ -157,22 +157,23 @@ const Login = () => {
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Mobile Number
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-                    <span className="text-slate-400 font-medium text-lg">+91</span>
-                    <span className="text-slate-600 mx-1">|</span>
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-3">
+                    <span className="text-slate-300 font-medium text-lg">+91</span>
                   </div>
-                  <input
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    className="dark-input w-full pl-16 pr-16 py-3 text-lg font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
-                    placeholder="9876543210"
-                    maxLength="10"
-                    required
-                  />
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                    <span className="text-slate-500 text-sm font-medium">{phone.length}/10</span>
+                  <div className="flex-1 relative">
+                    <input
+                      type="tel"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                      className="dark-input w-full px-4 py-3 text-lg font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                      placeholder="9876543210"
+                      maxLength="10"
+                      required
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+                      <span className="text-slate-500 text-sm font-medium">{phone.length}/10</span>
+                    </div>
                   </div>
                 </div>
               </div>

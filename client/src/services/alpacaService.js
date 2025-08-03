@@ -369,6 +369,120 @@ class AlpacaService {
     }));
   }
 
+  // Get portfolio history
+  async getPortfolioHistory(period = '1M', timeframe = '1D') {
+    try {
+      const response = await this.alpacaApi.get('/account/portfolio/history', {
+        params: { period, timeframe }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching portfolio history:', error);
+      // Return mock data for demo
+      return this.getMockPortfolioHistory(period);
+    }
+  }
+
+  // Get market clock
+  async getMarketClock() {
+    try {
+      const response = await this.alpacaApi.get('/clock');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching market clock:', error);
+      // Return mock market clock
+      return {
+        timestamp: new Date().toISOString(),
+        is_open: true,
+        next_open: new Date().toISOString(),
+        next_close: new Date().toISOString()
+      };
+    }
+  }
+
+  // Place order (generic method)
+  async placeOrder(orderParams) {
+    const { symbol, side, quantity, orderType, limitPrice } = orderParams;
+
+    if (side === 'buy') {
+      return await this.placeBuyOrder(symbol, quantity, orderType, limitPrice);
+    } else {
+      return await this.placeSellOrder(symbol, quantity, orderType, limitPrice);
+    }
+  }
+
+  // Cancel order
+  async cancelOrder(orderId) {
+    try {
+      const response = await this.alpacaApi.delete(`/orders/${orderId}`);
+
+      // Remove from local orders array
+      this.orders = this.orders.filter(order => order.id !== orderId);
+      this.notifyListeners();
+
+      notificationService.notifyTrade(`Order ${orderId} cancelled`, 'info');
+      return response.data;
+    } catch (error) {
+      console.error('Error cancelling order:', error);
+      notificationService.notifyTrade(`Failed to cancel order ${orderId}`, 'error');
+      throw error;
+    }
+  }
+
+  // Calculate portfolio metrics
+  calculatePortfolioMetrics(account, positions) {
+    if (!account || !positions) return null;
+
+    const totalValue = parseFloat(account.portfolio_value || 0);
+    const totalPnL = positions.reduce((sum, pos) => sum + parseFloat(pos.unrealized_pl || 0), 0);
+    const totalPnLPercent = account.last_equity ?
+      (totalPnL / parseFloat(account.last_equity)) * 100 : 0;
+
+    return {
+      totalValue,
+      totalPnL,
+      totalPnLPercent,
+      dayChange: parseFloat(account.portfolio_value || 0) - parseFloat(account.last_equity || 0),
+      dayChangePercent: account.last_equity ?
+        (((parseFloat(account.portfolio_value) - parseFloat(account.last_equity)) / parseFloat(account.last_equity)) * 100) : 0,
+      positionCount: positions.length,
+      cash: parseFloat(account.cash || 0),
+      buyingPower: parseFloat(account.buying_power || 0)
+    };
+  }
+
+  // Mock portfolio history for demo
+  getMockPortfolioHistory(period) {
+    const now = new Date();
+    const data = [];
+    const days = period === '1D' ? 1 : period === '1W' ? 7 : period === '1M' ? 30 : 90;
+
+    let baseValue = 100000;
+    for (let i = days; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+
+      // Add some random variation
+      const variation = (Math.random() - 0.5) * 2000;
+      baseValue += variation;
+
+      data.push({
+        timestamp: date.toISOString(),
+        equity: baseValue,
+        profit_loss: baseValue - 100000,
+        profit_loss_pct: ((baseValue - 100000) / 100000) * 100
+      });
+    }
+
+    return {
+      timestamp: data.map(d => d.timestamp),
+      equity: data.map(d => d.equity),
+      profit_loss: data.map(d => d.profit_loss),
+      profit_loss_pct: data.map(d => d.profit_loss_pct),
+      base_value: 100000
+    };
+  }
+
   // Disconnect
   disconnect() {
     this.isConnected = false;
