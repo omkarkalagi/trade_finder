@@ -9,8 +9,10 @@ import MarketChart from './MarketChart';
 import MarketNews from './MarketNews';
 import BotPerformance from './BotPerformance';
 import FeatureHighlights from './FeatureHighlights';
+import MarketStatus from './MarketStatus';
 import zerodhaService from '../services/zerodhaService';
 import notificationService from '../services/notificationService';
+import marketStatusService from '../services/marketStatusService';
 
 export default function Dashboard() {
   const [isConnected, setIsConnected] = useState(false);

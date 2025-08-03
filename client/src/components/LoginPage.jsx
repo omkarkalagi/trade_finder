@@ -62,7 +62,7 @@ const LoginPage = () => {
 
     try {
       const fullPhoneNumber = `+91${phoneNumber}`;
-      const response = await axios.post('http://localhost:5000/api/auth/verify-otp', {
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/auth/verify-otp`, {
         phone: fullPhoneNumber,
         otp: otp
       });
@@ -89,7 +89,7 @@ const LoginPage = () => {
 
     try {
       const fullPhoneNumber = `+91${phoneNumber}`;
-      await axios.post('http://localhost:5000/api/auth/send-otp', {
+      await axios.post(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/auth/send-otp`, {
         phone: fullPhoneNumber
       });
       setSuccess('OTP resent successfully!');

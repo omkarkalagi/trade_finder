@@ -96,12 +96,27 @@ const MarketNews = () => {
   // Fetch real news from API
   const fetchRealNews = async () => {
     try {
-      // Try to fetch from news API (you can replace with your preferred news API)
-      const response = await fetch('/api/market-news');
+      // Try to fetch from news API using News API
+      const newsApiKey = process.env.REACT_APP_NEWS_API_KEY || '0c0cf893b14d468a9f7acf0c588f8345';
+      const response = await fetch(`https://newsapi.org/v2/everything?q=indian+stock+market+OR+nifty+OR+sensex+OR+BSE+OR+NSE&language=en&sortBy=publishedAt&pageSize=20&apiKey=${newsApiKey}`);
+
       if (response.ok) {
-        const realNews = await response.json();
-        setNews(realNews.slice(0, 5)); // Show latest 5
-        setAllNews(realNews); // Store all news
+        const data = await response.json();
+        const processedNews = data.articles.map((article, index) => ({
+          id: index + 1,
+          title: article.title,
+          description: article.description || article.content?.substring(0, 150) + '...',
+          source: article.source.name,
+          publishedAt: new Date(article.publishedAt),
+          category: 'market',
+          impact: Math.random() > 0.5 ? 'positive' : Math.random() > 0.3 ? 'negative' : 'neutral',
+          stocks: extractStocksFromTitle(article.title),
+          url: article.url,
+          urlToImage: article.urlToImage
+        }));
+
+        setNews(processedNews.slice(0, 5)); // Show latest 5
+        setAllNews(processedNews); // Store all news
         setLoading(false);
         return;
       }
@@ -109,10 +124,44 @@ const MarketNews = () => {
       console.error('Error fetching real news:', error);
     }
 
-    // Fallback to mock data
-    setNews(mockNews.slice(0, 5));
-    setAllNews(mockNews);
+    // Fallback to mock data with more realistic timestamps
+    const updatedMockNews = mockNews.map(item => ({
+      ...item,
+      publishedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000) // Random time within last 24 hours
+    }));
+
+    setNews(updatedMockNews.slice(0, 5));
+    setAllNews(updatedMockNews);
     setLoading(false);
+  };
+
+  // Extract stock symbols from news title
+  const extractStocksFromTitle = (title) => {
+    const stockKeywords = {
+      'reliance': ['RELIANCE'],
+      'tcs': ['TCS'],
+      'infosys': ['INFY'],
+      'hdfc': ['HDFCBANK'],
+      'icici': ['ICICIBANK'],
+      'sbi': ['SBIN'],
+      'adani': ['ADANIPORTS', 'ADANIGREEN'],
+      'tata': ['TATAMOTORS', 'TATACONSUM'],
+      'wipro': ['WIPRO'],
+      'bharti': ['BHARTIARTL'],
+      'maruti': ['MARUTI'],
+      'bajaj': ['BAJFINANCE']
+    };
+
+    const stocks = [];
+    const lowerTitle = title.toLowerCase();
+
+    Object.entries(stockKeywords).forEach(([keyword, symbols]) => {
+      if (lowerTitle.includes(keyword)) {
+        stocks.push(...symbols);
+      }
+    });
+
+    return stocks.slice(0, 3); // Limit to 3 stocks
   };
 
   useEffect(() => {
@@ -126,9 +175,9 @@ const MarketNews = () => {
 
   const getImpactColor = (impact) => {
     switch (impact) {
-      case 'positive': return 'text-green-600 bg-green-50 border-green-200';
-      case 'negative': return 'text-red-600 bg-red-50 border-red-200';
-      default: return 'text-blue-600 bg-blue-50 border-blue-200';
+      case 'positive': return 'text-green-400 bg-green-500/20 border-green-500/30';
+      case 'negative': return 'text-red-400 bg-red-500/20 border-red-500/30';
+      default: return 'text-blue-400 bg-blue-500/20 border-blue-500/30';
     }
   };
 
@@ -193,8 +242,8 @@ const MarketNews = () => {
       {loading ? (
         <div className="flex justify-center items-center h-40">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-            <p className="text-gray-500 text-sm">Loading latest news...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-2"></div>
+            <p className="text-slate-400 text-sm">Loading latest news...</p>
           </div>
         </div>
       ) : news.length > 0 ? (
@@ -202,7 +251,8 @@ const MarketNews = () => {
           {displayedNews.map((item) => (
             <div
               key={item.id}
-              className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-blue-300"
+              className="glass dark-card border border-slate-700/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-blue-500/50"
+              onClick={() => item.url && window.open(item.url, '_blank')}
             >
               <div className="flex items-start justify-between mb-2">
                 <div className="flex items-center space-x-2">
@@ -211,37 +261,37 @@ const MarketNews = () => {
                     {getImpactIcon(item.impact)} {item.impact}
                   </span>
                 </div>
-                <span className="text-xs text-gray-500">{formatTimeAgo(item.publishedAt)}</span>
+                <span className="text-xs text-slate-400">{formatTimeAgo(item.publishedAt)}</span>
               </div>
 
-              <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+              <h3 className="font-semibold text-slate-100 mb-2 line-clamp-2 hover:text-blue-400 transition-colors">
                 {item.title}
               </h3>
 
-              <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+              <p className="text-sm text-slate-400 mb-3 line-clamp-2">
                 {item.description}
               </p>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-500">{item.source}</span>
+                  <span className="text-xs text-slate-500">{item.source}</span>
                   {item.stocks.length > 0 && (
                     <>
-                      <span className="text-xs text-gray-400">•</span>
+                      <span className="text-xs text-slate-600">•</span>
                       <div className="flex space-x-1">
                         {item.stocks.slice(0, 2).map((stock, idx) => (
-                          <span key={idx} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">
+                          <span key={idx} className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30">
                             {stock}
                           </span>
                         ))}
                         {item.stocks.length > 2 && (
-                          <span className="text-xs text-gray-500">+{item.stocks.length - 2}</span>
+                          <span className="text-xs text-slate-500">+{item.stocks.length - 2}</span>
                         )}
                       </div>
                     </>
                   )}
                 </div>
-                <button className="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                <button className="text-xs text-blue-400 hover:text-blue-300 font-medium">
                   Read More →
                 </button>
               </div>
@@ -249,20 +299,20 @@ const MarketNews = () => {
           ))}
 
           {/* View All Button */}
-          {!showAllNews && news.length > 5 && (
+          {!showAllNews && allNews.length > 5 && (
             <button
               onClick={() => setShowAllNews(true)}
               className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <span className="mr-2">📰</span>
-              View All News ({news.length - 5} more)
+              View All News ({allNews.length - 5} more)
             </button>
           )}
 
           {showAllNews && (
             <button
               onClick={() => setShowAllNews(false)}
-              className="w-full py-3 bg-gray-500 text-white rounded-xl font-medium hover:bg-gray-600 transition-all duration-200"
+              className="w-full py-3 glass dark-card border border-slate-600/30 text-slate-300 rounded-xl font-medium hover:bg-slate-700/50 transition-all duration-200"
             >
               <span className="mr-2">📰</span>
               Show Less
@@ -272,7 +322,13 @@ const MarketNews = () => {
       ) : (
         <div className="text-center py-8">
           <span className="text-4xl mb-4 block">📰</span>
-          <p className="text-gray-500">No news available at the moment</p>
+          <p className="text-slate-400">No news available at the moment</p>
+          <button
+            onClick={fetchRealNews}
+            className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+          >
+            Refresh News
+          </button>
         </div>
       )}
     </div>

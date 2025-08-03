@@ -3,8 +3,8 @@ import notificationService from './notificationService';
 
 // Alpaca Configuration
 const ALPACA_CONFIG = {
-  key: 'PKTEST_YOUR_API_KEY', // Replace with your actual paper trading key
-  secret: 'YOUR_SECRET_KEY', // Replace with your actual secret
+  key: process.env.VITE_ALPACA_API_KEY || 'PK2LGOIJ1F1V9RQ0UPU5',
+  secret: process.env.VITE_ALPACA_API_SECRET || 'lOdhyveIeUkBrO6OPRb38M7XwqxkG4WRLzQsEuIt',
   endpoint: 'https://paper-api.alpaca.markets/v2',
   dataEndpoint: 'https://data.alpaca.markets/v2'
 };
@@ -289,6 +289,65 @@ class AlpacaService {
   // Check connection status
   isAlpacaConnected() {
     return this.isConnected;
+  }
+
+  // Get market data for charts
+  async getMarketData(symbol, timeframe = '1D') {
+    try {
+      const now = new Date();
+      const start = new Date();
+
+      // Set start date based on timeframe
+      switch (timeframe) {
+        case '1D':
+          start.setDate(now.getDate() - 1);
+          break;
+        case '1W':
+          start.setDate(now.getDate() - 7);
+          break;
+        case '1M':
+          start.setMonth(now.getMonth() - 1);
+          break;
+        case '3M':
+          start.setMonth(now.getMonth() - 3);
+          break;
+        case '1Y':
+          start.setFullYear(now.getFullYear() - 1);
+          break;
+        default:
+          start.setDate(now.getDate() - 1);
+      }
+
+      const timeframeParam = timeframe === '1D' ? '1Hour' : timeframe === '1W' ? '1Day' : '1Day';
+
+      const response = await this.alpacaDataApi.get('/stocks/bars', {
+        params: {
+          symbols: symbol,
+          timeframe: timeframeParam,
+          start: start.toISOString().split('T')[0],
+          end: now.toISOString().split('T')[0],
+          limit: 1000
+        }
+      });
+
+      if (response.data && response.data.bars && response.data.bars[symbol]) {
+        return response.data.bars[symbol].map(bar => ({
+          time: timeframe === '1D' ?
+            new Date(bar.t).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) :
+            new Date(bar.t).toLocaleDateString('en-IN'),
+          price: parseFloat(bar.c),
+          volume: parseInt(bar.v),
+          high: parseFloat(bar.h),
+          low: parseFloat(bar.l),
+          open: parseFloat(bar.o)
+        }));
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error fetching market data:', error);
+      return null;
+    }
   }
 
   // Subscribe to updates

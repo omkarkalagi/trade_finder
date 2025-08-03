@@ -128,7 +128,7 @@ const MarketChart = () => {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
               selectedTimeframe === timeframe.id
                 ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
+                : 'glass dark-card text-slate-300 hover:bg-slate-700/50 hover:shadow-md border border-slate-600/30'
             }`}
           >
             <span className="mr-1">{timeframe.icon}</span>
@@ -138,12 +138,12 @@ const MarketChart = () => {
       </div>
 
       {/* Chart */}
-      <div className="bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-6 mb-6 border border-gray-200">
+      <div className="glass dark-card rounded-xl p-6 mb-6 border border-slate-700/30">
         {loading ? (
           <div className="h-64 flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading chart data...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+              <p className="text-slate-400">Loading real-time chart data...</p>
             </div>
           </div>
         ) : (
@@ -151,26 +151,27 @@ const MarketChart = () => {
             <ResponsiveContainer width="100%" height="100%">
               {chartType === 'area' ? (
                 <AreaChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                   <XAxis
                     dataKey="time"
-                    stroke="#6b7280"
+                    stroke="#94a3b8"
                     fontSize={12}
                     tickFormatter={(value) => selectedTimeframe === '1D' ? value : value.split('/')[0] + '/' + value.split('/')[1]}
                   />
                   <YAxis
-                    stroke="#6b7280"
+                    stroke="#94a3b8"
                     fontSize={12}
                     tickFormatter={(value) => `₹${value.toLocaleString()}`}
                   />
                   <Tooltip
                     formatter={(value) => [`₹${value.toLocaleString()}`, 'Price']}
-                    labelStyle={{ color: '#374151' }}
+                    labelStyle={{ color: '#e2e8f0' }}
                     contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
+                      backgroundColor: '#1e293b',
+                      border: '1px solid #475569',
                       borderRadius: '8px',
-                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
+                      color: '#e2e8f0'
                     }}
                   />
                   <Area
@@ -189,26 +190,27 @@ const MarketChart = () => {
                 </AreaChart>
               ) : (
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e7ff" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                   <XAxis
                     dataKey="time"
-                    stroke="#6b7280"
+                    stroke="#94a3b8"
                     fontSize={12}
                     tickFormatter={(value) => selectedTimeframe === '1D' ? value : value.split('/')[0] + '/' + value.split('/')[1]}
                   />
                   <YAxis
-                    stroke="#6b7280"
+                    stroke="#94a3b8"
                     fontSize={12}
                     tickFormatter={(value) => `₹${value.toLocaleString()}`}
                   />
                   <Tooltip
                     formatter={(value) => [`₹${value.toLocaleString()}`, 'Price']}
-                    labelStyle={{ color: '#374151' }}
+                    labelStyle={{ color: '#e2e8f0' }}
                     contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
+                      backgroundColor: '#1e293b',
+                      border: '1px solid #475569',
                       borderRadius: '8px',
-                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
+                      color: '#e2e8f0'
                     }}
                   />
                   <Line
@@ -217,7 +219,7 @@ const MarketChart = () => {
                     stroke="#3b82f6"
                     strokeWidth={3}
                     dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: 'white' }}
+                    activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#1e293b' }}
                   />
                 </LineChart>
               )}
@@ -228,45 +230,45 @@ const MarketChart = () => {
 
       {/* Price Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200 hover:shadow-lg transition-shadow">
+        <div className="glass dark-card p-4 rounded-xl border border-green-500/30 bg-gradient-to-br from-green-500/10 to-emerald-500/10 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <span className="text-2xl mr-3">📈</span>
             <div>
-              <p className="text-sm text-gray-600">High</p>
-              <p className="text-lg font-bold text-green-600">
+              <p className="text-sm text-slate-400">High</p>
+              <p className="text-lg font-bold text-green-400">
                 ₹{Math.max(...chartData.map(d => d.high)).toLocaleString() || '19,420'}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-red-50 to-rose-50 p-4 rounded-xl border border-red-200 hover:shadow-lg transition-shadow">
+        <div className="glass dark-card p-4 rounded-xl border border-red-500/30 bg-gradient-to-br from-red-500/10 to-rose-500/10 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <span className="text-2xl mr-3">📉</span>
             <div>
-              <p className="text-sm text-gray-600">Low</p>
-              <p className="text-lg font-bold text-red-600">
+              <p className="text-sm text-slate-400">Low</p>
+              <p className="text-lg font-bold text-red-400">
                 ₹{Math.min(...chartData.map(d => d.low)).toLocaleString() || '19,200'}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200 hover:shadow-lg transition-shadow">
+        <div className="glass dark-card p-4 rounded-xl border border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <span className="text-2xl mr-3">💰</span>
             <div>
-              <p className="text-sm text-gray-600">Open</p>
-              <p className="text-lg font-bold text-blue-600">
+              <p className="text-sm text-slate-400">Open</p>
+              <p className="text-lg font-bold text-blue-400">
                 ₹{chartData[0]?.open?.toLocaleString() || '19,250'}
               </p>
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-purple-50 to-violet-50 p-4 rounded-xl border border-purple-200 hover:shadow-lg transition-shadow">
+        <div className="glass dark-card p-4 rounded-xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-violet-500/10 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <span className="text-2xl mr-3">📊</span>
             <div>
-              <p className="text-sm text-gray-600">Volume</p>
-              <p className="text-lg font-bold text-purple-600">
+              <p className="text-sm text-slate-400">Volume</p>
+              <p className="text-lg font-bold text-purple-400">
                 {((chartData.reduce((sum, d) => sum + d.volume, 0) / 1000000).toFixed(1) || '13.6')}M
               </p>
             </div>
