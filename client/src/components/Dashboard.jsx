@@ -52,14 +52,14 @@ export default function Dashboard() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
                 <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                  🚀 Welcome to Trade Finder
+                  🚀 Welcome to Trade Finder By Omkar Kalagi
                 </h1>
                 <p className="text-slate-400 text-sm lg:text-base">
                   Your intelligent trading dashboard powered by AI and real-time market data
                 </p>
               </div>
               <div className="hidden lg:block">
-                <div className="glass dark-card p-4 border border-slate-700/30">
+                <div className="glass dark-card p-4 border border-slate-700/30 rounded-xl">
                   <div className="text-center">
                     <div className="text-xl lg:text-2xl font-bold text-green-400">
                       {new Date().toLocaleDateString('en-IN', {

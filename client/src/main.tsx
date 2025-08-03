@@ -16,6 +16,7 @@ import AlternativeData from './components/AlternativeData';
 import PortfolioAnalytics from './components/PortfolioAnalytics';
 import CommunityEducation from './components/CommunityEducation';
 import SectorScope from './components/SectorScope';
+import MarketNewsPage from './components/MarketNewsPage';
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { index: true, element: <LoginPage /> }, // Redirect to login first
       { path: "dashboard", element: <Dashboard /> },
       { path: "market", element: <LiveMarket /> },
+      { path: "market-news", element: <MarketNewsPage /> },
       { path: "sector-scope", element: <SectorScope /> },
       { path: "auto-trading", element: <AutoTrading /> },
       { path: "algo-trading", element: <AlgoTrading /> },

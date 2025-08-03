@@ -56,7 +56,7 @@ const SearchBar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSearch = (searchQuery) => {
+  const handleSearch = async (searchQuery) => {
     if (!searchQuery.trim()) {
       setResults([]);
       setIsOpen(false);
@@ -65,23 +65,60 @@ const SearchBar = () => {
 
     setLoading(true);
 
-    // Simulate API delay
+    try {
+      // Try to get real-time search results from API
+      const response = await fetch(`/api/search?q=${encodeURIComponent(searchQuery)}`);
+      if (response.ok) {
+        const apiResults = await response.json();
+        setResults(apiResults.slice(0, 8));
+        setIsOpen(true);
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.error('Search API error:', error);
+    }
+
+    // Fallback to local search with enhanced matching
     setTimeout(() => {
       const filteredResults = searchData.filter(item => {
         const searchTerm = searchQuery.toLowerCase();
         if (item.type === 'stock') {
           return item.symbol.toLowerCase().includes(searchTerm) ||
-                 item.name.toLowerCase().includes(searchTerm);
+                 item.name.toLowerCase().includes(searchTerm) ||
+                 item.symbol.toLowerCase().startsWith(searchTerm);
         } else if (item.type === 'sector' || item.type === 'index' || item.type === 'feature') {
-          return item.name.toLowerCase().includes(searchTerm);
+          return item.name.toLowerCase().includes(searchTerm) ||
+                 item.name.toLowerCase().startsWith(searchTerm);
         }
         return false;
-      }).slice(0, 8); // Limit to 8 results
+      })
+      .sort((a, b) => {
+        // Prioritize exact matches and starts-with matches
+        const aExact = a.symbol?.toLowerCase() === searchQuery.toLowerCase() ||
+                      a.name?.toLowerCase() === searchQuery.toLowerCase();
+        const bExact = b.symbol?.toLowerCase() === searchQuery.toLowerCase() ||
+                      b.name?.toLowerCase() === searchQuery.toLowerCase();
+
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+
+        const aStarts = a.symbol?.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+                       a.name?.toLowerCase().startsWith(searchQuery.toLowerCase());
+        const bStarts = b.symbol?.toLowerCase().startsWith(searchQuery.toLowerCase()) ||
+                       b.name?.toLowerCase().startsWith(searchQuery.toLowerCase());
+
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+
+        return 0;
+      })
+      .slice(0, 8);
 
       setResults(filteredResults);
       setIsOpen(true);
       setLoading(false);
-    }, 300);
+    }, 200);
   };
 
   const handleInputChange = (e) => {
@@ -90,11 +127,28 @@ const SearchBar = () => {
     handleSearch(value);
   };
 
-  const handleResultClick = (result) => {
+  const handleResultClick = async (result) => {
+    setQuery(result.symbol || result.name);
+    setIsOpen(false);
+
     if (result.type === 'stock') {
-      // Add to watchlist and show notification
-      alpacaService.addToWatchlist(result.symbol);
-      notificationService.notifySystem(`${result.symbol} added to watchlist`, 'low');
+      try {
+        // Add to watchlist and show notification
+        await alpacaService.addToWatchlist(result.symbol);
+        notificationService.notifySystem(`${result.symbol} added to watchlist`, 'success');
+
+        // Also try to get real-time quote
+        const quote = await alpacaService.getQuote(result.symbol);
+        if (quote) {
+          notificationService.notifySystem(
+            `${result.symbol}: ₹${quote.price} (${quote.change >= 0 ? '+' : ''}${quote.changePercent}%)`,
+            'info'
+          );
+        }
+      } catch (error) {
+        console.error('Error adding to watchlist:', error);
+        notificationService.notifySystem(`Failed to add ${result.symbol} to watchlist`, 'error');
+      }
     } else if (result.type === 'sector') {
       // Navigate to sector analysis
       window.location.href = '/sector-scope';
@@ -105,7 +159,11 @@ const SearchBar = () => {
         'Sector Scope': '/sector-scope',
         'Trade Discovery': '/trade-discovery',
         'Strategy Builder': '/strategy-builder',
-        'Algo Trading': '/algo-trading'
+        'Algo Trading': '/algo-trading',
+        'Auto Trading': '/auto-trading',
+        'Social Trading': '/social-trading',
+        'Alternative Data': '/alternative-data',
+        'Community & Education': '/community-education'
       };
       const route = featureRoutes[result.name];
       if (route) {

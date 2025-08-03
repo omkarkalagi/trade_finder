@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const MarketNews = () => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAllNews, setShowAllNews] = useState(false);
+  const [allNews, setAllNews] = useState([]);
+  const navigate = useNavigate();
 
   // Mock news data with Indian market focus
   const mockNews = [
@@ -90,12 +93,35 @@ const MarketNews = () => {
     }
   ];
 
+  // Fetch real news from API
+  const fetchRealNews = async () => {
+    try {
+      // Try to fetch from news API (you can replace with your preferred news API)
+      const response = await fetch('/api/market-news');
+      if (response.ok) {
+        const realNews = await response.json();
+        setNews(realNews.slice(0, 5)); // Show latest 5
+        setAllNews(realNews); // Store all news
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.error('Error fetching real news:', error);
+    }
+
+    // Fallback to mock data
+    setNews(mockNews.slice(0, 5));
+    setAllNews(mockNews);
+    setLoading(false);
+  };
+
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setNews(mockNews);
-      setLoading(false);
-    }, 1000);
+    fetchRealNews();
+
+    // Refresh news every 5 minutes
+    const interval = setInterval(fetchRealNews, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const getImpactColor = (impact) => {
@@ -137,18 +163,30 @@ const MarketNews = () => {
     return `${days}d ago`;
   };
 
-  const displayedNews = showAllNews ? news : news.slice(0, 5);
+  const displayedNews = showAllNews ? allNews : news;
+
+  const handleViewAll = () => {
+    navigate('/market-news', { state: { allNews } });
+  };
 
   return (
     <div className="h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900 flex items-center">
+        <h2 className="text-xl font-bold text-slate-100 flex items-center">
           <span className="mr-2">📰</span>
           Market News
         </h2>
-        <div className="flex items-center space-x-1 text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full">
-          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
-          <span>Live</span>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleViewAll}
+            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+          >
+            View All
+          </button>
+          <div className="flex items-center space-x-1 text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded-full border border-red-500/30">
+            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+            <span>Live</span>
+          </div>
         </div>
       </div>
 

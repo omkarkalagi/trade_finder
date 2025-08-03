@@ -11,6 +11,8 @@ const SectorScope = () => {
   const [isAlpacaConnected, setIsAlpacaConnected] = useState(false);
   const [orderQuantity, setOrderQuantity] = useState(1);
   const [watchlist, setWatchlist] = useState([]);
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [realTimeData, setRealTimeData] = useState({});
 
   // Mock sector data
   const mockSectorData = [
@@ -107,31 +109,142 @@ const SectorScope = () => {
   ];
 
   useEffect(() => {
-    // Initialize data and check Alpaca connection
-    setSectorData(mockSectorData);
-    setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+    const initializeSectorData = async () => {
+      try {
+        // Check Alpaca connection
+        setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+
+        // Try to fetch real sector data from API
+        const response = await fetch('/api/sectors/performance');
+        if (response.ok) {
+          const realSectorData = await response.json();
+          setSectorData(realSectorData);
+        } else {
+          // Fallback to mock data with enhanced real-time simulation
+          setSectorData(mockSectorData);
+        }
+
+        // Get real-time quotes for all stocks if Alpaca is connected
+        if (alpacaService.isAlpacaConnected()) {
+          const allStocks = mockSectorData.flatMap(sector =>
+            sector.topStocks.map(stock => stock.symbol)
+          );
+
+          // Fetch real quotes
+          const quotes = await Promise.all(
+            allStocks.map(async (symbol) => {
+              try {
+                const quote = await alpacaService.getQuote(symbol);
+                return { symbol, ...quote };
+              } catch (error) {
+                console.error(`Error fetching quote for ${symbol}:`, error);
+                return null;
+              }
+            })
+          );
+
+          // Update real-time data
+          const quotesMap = {};
+          quotes.filter(q => q).forEach(quote => {
+            quotesMap[quote.symbol] = quote;
+          });
+          setRealTimeData(quotesMap);
+
+          // Update sector data with real prices
+          setSectorData(prevData =>
+            prevData.map(sector => ({
+              ...sector,
+              topStocks: sector.topStocks.map(stock => {
+                const realQuote = quotesMap[stock.symbol];
+                return realQuote ? {
+                  ...stock,
+                  price: realQuote.price,
+                  change: realQuote.changePercent,
+                  volume: realQuote.volume || stock.volume
+                } : stock;
+              })
+            }))
+          );
+        }
+
+      } catch (error) {
+        console.error('Error initializing sector data:', error);
+        setSectorData(mockSectorData);
+      }
+
+      setLoading(false);
+    };
+
+    initializeSectorData();
 
     // Subscribe to Alpaca updates
     const unsubscribe = alpacaService.subscribe((data) => {
       setIsAlpacaConnected(data.connected);
+      if (data.connected) {
+        // Re-fetch data when connection is established
+        initializeSectorData();
+      }
     });
 
-    // Simulate real-time price updates
-    const priceUpdateInterval = setInterval(() => {
-      setSectorData(prevData =>
-        prevData.map(sector => ({
-          ...sector,
-          performance: sector.performance + (Math.random() - 0.5) * 0.1,
-          topStocks: sector.topStocks.map(stock => ({
-            ...stock,
-            price: stock.price + (Math.random() - 0.5) * 10,
-            change: stock.change + (Math.random() - 0.5) * 0.2
-          }))
-        }))
-      );
-    }, 5000); // Update every 5 seconds
+    // Real-time price updates every 30 seconds
+    const priceUpdateInterval = setInterval(async () => {
+      if (alpacaService.isAlpacaConnected()) {
+        // Fetch fresh quotes
+        const allStocks = sectorData.flatMap(sector =>
+          sector.topStocks.map(stock => stock.symbol)
+        );
 
-    setLoading(false);
+        const quotes = await Promise.all(
+          allStocks.map(async (symbol) => {
+            try {
+              const quote = await alpacaService.getQuote(symbol);
+              return { symbol, ...quote };
+            } catch (error) {
+              return null;
+            }
+          })
+        );
+
+        const quotesMap = {};
+        quotes.filter(q => q).forEach(quote => {
+          quotesMap[quote.symbol] = quote;
+        });
+        setRealTimeData(quotesMap);
+
+        // Update sector data
+        setSectorData(prevData =>
+          prevData.map(sector => ({
+            ...sector,
+            performance: sector.topStocks.reduce((avg, stock) => {
+              const quote = quotesMap[stock.symbol];
+              return avg + (quote ? quote.changePercent : stock.change);
+            }, 0) / sector.topStocks.length,
+            topStocks: sector.topStocks.map(stock => {
+              const realQuote = quotesMap[stock.symbol];
+              return realQuote ? {
+                ...stock,
+                price: realQuote.price,
+                change: realQuote.changePercent,
+                volume: realQuote.volume || stock.volume
+              } : stock;
+            })
+          }))
+        );
+      } else {
+        // Fallback to simulated updates
+        setSectorData(prevData =>
+          prevData.map(sector => ({
+            ...sector,
+            performance: sector.performance + (Math.random() - 0.5) * 0.1,
+            topStocks: sector.topStocks.map(stock => ({
+              ...stock,
+              price: stock.price + (Math.random() - 0.5) * 10,
+              change: stock.change + (Math.random() - 0.5) * 0.2
+            }))
+          }))
+        );
+      }
+    }, 30000); // Update every 30 seconds
 
     return () => {
       unsubscribe();
@@ -144,42 +257,119 @@ const SectorScope = () => {
     setSectorStocks(sector.topStocks);
   };
 
-  // Trading functions
+  // Trading functions with enhanced error handling and real-time updates
   const handleBuyStock = async (stock) => {
     try {
       if (!isAlpacaConnected) {
-        notificationService.notifySystem('Please connect to Alpaca first', 'medium');
+        notificationService.notifySystem('Please connect to Alpaca first', 'warning');
         return;
       }
 
-      await alpacaService.placeBuyOrder(stock.symbol, orderQuantity, 'market');
-      notificationService.notifyTrade(`Buy order placed for ${orderQuantity} shares of ${stock.symbol}`, 'success');
+      // Get current quote before placing order
+      const quote = await alpacaService.getQuote(stock.symbol);
+      const currentPrice = quote ? quote.price : stock.price;
+
+      const orderValue = currentPrice * orderQuantity;
+
+      // Confirm order with user
+      const confirmed = window.confirm(
+        `Place BUY order for ${orderQuantity} shares of ${stock.symbol} at ₹${currentPrice}?\nTotal: ₹${orderValue.toLocaleString()}`
+      );
+
+      if (!confirmed) return;
+
+      const order = await alpacaService.placeBuyOrder(stock.symbol, orderQuantity, 'market');
+      notificationService.notifyTrade(
+        `✅ Buy order placed: ${orderQuantity} shares of ${stock.symbol} at ₹${currentPrice}`,
+        'success'
+      );
+
+      // Update local state to reflect the order
+      setOrderHistory(prev => [...prev, {
+        id: order.id || Date.now(),
+        symbol: stock.symbol,
+        type: 'buy',
+        quantity: orderQuantity,
+        price: currentPrice,
+        timestamp: new Date(),
+        status: 'pending'
+      }]);
+
     } catch (error) {
-      notificationService.notifyTrade(`Failed to place buy order for ${stock.symbol}`, 'error');
+      console.error('Buy order error:', error);
+      notificationService.notifyTrade(`❌ Failed to place buy order for ${stock.symbol}: ${error.message}`, 'error');
     }
   };
 
   const handleSellStock = async (stock) => {
     try {
       if (!isAlpacaConnected) {
-        notificationService.notifySystem('Please connect to Alpaca first', 'medium');
+        notificationService.notifySystem('Please connect to Alpaca first', 'warning');
         return;
       }
 
-      await alpacaService.placeSellOrder(stock.symbol, orderQuantity, 'market');
-      notificationService.notifyTrade(`Sell order placed for ${orderQuantity} shares of ${stock.symbol}`, 'success');
+      // Check if user has positions in this stock
+      const positions = await alpacaService.getPositions();
+      const position = positions.find(p => p.symbol === stock.symbol);
+
+      if (!position || position.qty < orderQuantity) {
+        notificationService.notifySystem(
+          `Insufficient shares: You have ${position ? position.qty : 0} shares of ${stock.symbol}`,
+          'warning'
+        );
+        return;
+      }
+
+      // Get current quote before placing order
+      const quote = await alpacaService.getQuote(stock.symbol);
+      const currentPrice = quote ? quote.price : stock.price;
+
+      const orderValue = currentPrice * orderQuantity;
+
+      // Confirm order with user
+      const confirmed = window.confirm(
+        `Place SELL order for ${orderQuantity} shares of ${stock.symbol} at ₹${currentPrice}?\nTotal: ₹${orderValue.toLocaleString()}`
+      );
+
+      if (!confirmed) return;
+
+      const order = await alpacaService.placeSellOrder(stock.symbol, orderQuantity, 'market');
+      notificationService.notifyTrade(
+        `✅ Sell order placed: ${orderQuantity} shares of ${stock.symbol} at ₹${currentPrice}`,
+        'success'
+      );
+
+      // Update local state to reflect the order
+      setOrderHistory(prev => [...prev, {
+        id: order.id || Date.now(),
+        symbol: stock.symbol,
+        type: 'sell',
+        quantity: orderQuantity,
+        price: currentPrice,
+        timestamp: new Date(),
+        status: 'pending'
+      }]);
+
     } catch (error) {
-      notificationService.notifyTrade(`Failed to place sell order for ${stock.symbol}`, 'error');
+      console.error('Sell order error:', error);
+      notificationService.notifyTrade(`❌ Failed to place sell order for ${stock.symbol}: ${error.message}`, 'error');
     }
   };
 
-  const handleWatchStock = (stock) => {
-    if (watchlist.includes(stock.symbol)) {
-      setWatchlist(prev => prev.filter(s => s !== stock.symbol));
-      notificationService.notifySystem(`${stock.symbol} removed from watchlist`, 'low');
-    } else {
-      setWatchlist(prev => [...prev, stock.symbol]);
-      alpacaService.addToWatchlist(stock.symbol);
+  const handleWatchStock = async (stock) => {
+    try {
+      if (watchlist.includes(stock.symbol)) {
+        setWatchlist(prev => prev.filter(s => s !== stock.symbol));
+        await alpacaService.removeFromWatchlist(stock.symbol);
+        notificationService.notifySystem(`👁️ ${stock.symbol} removed from watchlist`, 'info');
+      } else {
+        setWatchlist(prev => [...prev, stock.symbol]);
+        await alpacaService.addToWatchlist(stock.symbol);
+        notificationService.notifySystem(`👁️ ${stock.symbol} added to watchlist`, 'success');
+      }
+    } catch (error) {
+      console.error('Watchlist error:', error);
+      notificationService.notifySystem(`Failed to update watchlist for ${stock.symbol}`, 'error');
     }
   };
 

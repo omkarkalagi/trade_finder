@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import Header from './Header';
-import Sidebar from './Sidebar';
+import PageLayout from './PageLayout';
 
 // Mock strategy marketplace data
 const STRATEGIES = [
@@ -19,7 +18,7 @@ const STRATEGIES = [
     downloads: 1250,
     lastUpdated: "2023-06-10",
     tags: ["Breakout", "Volume", "Momentum", "Swing Trading"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 2,
@@ -36,7 +35,7 @@ const STRATEGIES = [
     downloads: 950,
     lastUpdated: "2023-06-05",
     tags: ["Gap", "News", "Momentum", "Day Trading"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 3,

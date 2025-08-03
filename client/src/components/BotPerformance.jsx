@@ -131,33 +131,33 @@ const BotPerformance = () => {
   return (
     <div className="h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-gray-900 flex items-center">
+        <h2 className="text-xl font-bold text-slate-100 flex items-center">
           <span className="mr-2">🤖</span>
           Bot Performance
         </h2>
-        <div className="flex items-center space-x-1 text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-          <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+        <div className="flex items-center space-x-1 text-xs bg-purple-500/20 text-purple-300 px-2 py-1 rounded-full border border-purple-500/30">
+          <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
           <span>{botData.activeBots} Active</span>
         </div>
       </div>
 
       {/* Key Metrics */}
       <div className="grid grid-cols-2 gap-3 mb-6">
-        <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+        <div className="glass dark-card p-4 rounded-xl border border-green-500/30 bg-gradient-to-br from-green-500/10 to-emerald-500/10">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Win Rate</p>
-              <p className="text-2xl font-bold text-green-600">{botData.winRate}%</p>
+              <p className="text-sm text-slate-400">Win Rate</p>
+              <p className="text-2xl font-bold text-green-400">{botData.winRate}%</p>
             </div>
             <span className="text-2xl">🎯</span>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200">
+        <div className="glass dark-card p-4 rounded-xl border border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-indigo-500/10">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Trades</p>
-              <p className="text-2xl font-bold text-blue-600">{botData.totalTrades}</p>
+              <p className="text-sm text-slate-400">Total Trades</p>
+              <p className="text-2xl font-bold text-blue-400">{botData.totalTrades}</p>
             </div>
             <span className="text-2xl">📊</span>
           </div>
@@ -165,19 +165,19 @@ const BotPerformance = () => {
       </div>
 
       {/* Profit/Loss */}
-      <div className="bg-gradient-to-r from-gray-50 to-blue-50 p-4 rounded-xl border border-gray-200 mb-6">
-        <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+      <div className="glass dark-card p-4 rounded-xl border border-slate-700/30 mb-6 bg-gradient-to-r from-slate-800/50 to-blue-900/30">
+        <h3 className="font-semibold text-slate-100 mb-3 flex items-center">
           <span className="mr-2">💰</span>
           P&L Summary
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-600">Total Profit</p>
-            <p className="text-lg font-bold text-green-600">+₹{botData.totalProfit.toLocaleString()}</p>
+            <p className="text-sm text-slate-400">Total Profit</p>
+            <p className="text-lg font-bold text-green-400">+₹{botData.totalProfit.toLocaleString()}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Net P&L</p>
-            <p className="text-lg font-bold text-green-600">
+            <p className="text-sm text-slate-400">Net P&L</p>
+            <p className="text-lg font-bold text-green-400">
               +₹{(botData.totalProfit + botData.totalLoss).toLocaleString()}
             </p>
           </div>
@@ -185,8 +185,8 @@ const BotPerformance = () => {
       </div>
 
       {/* Trade Distribution Pie Chart */}
-      <div className="bg-white rounded-xl border border-gray-200 p-4 mb-6">
-        <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+      <div className="glass dark-card rounded-xl border border-slate-700/30 p-4 mb-6">
+        <h3 className="font-semibold text-slate-100 mb-3 flex items-center">
           <span className="mr-2">📈</span>
           Trade Distribution
         </h3>
@@ -206,41 +206,49 @@ const BotPerformance = () => {
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [value, 'Trades']} />
+              <Tooltip
+                formatter={(value) => [value, 'Trades']}
+                contentStyle={{
+                  backgroundColor: '#1e293b',
+                  border: '1px solid #475569',
+                  borderRadius: '8px',
+                  color: '#f1f5f9'
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
         <div className="flex justify-center space-x-4 mt-2">
           <div className="flex items-center">
             <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
-            <span className="text-xs text-gray-600">Success ({botData.successfulTrades})</span>
+            <span className="text-xs text-slate-400">Success ({botData.successfulTrades})</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-            <span className="text-xs text-gray-600">Failed ({botData.failedTrades})</span>
+            <span className="text-xs text-slate-400">Failed ({botData.failedTrades})</span>
           </div>
         </div>
       </div>
 
       {/* Active Strategies */}
       <div className="space-y-2">
-        <h3 className="font-semibold text-gray-900 flex items-center">
+        <h3 className="font-semibold text-slate-100 flex items-center">
           <span className="mr-2">⚙️</span>
           Active Strategies
         </h3>
         {botData.strategies.map((strategy, index) => (
-          <div key={index} className="bg-white rounded-lg border border-gray-200 p-3">
+          <div key={index} className="glass dark-card rounded-lg border border-slate-700/30 p-3 hover:border-slate-600/50 transition-all duration-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-medium text-gray-900">{strategy.name}</p>
-                <p className="text-sm text-gray-600">{strategy.trades} trades</p>
+                <p className="font-medium text-slate-100">{strategy.name}</p>
+                <p className="text-sm text-slate-400">{strategy.trades} trades</p>
               </div>
               <div className="text-right">
-                <p className="font-semibold text-green-600">+₹{strategy.profit.toLocaleString()}</p>
+                <p className="font-semibold text-green-400">+₹{strategy.profit.toLocaleString()}</p>
                 <div className={`text-xs px-2 py-1 rounded-full ${
                   strategy.status === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-orange-100 text-orange-700'
+                    ? 'bg-green-500/20 text-green-300 border border-green-500/30'
+                    : 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
                 }`}>
                   {strategy.status}
                 </div>

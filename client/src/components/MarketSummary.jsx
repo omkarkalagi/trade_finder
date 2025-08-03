@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import realTimeMarketService from '../services/realTimeMarketService';
+import marketStatusService from '../services/marketStatusService';
 import LoadingSpinner from './LoadingSpinner';
 
 const MarketSummary = () => {
   const [marketData, setMarketData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [marketStatus, setMarketStatus] = useState(null);
 
   // Map US market symbols to Indian market equivalents for display
   const marketIndices = {
@@ -68,8 +70,17 @@ const MarketSummary = () => {
       }
     }
 
+    // Subscribe to market status updates
+    const unsubscribeMarketStatus = marketStatusService.subscribe((status) => {
+      setMarketStatus(status);
+    });
+
+    // Get initial market status
+    setMarketStatus(marketStatusService.getMarketStatus());
+
     return () => {
       unsubscribe();
+      unsubscribeMarketStatus();
       clearInterval(statusInterval);
     };
   }, []);
@@ -106,15 +117,31 @@ const MarketSummary = () => {
           <span className="mr-2">📊</span>
           Market Summary
         </h2>
-        <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
-          connectionStatus === 'connected'
-            ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-            : 'bg-red-500/20 text-red-400 border border-red-500/30'
-        }`}>
-          <div className={`w-2 h-2 rounded-full animate-pulse ${
-            connectionStatus === 'connected' ? 'bg-green-400' : 'bg-red-400'
-          }`}></div>
-          <span>{connectionStatus === 'connected' ? 'Live' : 'Offline'}</span>
+        <div className="flex items-center space-x-2">
+          {/* Market Status */}
+          {marketStatus && (
+            <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full border ${
+              marketStatus.color === 'green' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+              marketStatus.color === 'red' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+              marketStatus.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+              'bg-blue-500/20 text-blue-400 border-blue-500/30'
+            }`}>
+              <span>{marketStatus.icon}</span>
+              <span>{marketStatus.reason}</span>
+            </div>
+          )}
+
+          {/* Connection Status */}
+          <div className={`flex items-center space-x-1 text-xs px-2 py-1 rounded-full ${
+            connectionStatus === 'connected'
+              ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+              : 'bg-red-500/20 text-red-400 border border-red-500/30'
+          }`}>
+            <div className={`w-2 h-2 rounded-full animate-pulse ${
+              connectionStatus === 'connected' ? 'bg-green-400' : 'bg-red-400'
+            }`}></div>
+            <span>{connectionStatus === 'connected' ? 'Live' : 'Offline'}</span>
+          </div>
         </div>
       </div>
 
