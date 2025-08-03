@@ -261,16 +261,11 @@ const SectorScope = () => {
   const handleBuyStock = async (stock) => {
     try {
       if (!isAlpacaConnected) {
-        // Try to connect first
-        try {
-          await alpacaService.connect();
-          setIsAlpacaConnected(alpacaService.isAlpacaConnected());
-          if (!alpacaService.isAlpacaConnected()) {
-            notificationService.notifySystem('Unable to connect to Alpaca. Please check your API credentials.', 'error');
-            return;
-          }
-        } catch (connectError) {
-          notificationService.notifySystem('Please connect to Alpaca first', 'warning');
+        // Alpaca service auto-initializes, just wait a moment
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+        if (!alpacaService.isAlpacaConnected()) {
+          notificationService.notifySystem('Alpaca service is initializing...', 'info');
           return;
         }
       }
@@ -339,16 +334,11 @@ const SectorScope = () => {
   const handleSellStock = async (stock) => {
     try {
       if (!isAlpacaConnected) {
-        // Try to connect first
-        try {
-          await alpacaService.connect();
-          setIsAlpacaConnected(alpacaService.isAlpacaConnected());
-          if (!alpacaService.isAlpacaConnected()) {
-            notificationService.notifySystem('Unable to connect to Alpaca. Please check your API credentials.', 'error');
-            return;
-          }
-        } catch (connectError) {
-          notificationService.notifySystem('Please connect to Alpaca first', 'warning');
+        // Alpaca service auto-initializes, just wait a moment
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+        if (!alpacaService.isAlpacaConnected()) {
+          notificationService.notifySystem('Alpaca service is initializing...', 'info');
           return;
         }
       }

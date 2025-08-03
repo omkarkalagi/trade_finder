@@ -36,10 +36,8 @@ const BotPerformance = () => {
     // Connect to Alpaca and get real bot performance data
     const initializeBotData = async () => {
       try {
-        // First try to connect to Alpaca if not already connected
-        if (!alpacaService.isAlpacaConnected()) {
-          await alpacaService.connect();
-        }
+        // Alpaca service auto-initializes, just wait a moment for it to be ready
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Check if Alpaca is connected
         if (alpacaService.isAlpacaConnected()) {

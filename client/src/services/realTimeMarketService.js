@@ -90,12 +90,17 @@ class RealTimeMarketService {
 
     for (const symbol of allSymbols) {
       try {
-        // Using a CORS proxy for Yahoo Finance
-        const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`, {
+        // Use a more robust fetch approach
+        const fetchOptions = {
+          method: 'GET',
           headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-          }
-        });
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/json'
+          },
+          mode: 'cors'
+        };
+
+        const response = await window.fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`, fetchOptions);
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
