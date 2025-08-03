@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import LoadingSpinner from './common/LoadingSpinner';
 import realTimeMarketService from '../services/realTimeMarketService';
 import newsService from '../services/newsService';
+import tradingService from '../services/tradingService';
+import TradingModal from './TradingModal';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
@@ -19,6 +22,12 @@ export default function LiveMarket() {
   const [newsLoading, setNewsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const [tradingModal, setTradingModal] = useState({
+    isOpen: false,
+    symbol: '',
+    side: 'buy',
+    currentPrice: 0
+  });
 
   useEffect(() => {
     const unsubscribe = realTimeMarketService.subscribe((data) => {
@@ -82,6 +91,30 @@ export default function LiveMarket() {
 
     setFilteredData(dataToFilter);
   }, [marketData, topGainers, topLosers, mostActive, activeTab, searchQuery]);
+
+  // Trading functions
+  const handleTrade = (symbol, side, currentPrice) => {
+    setTradingModal({
+      isOpen: true,
+      symbol,
+      side,
+      currentPrice
+    });
+  };
+
+  const closeTradingModal = () => {
+    setTradingModal({
+      isOpen: false,
+      symbol: '',
+      side: 'buy',
+      currentPrice: 0
+    });
+  };
+
+  const handleAddToWatchlist = (symbol) => {
+    tradingService.addToWatchlist(symbol);
+    // You could add a toast notification here
+  };
 
   const renderPriceChange = (change, percentChange) => {
     const isPositive = change >= 0;
@@ -316,10 +349,23 @@ export default function LiveMarket() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">
-                            <button className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
-                              Trade
+                            <button
+                              onClick={() => handleTrade(data.symbol, 'buy', data.price)}
+                              className="px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs"
+                            >
+                              Buy
                             </button>
-                            <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                            <button
+                              onClick={() => handleTrade(data.symbol, 'sell', data.price)}
+                              className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
+                            >
+                              Sell
+                            </button>
+                            <button
+                              onClick={() => handleAddToWatchlist(data.symbol)}
+                              className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                              title="Add to Watchlist"
+                            >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                               </svg>
@@ -383,10 +429,23 @@ export default function LiveMarket() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">
-                            <button className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
-                              Trade
+                            <button
+                              onClick={() => handleTrade(stock.symbol, 'buy', stock.price)}
+                              className="px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs"
+                            >
+                              Buy
                             </button>
-                            <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                            <button
+                              onClick={() => handleTrade(stock.symbol, 'sell', stock.price)}
+                              className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
+                            >
+                              Sell
+                            </button>
+                            <button
+                              onClick={() => handleAddToWatchlist(stock.symbol)}
+                              className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                              title="Add to Watchlist"
+                            >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                               </svg>
@@ -450,10 +509,23 @@ export default function LiveMarket() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">
-                            <button className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
-                              Trade
+                            <button
+                              onClick={() => handleTrade(stock.symbol, 'buy', stock.price)}
+                              className="px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs"
+                            >
+                              Buy
                             </button>
-                            <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                            <button
+                              onClick={() => handleTrade(stock.symbol, 'sell', stock.price)}
+                              className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
+                            >
+                              Sell
+                            </button>
+                            <button
+                              onClick={() => handleAddToWatchlist(stock.symbol)}
+                              className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                              title="Add to Watchlist"
+                            >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                               </svg>
@@ -519,10 +591,23 @@ export default function LiveMarket() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                           <div className="flex space-x-2">
-                            <button className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
-                              Trade
+                            <button
+                              onClick={() => handleTrade(stock.symbol, 'buy', stock.price)}
+                              className="px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 text-xs"
+                            >
+                              Buy
                             </button>
-                            <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                            <button
+                              onClick={() => handleTrade(stock.symbol, 'sell', stock.price)}
+                              className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 text-xs"
+                            >
+                              Sell
+                            </button>
+                            <button
+                              onClick={() => handleAddToWatchlist(stock.symbol)}
+                              className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                              title="Add to Watchlist"
+                            >
                               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                               </svg>
@@ -568,12 +653,12 @@ export default function LiveMarket() {
           <div className="bg-white rounded-xl shadow-md p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold">Latest Market News</h2>
-              <button className="text-sm text-blue-600 hover:text-blue-800 flex items-center">
+              <Link to="/news" className="text-sm text-blue-600 hover:text-blue-800 flex items-center">
                 View All
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-              </button>
+              </Link>
             </div>
 
             {newsLoading ? (
@@ -659,6 +744,15 @@ export default function LiveMarket() {
           </div>
         </main>
       </div>
+
+      {/* Trading Modal */}
+      <TradingModal
+        isOpen={tradingModal.isOpen}
+        onClose={closeTradingModal}
+        symbol={tradingModal.symbol}
+        side={tradingModal.side}
+        currentPrice={tradingModal.currentPrice}
+      />
     </div>
   );
 }
