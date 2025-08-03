@@ -36,25 +36,12 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch('/api/auth/send-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          phone: `+91${phone}`
-        }),
-      });
+      // Demo mode - simulate OTP sending
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
 
-      const data = await response.json();
-
-      if (data.success) {
-        setSuccess('OTP sent successfully! Please check your phone.');
-        setStep('otp');
-        setCountdown(300); // 5 minutes countdown
-      } else {
-        setError(data.message || 'Failed to send OTP');
-      }
+      setSuccess('OTP sent successfully! (Demo Mode - Enter any 6-digit code)');
+      setStep('otp');
+      setCountdown(300); // 5 minutes countdown
     } catch (err) {
       setError('Network error. Please try again.');
       console.error('Send OTP error:', err);
@@ -75,27 +62,27 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Demo mode - simulate OTP verification
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+
+      // Accept any 6-digit OTP in demo mode
+      if (otp.length === 6) {
+        const demoUser = {
+          id: '1',
+          name: 'Omkar Kalagi',
           phone: `+91${phone}`,
-          otp: otp
-        }),
-      });
+          email: 'omkar@kalagigroup.com'
+        };
 
-      const data = await response.json();
+        const demoToken = 'demo-jwt-token-' + Date.now();
 
-      if (data.success) {
-        login(data.token, data.user);
+        login(demoToken, demoUser);
         setSuccess('Login successful! Redirecting...');
         setTimeout(() => {
           navigate('/dashboard');
         }, 1500);
       } else {
-        setError(data.message || 'Invalid OTP');
+        setError('Please enter a valid 6-digit OTP');
       }
     } catch (err) {
       setError('Network error. Please try again.');
@@ -171,20 +158,21 @@ const Login = () => {
                   Mobile Number
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-slate-400 font-medium">+91</span>
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                    <span className="text-slate-400 font-medium text-lg">+91</span>
+                    <span className="text-slate-600 mx-1">|</span>
                   </div>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                    className="dark-input w-full pl-12 pr-4 py-3 text-lg font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                    className="dark-input w-full pl-16 pr-16 py-3 text-lg font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
                     placeholder="9876543210"
                     maxLength="10"
                     required
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <span className="text-slate-500 text-sm">{phone.length}/10</span>
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
+                    <span className="text-slate-500 text-sm font-medium">{phone.length}/10</span>
                   </div>
                 </div>
               </div>
