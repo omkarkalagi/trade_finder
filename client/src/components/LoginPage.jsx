@@ -31,10 +31,10 @@ const LoginPage = () => {
 
     setLoading(true);
     setError('');
-    
+
     try {
       const fullPhoneNumber = `+91${phoneNumber}`;
-      const response = await axios.post('http://localhost:5000/api/auth/send-otp', {
+      const response = await axios.post(`${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/auth/send-otp`, {
         phone: fullPhoneNumber
       });
 
@@ -83,10 +83,10 @@ const LoginPage = () => {
 
   const handleResendOTP = async () => {
     if (countdown > 0) return;
-    
+
     setLoading(true);
     setError('');
-    
+
     try {
       const fullPhoneNumber = `+91${phoneNumber}`;
       await axios.post('http://localhost:5000/api/auth/send-otp', {
@@ -152,7 +152,7 @@ const LoginPage = () => {
               {error}
             </div>
           )}
-          
+
           {success && (
             <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-sm animate-slide-up">
               {success}
