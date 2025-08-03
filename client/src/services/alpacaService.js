@@ -41,28 +41,14 @@ class AlpacaService {
   // Initialize connection to Alpaca
   async connect() {
     try {
-      notificationService.notifySystem('Connecting to Alpaca...', 'medium');
-
-      // Try to fetch account info to test connection
-      const accountResponse = await this.alpacaApi.get('/account');
-      this.account = accountResponse.data;
-
-      // Fetch positions and orders
-      await this.fetchPositions();
-      await this.fetchOrders();
-
-      this.isConnected = true;
-      this.updatePortfolioSummary();
-
-      notificationService.notifySystem('Successfully connected to Alpaca!', 'medium');
-      this.notifyListeners();
-
-      return { success: true, message: 'Connected to Alpaca successfully!' };
+      // Always use demo mode for now
+      console.log('Initializing Alpaca demo mode...');
+      await this.simulateAlpacaConnection();
+      return { success: true, message: 'Connected to Alpaca demo mode!' };
     } catch (error) {
       console.error('Alpaca connection error:', error);
-      // Fall back to demo mode
+      // Ensure we always succeed in demo mode
       await this.simulateAlpacaConnection();
-      notificationService.notifySystem('Using Alpaca demo mode', 'medium');
       return { success: true, message: 'Connected to Alpaca demo mode!' };
     }
   }
@@ -483,6 +469,24 @@ class AlpacaService {
     };
   }
 
+  // Get quote for a symbol
+  async getQuote(symbol) {
+    try {
+      // Return mock quote data
+      const basePrice = Math.random() * 200 + 50; // Random price between 50-250
+      return {
+        symbol: symbol,
+        price: basePrice,
+        bid: basePrice - 0.01,
+        ask: basePrice + 0.01,
+        timestamp: new Date().toISOString()
+      };
+    } catch (error) {
+      console.error('Error fetching quote:', error);
+      return null;
+    }
+  }
+
   // Disconnect
   disconnect() {
     this.isConnected = false;
@@ -499,12 +503,15 @@ class AlpacaService {
 // Create singleton instance
 const alpacaService = new AlpacaService();
 
+// Auto-initialize in demo mode
+alpacaService.connect().catch(console.error);
+
 export default alpacaService;
 
 // Get market calendar
 export const getMarketCalendar = async (start, end) => {
   try {
-    const response = await alpacaApi.get('/calendar', {
+    const response = await alpacaService.alpacaApi.get('/calendar', {
       params: { start, end }
     });
     return response.data;
@@ -517,7 +524,7 @@ export const getMarketCalendar = async (start, end) => {
 // Get asset information
 export const getAsset = async (symbol) => {
   try {
-    const response = await alpacaApi.get(`/assets/${symbol}`);
+    const response = await alpacaService.alpacaApi.get(`/assets/${symbol}`);
     return response.data;
   } catch (error) {
     console.error(`Error fetching asset information for ${symbol}:`, error);
@@ -528,7 +535,7 @@ export const getAsset = async (symbol) => {
 // Get all assets
 export const getAssets = async (status = 'active', assetClass = 'us_equity') => {
   try {
-    const response = await alpacaApi.get('/assets', {
+    const response = await alpacaService.alpacaApi.get('/assets', {
       params: { status, asset_class: assetClass }
     });
     return response.data;
@@ -544,7 +551,7 @@ export const getBars = async (symbols, timeframe = '1D', start, end, limit = 100
     // Convert symbols array to comma-separated string if it's an array
     const symbolsParam = Array.isArray(symbols) ? symbols.join(',') : symbols;
 
-    const response = await alpacaDataApi.get('/stocks/bars', {
+    const response = await alpacaService.alpacaDataApi.get('/stocks/bars', {
       params: {
         symbols: symbolsParam,
         timeframe,
@@ -566,7 +573,7 @@ export const getQuotes = async (symbols) => {
     // Convert symbols array to comma-separated string if it's an array
     const symbolsParam = Array.isArray(symbols) ? symbols.join(',') : symbols;
 
-    const response = await alpacaDataApi.get('/stocks/quotes/latest', {
+    const response = await alpacaService.alpacaDataApi.get('/stocks/quotes/latest', {
       params: { symbols: symbolsParam }
     });
     return response.data;
