@@ -25,6 +25,11 @@ class ZerodhaService {
     };
   }
 
+  // Connect method for compatibility
+  async connect() {
+    return this.connectToZerodha();
+  }
+
   // Connect to Zerodha
   async connectToZerodha() {
     try {

@@ -48,8 +48,14 @@ const MarketSummary = () => {
     }, 1000);
 
     // Initialize with current data if available
-    const currentData = realTimeMarketService.getMarketData();
-    if (Object.keys(currentData).length > 0) {
+    const allMarketData = realTimeMarketService.getAllMarketData() || [];
+    const currentData = {};
+    allMarketData.forEach(data => {
+      if (data && data.symbol) {
+        currentData[data.symbol] = data;
+      }
+    });
+    if (currentData && typeof currentData === 'object' && Object.keys(currentData).length > 0) {
       const processedData = {};
       Object.keys(marketIndices).forEach(symbol => {
         if (currentData[symbol]) {
@@ -96,7 +102,7 @@ const MarketSummary = () => {
     );
   }
 
-  if (!marketData || Object.keys(marketData).length === 0) {
+  if (!marketData || typeof marketData !== 'object' || Object.keys(marketData || {}).length === 0) {
     return (
       <div className="h-full flex items-center justify-center">
         <div className="text-center text-slate-400">
