@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Logo from './Logo';
 import MarketStatusIndicator from './MarketStatusIndicator';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const [isMobile, setIsMobile] = useState(false);
+  const { logout, user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkMobile = () => {
