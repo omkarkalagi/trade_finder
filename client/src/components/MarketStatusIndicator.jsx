@@ -1,37 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import marketStatusService from '../services/marketStatusService';
 
 const MarketStatusIndicator = () => {
-  const [isMarketOpen, setIsMarketOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [marketStatus, setMarketStatus] = useState(marketStatusService.getMarketStatus());
+  const [statusText, setStatusText] = useState(marketStatusService.getMarketStatusText());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const now = new Date();
-      setCurrentTime(now);
+    // Subscribe to market status updates
+    const unsubscribe = marketStatusService.subscribe((status) => {
+      setMarketStatus(status);
+      setStatusText(marketStatusService.getMarketStatusText());
+    });
 
-      // Check if market is open (Monday to Friday, 9:15 AM to 3:30 PM IST)
-      const day = now.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-      const hours = now.getHours();
-      const minutes = now.getMinutes();
-      const currentTimeInMinutes = hours * 60 + minutes;
+    // Initial update
+    setMarketStatus(marketStatusService.getMarketStatus());
+    setStatusText(marketStatusService.getMarketStatusText());
 
-      // Market hours: 9:15 AM (555 minutes) to 3:30 PM (930 minutes)
-      const marketOpen = 9 * 60 + 15; // 9:15 AM
-      const marketClose = 15 * 60 + 30; // 3:30 PM
-
-      // Market is open Monday to Friday (1-5) during trading hours
-      const isOpen = day >= 1 && day <= 5 &&
-                   currentTimeInMinutes >= marketOpen &&
-                   currentTimeInMinutes <= marketClose;
-
-      setIsMarketOpen(isOpen);
-    }, 1000);
-
-    return () => clearInterval(timer);
+    return unsubscribe;
   }, []);
 
-  const getMarketStatus = () => {
-    if (isMarketOpen) {
+  const getDisplayStatus = () => {
+    if (marketStatus.isOpen) {
       return {
         status: 'Market Open',
         color: 'bg-green-400',
@@ -40,32 +29,48 @@ const MarketStatusIndicator = () => {
         description: 'Live Trading Active'
       };
     } else {
-      const day = currentTime.getDay();
-      if (day === 0 || day === 6) {
+      const session = marketStatusService.getMarketSession();
+
+      if (session.session === 'pre-market') {
         return {
-          status: 'Weekend',
-          color: 'bg-orange-400',
-          textColor: 'text-orange-400',
-          icon: '🟠',
+          status: 'Pre-Market',
+          color: 'bg-blue-400',
+          textColor: 'text-blue-400',
+          icon: '🔵',
+          description: 'Opening Soon'
+        };
+      } else if (session.session === 'post-market') {
+        return {
+          status: 'After Hours',
+          color: 'bg-red-400',
+          textColor: 'text-red-400',
+          icon: '🔴',
           description: 'Markets Closed'
         };
       } else {
-        const hours = currentTime.getHours();
-        const minutes = currentTime.getMinutes();
-        const currentTimeInMinutes = hours * 60 + minutes;
-        const marketOpen = 9 * 60 + 15; // 9:15 AM
+        const now = new Date();
+        const istTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+        const day = istTime.getDay();
 
-        if (currentTimeInMinutes < marketOpen) {
+        if (day === 0) {
           return {
-            status: 'Pre-Market',
-            color: 'bg-blue-400',
-            textColor: 'text-blue-400',
-            icon: '🔵',
-            description: 'Opening Soon'
+            status: 'Holiday',
+            color: 'bg-red-400',
+            textColor: 'text-red-400',
+            icon: '🔴',
+            description: 'Sunday - Market Closed'
+          };
+        } else if (day === 6) {
+          return {
+            status: 'Weekend',
+            color: 'bg-orange-400',
+            textColor: 'text-orange-400',
+            icon: '🟠',
+            description: 'Saturday - Market Closed'
           };
         } else {
           return {
-            status: 'After Hours',
+            status: 'Closed',
             color: 'bg-red-400',
             textColor: 'text-red-400',
             icon: '🔴',
@@ -76,23 +81,23 @@ const MarketStatusIndicator = () => {
     }
   };
 
-  const marketStatus = getMarketStatus();
+  const displayStatus = getDisplayStatus();
 
   return (
     <div className="space-y-2">
       <div className="flex items-center space-x-3">
         <div className="relative">
-          <div className={`w-3 h-3 ${marketStatus.color} rounded-full ${isMarketOpen ? 'animate-pulse' : ''}`}></div>
-          {isMarketOpen && (
+          <div className={`w-3 h-3 ${displayStatus.color} rounded-full ${marketStatus.isOpen ? 'animate-pulse' : ''}`}></div>
+          {marketStatus.isOpen && (
             <div className="absolute inset-0 w-3 h-3 bg-green-400 rounded-full animate-ping opacity-75"></div>
           )}
         </div>
         <div className="flex-1">
-          <div className={`${marketStatus.textColor} font-semibold text-sm`}>
-            {marketStatus.icon} {marketStatus.status}
+          <div className={`${displayStatus.textColor} font-semibold text-sm`}>
+            {displayStatus.icon} {displayStatus.status}
           </div>
           <div className="text-slate-500 text-xs">
-            {marketStatus.description}
+            {displayStatus.description}
           </div>
         </div>
       </div>
@@ -105,13 +110,20 @@ const MarketStatusIndicator = () => {
         <div className="flex justify-between">
           <span>Current Time:</span>
           <span className="font-mono">
-            {currentTime.toLocaleTimeString('en-IN', {
+            {marketStatus.currentTime.toLocaleTimeString('en-IN', {
+              timeZone: 'Asia/Kolkata',
               hour: '2-digit',
               minute: '2-digit',
               second: '2-digit'
             })}
           </span>
         </div>
+        {statusText.subtext && (
+          <div className="flex justify-between">
+            <span>Next:</span>
+            <span className="text-slate-300">{statusText.subtext}</span>
+          </div>
+        )}
       </div>
     </div>
   );

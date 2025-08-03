@@ -261,51 +261,96 @@ const SectorScope = () => {
   const handleBuyStock = async (stock) => {
     try {
       if (!isAlpacaConnected) {
-        notificationService.notifySystem('Please connect to Alpaca first', 'warning');
-        return;
+        // Try to connect first
+        try {
+          await alpacaService.connect();
+          setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+          if (!alpacaService.isAlpacaConnected()) {
+            notificationService.notifySystem('Unable to connect to Alpaca. Please check your API credentials.', 'error');
+            return;
+          }
+        } catch (connectError) {
+          notificationService.notifySystem('Please connect to Alpaca first', 'warning');
+          return;
+        }
       }
 
       // Get current quote before placing order
-      const quote = await alpacaService.getQuote(stock.symbol);
-      const currentPrice = quote ? quote.price : stock.price;
+      let currentPrice = stock.price;
+      try {
+        const quote = await alpacaService.getQuote(stock.symbol);
+        if (quote && quote.price) {
+          currentPrice = quote.price;
+        }
+      } catch (quoteError) {
+        console.warn('Could not fetch real-time quote, using cached price:', quoteError);
+      }
 
       const orderValue = currentPrice * orderQuantity;
 
       // Confirm order with user
       const confirmed = window.confirm(
-        `Place BUY order for ${orderQuantity} shares of ${stock.symbol} at ₹${currentPrice}?\nTotal: ₹${orderValue.toLocaleString()}`
+        `Place BUY order for ${orderQuantity} shares of ${stock.symbol} at $${currentPrice.toFixed(2)}?\nTotal: $${orderValue.toFixed(2)}`
       );
 
       if (!confirmed) return;
 
+      // Place the order
       const order = await alpacaService.placeBuyOrder(stock.symbol, orderQuantity, 'market');
-      notificationService.notifyTrade(
-        `✅ Buy order placed: ${orderQuantity} shares of ${stock.symbol} at ₹${currentPrice}`,
-        'success'
-      );
 
-      // Update local state to reflect the order
-      setOrderHistory(prev => [...prev, {
-        id: order.id || Date.now(),
-        symbol: stock.symbol,
-        type: 'buy',
-        quantity: orderQuantity,
-        price: currentPrice,
-        timestamp: new Date(),
-        status: 'pending'
-      }]);
+      if (order) {
+        notificationService.notifyTrade(
+          `✅ Buy order placed: ${orderQuantity} shares of ${stock.symbol} at $${currentPrice.toFixed(2)}`,
+          'success'
+        );
+
+        // Update local state to reflect the order
+        setOrderHistory(prev => [...prev, {
+          id: order.id || Date.now(),
+          symbol: stock.symbol,
+          type: 'buy',
+          quantity: orderQuantity,
+          price: currentPrice,
+          timestamp: new Date(),
+          status: order.status || 'pending'
+        }]);
+
+        // Refresh positions and orders
+        setTimeout(() => {
+          if (alpacaService.isAlpacaConnected()) {
+            const positions = alpacaService.getPositions();
+            const orders = alpacaService.getOrders();
+            setOrderHistory(orders || []);
+          }
+        }, 2000);
+      } else {
+        throw new Error('Order placement failed - no response from broker');
+      }
 
     } catch (error) {
       console.error('Buy order error:', error);
-      notificationService.notifyTrade(`❌ Failed to place buy order for ${stock.symbol}: ${error.message}`, 'error');
+      notificationService.notifyTrade(
+        `❌ Failed to place buy order for ${stock.symbol}: ${error.message || 'Unknown error'}`,
+        'error'
+      );
     }
   };
 
   const handleSellStock = async (stock) => {
     try {
       if (!isAlpacaConnected) {
-        notificationService.notifySystem('Please connect to Alpaca first', 'warning');
-        return;
+        // Try to connect first
+        try {
+          await alpacaService.connect();
+          setIsAlpacaConnected(alpacaService.isAlpacaConnected());
+          if (!alpacaService.isAlpacaConnected()) {
+            notificationService.notifySystem('Unable to connect to Alpaca. Please check your API credentials.', 'error');
+            return;
+          }
+        } catch (connectError) {
+          notificationService.notifySystem('Please connect to Alpaca first', 'warning');
+          return;
+        }
       }
 
       // Check if user has positions in this stock

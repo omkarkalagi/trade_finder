@@ -538,19 +538,4 @@ export const calculatePortfolioMetrics = (account, positions) => {
   };
 };
 
-export default {
-  getAccount,
-  getPositions,
-  getOrders,
-  placeOrder,
-  cancelOrder,
-  getPortfolioHistory,
-  getMarketClock,
-  getMarketCalendar,
-  getAsset,
-  getAssets,
-  getBars,
-  getQuotes,
-  getTrades,
-  calculatePortfolioMetrics
-};
+// Additional functions are already exported as part of alpacaService above

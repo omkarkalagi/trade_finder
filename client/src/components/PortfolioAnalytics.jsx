@@ -1293,7 +1293,7 @@ export default function PortfolioAnalytics() {
           </div>
         </div>
 
-        <main className="flex-1 p-6">
+        <div className="flex-1">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">📈 Portfolio Analytics</h1>
 
@@ -1408,8 +1408,8 @@ export default function PortfolioAnalytics() {
               </div>
             </div>
           </div>
-        </main>
+        </div>
       </div>
-    </div>
+    </PageLayout>
   );
 }

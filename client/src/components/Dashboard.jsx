@@ -135,6 +135,11 @@ export default function Dashboard() {
               <BotPerformance />
             </div>
 
+            {/* Market Status */}
+            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+              <MarketStatus />
+            </div>
+
             {/* Market News */}
             <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
               <MarketNews />

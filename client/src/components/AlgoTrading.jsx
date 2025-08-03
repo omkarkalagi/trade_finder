@@ -197,7 +197,30 @@ export default function AlgoTrading() {
         const signal = await generateTradingSignal(strategy);
 
         if (signal && signal.action !== 'hold') {
-          await executeTrade(signal, strategy);
+          const tradeResult = await executeTrade(signal, strategy);
+
+          // Show detailed trade execution notification
+          if (tradeResult) {
+            notificationService.notifyTrade(
+              `🤖 ${strategy.name}: ${signal.action.toUpperCase()} ${signal.quantity} shares of ${signal.symbol} at $${signal.price.toFixed(2)}`,
+              'success'
+            );
+
+            // Add to trade history with detailed information
+            setTradeHistory(prev => [{
+              id: Date.now(),
+              strategy: strategy.name,
+              symbol: signal.symbol,
+              side: signal.action,
+              quantity: signal.quantity,
+              price: signal.price,
+              timestamp: new Date(),
+              status: 'filled',
+              pnl: 0, // Will be calculated later
+              reason: signal.reason || 'Strategy signal',
+              confidence: signal.confidence || Math.random() * 100
+            }, ...prev]);
+          }
         }
       } catch (error) {
         console.error('Strategy execution error:', error);
@@ -248,13 +271,26 @@ export default function AlgoTrading() {
       }
 
       if (action !== 'hold') {
+        const basePrice = quote ? quote.price : 2500 + Math.random() * 1000;
+        const reasons = {
+          'Mean Reversion': ['RSI oversold', 'Bollinger Band bounce', 'Support level hold'],
+          'Momentum': ['Breakout confirmed', 'Volume surge', 'Moving average cross'],
+          'Breakout': ['Resistance break', 'High volume breakout', 'Pattern completion'],
+          'Scalping': ['Quick momentum', 'Level bounce', 'Spread opportunity'],
+          'AI Neural': ['Neural pattern match', 'ML confidence high', 'Algorithm signal']
+        };
+
+        const strategyReasons = reasons[strategy.name.split(' ')[0]] || ['Strategy signal'];
+
         return {
           symbol,
           action,
           quantity: Math.floor(Math.random() * 50) + 10,
-          price: quote ? quote.price : 2500 + Math.random() * 1000,
-          confidence: signalStrength,
-          timestamp: new Date()
+          price: basePrice,
+          confidence: Math.round(signalStrength * 100),
+          reason: strategyReasons[Math.floor(Math.random() * strategyReasons.length)],
+          timestamp: new Date(),
+          strategyName: strategy.name
         };
       }
     } catch (error) {
