@@ -1,288 +1,346 @@
-import { ALPACA_CONFIG, MARKET_SYMBOLS, isMarketOpen } from '../config/alpaca';
-import notificationService from './notificationService';
-
 class RealTimeMarketService {
   constructor() {
-    this.ws = null;
+    this.listeners = [];
+    this.marketData = new Map();
     this.isConnected = false;
     this.reconnectAttempts = 0;
     this.maxReconnectAttempts = 5;
     this.reconnectDelay = 1000;
-    this.subscribers = [];
-    this.marketData = new Map();
-    this.lastUpdate = null;
-    
-    // Bind methods
-    this.connect = this.connect.bind(this);
-    this.disconnect = this.disconnect.bind(this);
-    this.subscribe = this.subscribe.bind(this);
-    this.unsubscribe = this.unsubscribe.bind(this);
+
+    // Indian market symbols
+    this.symbols = [
+      'RELIANCE.NS', 'TCS.NS', 'HDFCBANK.NS', 'INFY.NS', 'HINDUNILVR.NS',
+      'ICICIBANK.NS', 'SBIN.NS', 'BHARTIARTL.NS', 'ITC.NS', 'KOTAKBANK.NS',
+      'LT.NS', 'ASIANPAINT.NS', 'AXISBANK.NS', 'MARUTI.NS', 'SUNPHARMA.NS',
+      'ULTRACEMCO.NS', 'TITAN.NS', 'WIPRO.NS', 'NESTLEIND.NS', 'POWERGRID.NS'
+    ];
+
+    this.indices = [
+      { symbol: '^NSEI', name: 'NIFTY 50' },
+      { symbol: '^BSESN', name: 'SENSEX' },
+      { symbol: '^NSEBANK', name: 'BANK NIFTY' },
+      { symbol: '^CNXIT', name: 'NIFTY IT' }
+    ];
+
+    this.startDataFeed();
   }
 
-  // Connect to Alpaca WebSocket
-  async connect() {
-    if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      return;
-    }
+  // Start real-time data feed
+  startDataFeed() {
+    this.fetchMarketData();
 
-    try {
-      console.log('🔌 Connecting to Alpaca WebSocket...');
-      this.ws = new WebSocket(ALPACA_CONFIG.wsEndpoint);
-      
-      this.ws.onopen = this.handleOpen.bind(this);
-      this.ws.onmessage = this.handleMessage.bind(this);
-      this.ws.onclose = this.handleClose.bind(this);
-      this.ws.onerror = this.handleError.bind(this);
-      
-    } catch (error) {
-      console.error('❌ WebSocket connection error:', error);
-      this.handleReconnect();
-    }
-  }
-
-  handleOpen() {
-    console.log('✅ WebSocket connected to Alpaca');
-    this.isConnected = true;
-    this.reconnectAttempts = 0;
-    
-    // Authenticate
-    this.authenticate();
-  }
-
-  authenticate() {
-    const authMessage = {
-      action: 'auth',
-      key: ALPACA_CONFIG.key,
-      secret: ALPACA_CONFIG.secret
-    };
-    
-    this.ws.send(JSON.stringify(authMessage));
-    console.log('🔐 Authenticating with Alpaca...');
-  }
-
-  handleMessage(event) {
-    try {
-      const data = JSON.parse(event.data);
-      
-      // Handle different message types
-      if (Array.isArray(data)) {
-        data.forEach(message => this.processMessage(message));
-      } else {
-        this.processMessage(data);
+    // Update every 30 seconds during market hours
+    this.dataInterval = setInterval(() => {
+      if (this.isMarketOpen()) {
+        this.fetchMarketData();
       }
+    }, 30000);
+
+    // Update every 5 minutes outside market hours
+    this.slowUpdateInterval = setInterval(() => {
+      if (!this.isMarketOpen()) {
+        this.fetchMarketData();
+      }
+    }, 300000);
+  }
+
+  // Check if Indian market is open
+  isMarketOpen() {
+    const now = new Date();
+    const istTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+    const day = istTime.getDay();
+    const hours = istTime.getHours();
+    const minutes = istTime.getMinutes();
+    const currentTime = hours * 60 + minutes;
+
+    // Market is closed on weekends
+    if (day === 0 || day === 6) return false;
+
+    // Market hours: 9:15 AM to 3:30 PM IST
+    const marketOpen = 9 * 60 + 15;
+    const marketClose = 15 * 60 + 30;
+
+    return currentTime >= marketOpen && currentTime <= marketClose;
+  }
+
+  // Fetch market data from multiple sources
+  async fetchMarketData() {
+    try {
+      // Try Yahoo Finance API first
+      await this.fetchFromYahooFinance();
+      this.isConnected = true;
+      this.reconnectAttempts = 0;
     } catch (error) {
-      console.error('❌ Error processing WebSocket message:', error);
+      console.warn('Yahoo Finance failed, trying Alpha Vantage:', error);
+      try {
+        await this.fetchFromAlphaVantage();
+        this.isConnected = true;
+        this.reconnectAttempts = 0;
+      } catch (error2) {
+        console.warn('Alpha Vantage failed, using fallback data:', error2);
+        this.generateFallbackData();
+        this.handleConnectionError();
+      }
     }
   }
 
-  processMessage(message) {
-    switch (message.T) {
-      case 'success':
-        if (message.msg === 'authenticated') {
-          console.log('✅ Authenticated with Alpaca');
-          this.subscribeToMarketData();
+  // Fetch from Yahoo Finance (free tier)
+  async fetchFromYahooFinance() {
+    const allSymbols = [...this.symbols, ...this.indices.map(i => i.symbol)];
+
+    for (const symbol of allSymbols) {
+      try {
+        // Using a CORS proxy for Yahoo Finance
+        const response = await fetch(`https://query1.finance.yahoo.com/v8/finance/chart/${symbol}`, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+          }
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const data = await response.json();
+        const result = data.chart.result[0];
+        const meta = result.meta;
+        const quote = result.indicators.quote[0];
+
+        const marketData = {
+          symbol: symbol,
+          price: meta.regularMarketPrice || meta.previousClose,
+          change: (meta.regularMarketPrice || meta.previousClose) - meta.previousClose,
+          changePercent: ((meta.regularMarketPrice || meta.previousClose) - meta.previousClose) / meta.previousClose * 100,
+          volume: meta.regularMarketVolume || 0,
+          high: meta.regularMarketDayHigh || meta.previousClose,
+          low: meta.regularMarketDayLow || meta.previousClose,
+          open: quote.open?.[quote.open.length - 1] || meta.previousClose,
+          previousClose: meta.previousClose,
+          marketCap: meta.marketCap || 0,
+          timestamp: new Date(),
+          source: 'Yahoo Finance'
+        };
+
+        this.marketData.set(symbol, marketData);
+
+        // Small delay to avoid rate limiting
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+      } catch (error) {
+        console.warn(`Failed to fetch ${symbol} from Yahoo Finance:`, error);
+      }
+    }
+
+    this.notifyListeners();
+  }
+
+  // Fetch from Alpha Vantage (backup)
+  async fetchFromAlphaVantage() {
+    // Note: This requires an API key from Alpha Vantage
+    const API_KEY = process.env.VITE_ALPHA_VANTAGE_KEY || 'demo';
+
+    for (const symbol of this.symbols.slice(0, 5)) { // Limited calls for free tier
+      try {
+        const cleanSymbol = symbol.replace('.NS', '');
+        const response = await fetch(
+          `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${cleanSymbol}.BSE&apikey=${API_KEY}`
+        );
+
+        const data = await response.json();
+        const quote = data['Global Quote'];
+
+        if (quote && quote['05. price']) {
+          const marketData = {
+            symbol: symbol,
+            price: parseFloat(quote['05. price']),
+            change: parseFloat(quote['09. change']),
+            changePercent: parseFloat(quote['10. change percent'].replace('%', '')),
+            volume: parseInt(quote['06. volume']),
+            high: parseFloat(quote['03. high']),
+            low: parseFloat(quote['04. low']),
+            open: parseFloat(quote['02. open']),
+            previousClose: parseFloat(quote['08. previous close']),
+            timestamp: new Date(),
+            source: 'Alpha Vantage'
+          };
+
+          this.marketData.set(symbol, marketData);
         }
-        break;
-        
-      case 'q': // Quote data
-        this.handleQuoteUpdate(message);
-        break;
-        
-      case 't': // Trade data
-        this.handleTradeUpdate(message);
-        break;
-        
-      case 'subscription':
-        console.log('📊 Subscribed to:', message);
-        break;
-        
-      default:
-        // Handle other message types
-        if (message.msg) {
-          console.log('📨 Alpaca message:', message.msg);
-        }
+
+        // Rate limiting for free tier
+        await new Promise(resolve => setTimeout(resolve, 12000));
+
+      } catch (error) {
+        console.warn(`Failed to fetch ${symbol} from Alpha Vantage:`, error);
+      }
     }
+
+    this.notifyListeners();
   }
 
-  subscribeToMarketData() {
-    const subscribeMessage = {
-      action: 'subscribe',
-      quotes: MARKET_SYMBOLS,
-      trades: MARKET_SYMBOLS
+  // Generate realistic fallback data when APIs fail
+  generateFallbackData() {
+    const baseData = {
+      'RELIANCE.NS': { price: 2890, name: 'Reliance Industries' },
+      'TCS.NS': { price: 4150, name: 'Tata Consultancy Services' },
+      'HDFCBANK.NS': { price: 1680, name: 'HDFC Bank' },
+      'INFY.NS': { price: 1820, name: 'Infosys' },
+      'ICICIBANK.NS': { price: 1250, name: 'ICICI Bank' },
+      '^NSEI': { price: 19850, name: 'NIFTY 50' },
+      '^BSESN': { price: 66590, name: 'SENSEX' },
+      '^NSEBANK': { price: 45230, name: 'BANK NIFTY' }
     };
-    
-    this.ws.send(JSON.stringify(subscribeMessage));
-    console.log('📈 Subscribed to market data for:', MARKET_SYMBOLS.length, 'symbols');
-    
-    notificationService.notifySystem('Connected to real-time market data', 'low');
+
+    Object.entries(baseData).forEach(([symbol, base]) => {
+      // Generate realistic price movements
+      const volatility = symbol.startsWith('^') ? 0.02 : 0.03; // Indices less volatile
+      const randomChange = (Math.random() - 0.5) * volatility;
+      const currentPrice = base.price * (1 + randomChange);
+      const change = currentPrice - base.price;
+      const changePercent = (change / base.price) * 100;
+
+      const marketData = {
+        symbol,
+        name: base.name,
+        price: currentPrice,
+        change,
+        changePercent,
+        volume: Math.floor(Math.random() * 1000000) + 100000,
+        high: currentPrice * (1 + Math.random() * 0.02),
+        low: currentPrice * (1 - Math.random() * 0.02),
+        open: base.price * (1 + (Math.random() - 0.5) * 0.01),
+        previousClose: base.price,
+        timestamp: new Date(),
+        source: 'Simulated Data'
+      };
+
+      this.marketData.set(symbol, marketData);
+    });
+
+    this.notifyListeners();
   }
 
-  handleQuoteUpdate(quote) {
-    const symbol = quote.S;
-    const existingData = this.marketData.get(symbol) || {};
-    
-    const updatedData = {
-      ...existingData,
-      symbol,
-      bid: quote.bp,
-      ask: quote.ap,
-      bidSize: quote.bs,
-      askSize: quote.as,
-      timestamp: new Date(quote.t),
-      spread: quote.ap - quote.bp,
-      type: 'quote'
-    };
-    
-    this.marketData.set(symbol, updatedData);
-    this.notifySubscribers(symbol, updatedData);
-  }
-
-  handleTradeUpdate(trade) {
-    const symbol = trade.S;
-    const existingData = this.marketData.get(symbol) || {};
-    
-    // Calculate price change
-    const previousPrice = existingData.price || trade.p;
-    const priceChange = trade.p - previousPrice;
-    const priceChangePercent = previousPrice ? (priceChange / previousPrice) * 100 : 0;
-    
-    const updatedData = {
-      ...existingData,
-      symbol,
-      price: trade.p,
-      size: trade.s,
-      timestamp: new Date(trade.t),
-      priceChange,
-      priceChangePercent,
-      volume: (existingData.volume || 0) + trade.s,
-      type: 'trade'
-    };
-    
-    this.marketData.set(symbol, updatedData);
-    this.notifySubscribers(symbol, updatedData);
-    this.lastUpdate = new Date();
-  }
-
-  handleClose(event) {
-    console.log('🔌 WebSocket disconnected:', event.code, event.reason);
+  // Handle connection errors
+  handleConnectionError() {
     this.isConnected = false;
-    
-    if (event.code !== 1000) { // Not a normal closure
-      this.handleReconnect();
-    }
-  }
-
-  handleError(error) {
-    console.error('❌ WebSocket error:', error);
-    this.isConnected = false;
-  }
-
-  handleReconnect() {
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.error('❌ Max reconnection attempts reached');
-      notificationService.notifySystem('Market data connection failed', 'high');
-      return;
-    }
-
     this.reconnectAttempts++;
-    const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-    
-    console.log(`🔄 Reconnecting in ${delay}ms (attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
-    
-    setTimeout(() => {
-      this.connect();
-    }, delay);
+
+    if (this.reconnectAttempts < this.maxReconnectAttempts) {
+      setTimeout(() => {
+        console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+        this.fetchMarketData();
+      }, this.reconnectDelay * this.reconnectAttempts);
+    }
+  }
+
+  // Get market data for a specific symbol
+  getMarketData(symbol) {
+    return this.marketData.get(symbol) || null;
+  }
+
+  // Get all market data
+  getAllMarketData() {
+    return Array.from(this.marketData.values());
+  }
+
+  // Get indices data
+  getIndicesData() {
+    return this.indices.map(index => ({
+      ...index,
+      ...this.marketData.get(index.symbol)
+    })).filter(item => item.price);
+  }
+
+  // Get top gainers
+  getTopGainers(limit = 5) {
+    return Array.from(this.marketData.values())
+      .filter(data => !data.symbol.startsWith('^'))
+      .sort((a, b) => b.changePercent - a.changePercent)
+      .slice(0, limit);
+  }
+
+  // Get top losers
+  getTopLosers(limit = 5) {
+    return Array.from(this.marketData.values())
+      .filter(data => !data.symbol.startsWith('^'))
+      .sort((a, b) => a.changePercent - b.changePercent)
+      .slice(0, limit);
+  }
+
+  // Get most active stocks by volume
+  getMostActive(limit = 5) {
+    return Array.from(this.marketData.values())
+      .filter(data => !data.symbol.startsWith('^'))
+      .sort((a, b) => b.volume - a.volume)
+      .slice(0, limit);
   }
 
   // Subscribe to market data updates
   subscribe(callback) {
-    this.subscribers.push(callback);
-    
-    // Return unsubscribe function
+    this.listeners.push(callback);
+
+    // Send initial data
+    callback({
+      data: this.getAllMarketData(),
+      indices: this.getIndicesData(),
+      isConnected: this.isConnected,
+      lastUpdate: new Date()
+    });
+
     return () => {
-      this.unsubscribe(callback);
+      this.listeners = this.listeners.filter(l => l !== callback);
     };
   }
 
-  unsubscribe(callback) {
-    const index = this.subscribers.indexOf(callback);
-    if (index > -1) {
-      this.subscribers.splice(index, 1);
-    }
-  }
+  // Notify all listeners
+  notifyListeners() {
+    const payload = {
+      data: this.getAllMarketData(),
+      indices: this.getIndicesData(),
+      topGainers: this.getTopGainers(),
+      topLosers: this.getTopLosers(),
+      mostActive: this.getMostActive(),
+      isConnected: this.isConnected,
+      lastUpdate: new Date()
+    };
 
-  notifySubscribers(symbol, data) {
-    this.subscribers.forEach(callback => {
+    this.listeners.forEach(callback => {
       try {
-        callback(symbol, data);
+        callback(payload);
       } catch (error) {
-        console.error('❌ Error in subscriber callback:', error);
+        console.error('Error notifying listener:', error);
       }
     });
   }
 
-  // Get current market data
-  getMarketData(symbol) {
-    if (symbol) {
-      return this.marketData.get(symbol);
-    }
-    return Object.fromEntries(this.marketData);
-  }
-
   // Get market summary
   getMarketSummary() {
-    const data = Array.from(this.marketData.values());
-    
-    if (data.length === 0) {
-      return null;
-    }
+    const indices = this.getIndicesData();
+    const stocks = Array.from(this.marketData.values()).filter(data => !data.symbol.startsWith('^'));
 
-    const gainers = data.filter(item => item.priceChangePercent > 0).length;
-    const losers = data.filter(item => item.priceChangePercent < 0).length;
-    const unchanged = data.filter(item => item.priceChangePercent === 0).length;
-    
-    const avgChange = data.reduce((sum, item) => sum + (item.priceChangePercent || 0), 0) / data.length;
-    
+    const advancing = stocks.filter(s => s.changePercent > 0).length;
+    const declining = stocks.filter(s => s.changePercent < 0).length;
+    const unchanged = stocks.filter(s => s.changePercent === 0).length;
+
     return {
-      totalSymbols: data.length,
-      gainers,
-      losers,
+      indices,
+      advancing,
+      declining,
       unchanged,
-      averageChange: avgChange,
-      lastUpdate: this.lastUpdate,
-      isMarketOpen: isMarketOpen()
+      totalVolume: stocks.reduce((sum, s) => sum + (s.volume || 0), 0),
+      marketStatus: this.isMarketOpen() ? 'Open' : 'Closed',
+      lastUpdate: new Date()
     };
   }
 
-  // Disconnect
-  disconnect() {
-    if (this.ws) {
-      this.ws.close(1000, 'Client disconnect');
-      this.ws = null;
-    }
-    this.isConnected = false;
-    this.subscribers = [];
+  // Clean up
+  destroy() {
+    if (this.dataInterval) clearInterval(this.dataInterval);
+    if (this.slowUpdateInterval) clearInterval(this.slowUpdateInterval);
+    this.listeners = [];
     this.marketData.clear();
-  }
-
-  // Get connection status
-  getConnectionStatus() {
-    return {
-      isConnected: this.isConnected,
-      reconnectAttempts: this.reconnectAttempts,
-      lastUpdate: this.lastUpdate,
-      subscriberCount: this.subscribers.length,
-      symbolCount: this.marketData.size
-    };
   }
 }
 
 // Create singleton instance
 const realTimeMarketService = new RealTimeMarketService();
-
-// Auto-connect when market is open
-if (isMarketOpen()) {
-  realTimeMarketService.connect();
-}
 
 export default realTimeMarketService;

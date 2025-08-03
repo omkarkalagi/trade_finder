@@ -1,38 +1,87 @@
 import React, { useState, useEffect } from 'react';
 import LoadingSpinner from './common/LoadingSpinner';
-import { getMockMarketData, getTopGainers, getTopLosers } from '../services/mockMarketData';
+import realTimeMarketService from '../services/realTimeMarketService';
+import newsService from '../services/newsService';
 import Header from './Header';
 import Sidebar from './Sidebar';
 
 export default function LiveMarket() {
-  const [marketData, setMarketData] = useState({});
+  const [marketData, setMarketData] = useState([]);
+  const [indices, setIndices] = useState([]);
   const [topGainers, setTopGainers] = useState([]);
   const [topLosers, setTopLosers] = useState([]);
+  const [mostActive, setMostActive] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
-  // Only using Indian market data
-  const selectedMarket = 'indian';
+  const [isConnected, setIsConnected] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState(null);
+  const [news, setNews] = useState([]);
+  const [newsLoading, setNewsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
   useEffect(() => {
-    // Initial data load
-    setLoading(true);
-    setMarketData(getMockMarketData('indian'));
-    setTopGainers(getTopGainers('indian'));
-    setTopLosers(getTopLosers('indian'));
-    setLoading(false);
+    const unsubscribe = realTimeMarketService.subscribe((data) => {
+      setMarketData(data.data || []);
+      setIndices(data.indices || []);
+      setTopGainers(data.topGainers || []);
+      setTopLosers(data.topLosers || []);
+      setMostActive(data.mostActive || []);
+      setIsConnected(data.isConnected);
+      setLastUpdate(data.lastUpdate);
+      setLoading(false);
+    });
 
-    // Set up interval to update data every 3 seconds
-    const intervalId = setInterval(() => {
-      setMarketData(getMockMarketData('indian'));
-      // Occasionally update top gainers and losers (less frequently)
-      if (Math.random() > 0.7) {
-        setTopGainers(getTopGainers('indian'));
-        setTopLosers(getTopLosers('indian'));
-      }
-    }, 3000);
-
-    return () => clearInterval(intervalId);
+    return unsubscribe;
   }, []);
+
+  // Fetch news
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        setNewsLoading(true);
+        const latestNews = await newsService.fetchLatestNews();
+        setNews(latestNews.slice(0, 5)); // Show top 5 news items
+      } catch (error) {
+        console.error('Failed to fetch news:', error);
+        setNews(newsService.getLatestNews(5)); // Fallback to cached news
+      } finally {
+        setNewsLoading(false);
+      }
+    };
+
+    fetchNews();
+
+    // Refresh news every 10 minutes
+    const newsInterval = setInterval(fetchNews, 10 * 60 * 1000);
+
+    return () => clearInterval(newsInterval);
+  }, []);
+
+  // Filter data based on search query and active tab
+  useEffect(() => {
+    let dataToFilter = [];
+
+    if (activeTab === 'all') {
+      dataToFilter = marketData.filter(data => !data.symbol.startsWith('^'));
+    } else if (activeTab === 'gainers') {
+      dataToFilter = topGainers;
+    } else if (activeTab === 'losers') {
+      dataToFilter = topLosers;
+    } else if (activeTab === 'active') {
+      dataToFilter = mostActive;
+    }
+
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      dataToFilter = dataToFilter.filter(stock =>
+        stock.symbol.toLowerCase().includes(query) ||
+        stock.symbol.replace('.NS', '').toLowerCase().includes(query)
+      );
+    }
+
+    setFilteredData(dataToFilter);
+  }, [marketData, topGainers, topLosers, mostActive, activeTab, searchQuery]);
 
   const renderPriceChange = (change, percentChange) => {
     const isPositive = change >= 0;
@@ -57,13 +106,24 @@ export default function LiveMarket() {
             <h1 className="text-2xl font-bold">📈 Indian Stock Market (NSE)</h1>
 
             <div className="flex items-center space-x-4">
-              <div className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-1 rounded-full flex items-center">
-                <span className="h-2 w-2 bg-green-500 rounded-full mr-1.5"></span>
-                Live Data
+              <div className={`text-xs font-medium px-2.5 py-1 rounded-full flex items-center ${
+                isConnected
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-red-100 text-red-800'
+              }`}>
+                <span className={`h-2 w-2 rounded-full mr-1.5 ${
+                  isConnected ? 'bg-green-500' : 'bg-red-500'
+                }`}></span>
+                {isConnected ? 'Live Data' : 'Offline'}
               </div>
               <div className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
                 NSE
               </div>
+              {lastUpdate && (
+                <div className="text-xs text-gray-500">
+                  Updated: {lastUpdate.toLocaleTimeString()}
+                </div>
+              )}
             </div>
           </div>
 
@@ -72,21 +132,28 @@ export default function LiveMarket() {
             <div className="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
               <h2 className="text-xl font-semibold mb-4">Market Overview</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-blue-800">NIFTY 50</h3>
-                  <p className="text-2xl font-bold">22,845.30</p>
-                  <p className="text-green-600">+156.35 (0.69%)</p>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-blue-800">SENSEX</h3>
-                  <p className="text-2xl font-bold">75,320.54</p>
-                  <p className="text-green-600">+498.25 (0.67%)</p>
-                </div>
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-blue-800">NIFTY BANK</h3>
-                  <p className="text-2xl font-bold">48,650.75</p>
-                  <p className="text-red-600">-125.40 (-0.26%)</p>
-                </div>
+                {indices.slice(0, 3).map((index, i) => (
+                  <div key={index.symbol} className="bg-blue-50 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-blue-800">{index.name}</h3>
+                    <p className="text-2xl font-bold">
+                      {index.price ? index.price.toLocaleString('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2
+                      }) : 'Loading...'}
+                    </p>
+                    {index.change !== undefined && (
+                      <p className={index.change >= 0 ? 'text-green-600' : 'text-red-600'}>
+                        {index.change >= 0 ? '+' : ''}{index.change.toFixed(2)} ({index.changePercent?.toFixed(2)}%)
+                      </p>
+                    )}
+                  </div>
+                ))}
+                {indices.length === 0 && (
+                  <div className="col-span-3 text-center py-8 text-gray-500">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                    Loading market data...
+                  </div>
+                )}
               </div>
             </div>
 
@@ -141,8 +208,10 @@ export default function LiveMarket() {
                   </div>
                   <input
                     type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Search symbol..."
+                    placeholder="Search symbol (e.g., RELIANCE, TCS)..."
                   />
                 </div>
 
@@ -164,6 +233,12 @@ export default function LiveMarket() {
                     className={`px-3 py-1 rounded ${activeTab === 'losers' ? 'bg-red-600 text-white' : 'bg-gray-200'}`}
                   >
                     Top Losers
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('active')}
+                    className={`px-3 py-1 rounded ${activeTab === 'active' ? 'bg-purple-600 text-white' : 'bg-gray-200'}`}
+                  >
+                    Most Active
                   </button>
                 </div>
               </div>
@@ -187,52 +262,56 @@ export default function LiveMarket() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {activeTab === 'all' && Object.entries(marketData).map(([symbol, data]) => (
-                      <tr key={symbol} className="hover:bg-gray-50">
+                    {activeTab === 'all' && filteredData.map((data) => (
+                      <tr key={data.symbol} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <div className="flex-shrink-0 h-8 w-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                              {symbol.charAt(0)}
+                              {data.symbol.charAt(0)}
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{symbol}</div>
-                              <div className="text-xs text-gray-500">{selectedMarket === 'indian' ? 'NSE' : 'NASDAQ'}</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {data.symbol.replace('.NS', '')}
+                              </div>
+                              <div className="text-xs text-gray-500">NSE</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {selectedMarket === 'indian' ? '₹' : '$'}{data.price.toFixed(2)}
+                            ₹{data.price?.toFixed(2) || 'N/A'}
                           </div>
                           <div className="text-xs text-gray-500">
-                            Open: {selectedMarket === 'indian' ? '₹' : '$'}{data.open.toFixed(2)}
+                            Open: ₹{data.open?.toFixed(2) || 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {renderPriceChange(data.change, data.percentChange)}
+                          {renderPriceChange(data.change, data.changePercent)}
                           <div className="text-xs text-gray-500 mt-1">
-                            Prev: {selectedMarket === 'indian' ? '₹' : '$'}{data.prevClose.toFixed(2)}
+                            Prev: ₹{data.previousClose?.toFixed(2) || 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-xs text-gray-500">
-                            <span className="text-green-600">H: {selectedMarket === 'indian' ? '₹' : '$'}{data.dayHigh.toFixed(2)}</span>
+                            <span className="text-green-600">H: ₹{data.high?.toFixed(2) || 'N/A'}</span>
                             <br />
-                            <span className="text-red-600">L: {selectedMarket === 'indian' ? '₹' : '$'}{data.dayLow.toFixed(2)}</span>
+                            <span className="text-red-600">L: ₹{data.low?.toFixed(2) || 'N/A'}</span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
-                            <div
-                              className="bg-blue-600 h-1 rounded-full"
-                              style={{
-                                width: `${((data.price - data.dayLow) / (data.dayHigh - data.dayLow) * 100)}%`
-                              }}
-                            ></div>
-                          </div>
+                          {data.high && data.low && data.price && (
+                            <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
+                              <div
+                                className="bg-blue-600 h-1 rounded-full"
+                                style={{
+                                  width: `${((data.price - data.low) / (data.high - data.low) * 100)}%`
+                                }}
+                              ></div>
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {data.volume.toLocaleString()}
+                          {data.volume?.toLocaleString() || 'N/A'}
                           <div className="text-xs text-gray-400 mt-1">
-                            {new Date(data.timestamp).toLocaleTimeString()}
+                            {data.timestamp ? new Date(data.timestamp).toLocaleTimeString() : 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -250,7 +329,7 @@ export default function LiveMarket() {
                       </tr>
                     ))}
 
-                    {activeTab === 'gainers' && topGainers.map((stock) => (
+                    {activeTab === 'gainers' && filteredData.map((stock) => (
                       <tr key={stock.symbol} className="hover:bg-gray-50 bg-green-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
@@ -258,42 +337,48 @@ export default function LiveMarket() {
                               {stock.symbol.charAt(0)}
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{stock.symbol}</div>
-                              <div className="text-xs text-gray-500">{stock.name}</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {stock.symbol.replace('.NS', '')}
+                              </div>
+                              <div className="text-xs text-gray-500">NSE</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {selectedMarket === 'indian' ? '₹' : '$'}{stock.price.toFixed(2)}
+                            ₹{stock.price?.toFixed(2) || 'N/A'}
                           </div>
                           <div className="text-xs text-gray-500">
-                            Open: {selectedMarket === 'indian' ? '₹' : '$'}{(stock.price - (stock.price * 0.01)).toFixed(2)}
+                            Open: ₹{stock.open?.toFixed(2) || 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {renderPriceChange(stock.change, stock.percentChange)}
+                          {renderPriceChange(stock.change, stock.changePercent)}
                           <div className="text-xs text-gray-500 mt-1">
-                            Prev: {selectedMarket === 'indian' ? '₹' : '$'}{(stock.price - stock.change).toFixed(2)}
+                            Prev: ₹{stock.previousClose?.toFixed(2) || 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-xs text-gray-500">
-                            <span className="text-green-600">H: {selectedMarket === 'indian' ? '₹' : '$'}{(stock.price + (stock.price * 0.01)).toFixed(2)}</span>
+                            <span className="text-green-600">H: ₹{stock.high?.toFixed(2) || 'N/A'}</span>
                             <br />
-                            <span className="text-red-600">L: {selectedMarket === 'indian' ? '₹' : '$'}{(stock.price - (stock.price * 0.02)).toFixed(2)}</span>
+                            <span className="text-red-600">L: ₹{stock.low?.toFixed(2) || 'N/A'}</span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
-                            <div
-                              className="bg-green-600 h-1 rounded-full"
-                              style={{ width: '80%' }}
-                            ></div>
-                          </div>
+                          {stock.high && stock.low && stock.price && (
+                            <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
+                              <div
+                                className="bg-green-600 h-1 rounded-full"
+                                style={{
+                                  width: `${((stock.price - stock.low) / (stock.high - stock.low) * 100)}%`
+                                }}
+                              ></div>
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {(Math.floor(Math.random() * 10000000) + 1000000).toLocaleString()}
+                          {stock.volume?.toLocaleString() || 'N/A'}
                           <div className="text-xs text-gray-400 mt-1">
-                            {new Date().toLocaleTimeString()}
+                            {stock.timestamp ? new Date(stock.timestamp).toLocaleTimeString() : 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -311,7 +396,7 @@ export default function LiveMarket() {
                       </tr>
                     ))}
 
-                    {activeTab === 'losers' && topLosers.map((stock) => (
+                    {activeTab === 'losers' && filteredData.map((stock) => (
                       <tr key={stock.symbol} className="hover:bg-gray-50 bg-red-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
@@ -319,42 +404,48 @@ export default function LiveMarket() {
                               {stock.symbol.charAt(0)}
                             </div>
                             <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{stock.symbol}</div>
-                              <div className="text-xs text-gray-500">{stock.name}</div>
+                              <div className="text-sm font-medium text-gray-900">
+                                {stock.symbol.replace('.NS', '')}
+                              </div>
+                              <div className="text-xs text-gray-500">NSE</div>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-sm font-medium text-gray-900">
-                            {selectedMarket === 'indian' ? '₹' : '$'}{stock.price.toFixed(2)}
+                            ₹{stock.price?.toFixed(2) || 'N/A'}
                           </div>
                           <div className="text-xs text-gray-500">
-                            Open: {selectedMarket === 'indian' ? '₹' : '$'}{(stock.price + Math.abs(stock.change * 0.5)).toFixed(2)}
+                            Open: ₹{stock.open?.toFixed(2) || 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          {renderPriceChange(stock.change, stock.percentChange)}
+                          {renderPriceChange(stock.change, stock.changePercent)}
                           <div className="text-xs text-gray-500 mt-1">
-                            Prev: {selectedMarket === 'indian' ? '₹' : '$'}{(stock.price - stock.change).toFixed(2)}
+                            Prev: ₹{stock.previousClose?.toFixed(2) || 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="text-xs text-gray-500">
-                            <span className="text-green-600">H: {selectedMarket === 'indian' ? '₹' : '$'}{(stock.price + Math.abs(stock.change * 0.2)).toFixed(2)}</span>
+                            <span className="text-green-600">H: ₹{stock.high?.toFixed(2) || 'N/A'}</span>
                             <br />
-                            <span className="text-red-600">L: {selectedMarket === 'indian' ? '₹' : '$'}{(stock.price - Math.abs(stock.change * 0.1)).toFixed(2)}</span>
+                            <span className="text-red-600">L: ₹{stock.low?.toFixed(2) || 'N/A'}</span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
-                            <div
-                              className="bg-red-600 h-1 rounded-full"
-                              style={{ width: '20%' }}
-                            ></div>
-                          </div>
+                          {stock.high && stock.low && stock.price && (
+                            <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
+                              <div
+                                className="bg-red-600 h-1 rounded-full"
+                                style={{
+                                  width: `${((stock.price - stock.low) / (stock.high - stock.low) * 100)}%`
+                                }}
+                              ></div>
+                            </div>
+                          )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {(Math.floor(Math.random() * 10000000) + 1000000).toLocaleString()}
+                          {stock.volume?.toLocaleString() || 'N/A'}
                           <div className="text-xs text-gray-400 mt-1">
-                            {new Date().toLocaleTimeString()}
+                            {stock.timestamp ? new Date(stock.timestamp).toLocaleTimeString() : 'N/A'}
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -371,6 +462,102 @@ export default function LiveMarket() {
                         </td>
                       </tr>
                     ))}
+
+                    {activeTab === 'active' && filteredData.map((stock) => (
+                      <tr key={stock.symbol} className="hover:bg-gray-50 bg-purple-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                              {stock.symbol.charAt(0)}
+                            </div>
+                            <div className="ml-4">
+                              <div className="text-sm font-medium text-gray-900">
+                                {stock.symbol.replace('.NS', '')}
+                              </div>
+                              <div className="text-xs text-gray-500">NSE</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            ₹{stock.price?.toFixed(2) || 'N/A'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Open: ₹{stock.open?.toFixed(2) || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          {renderPriceChange(stock.change, stock.changePercent)}
+                          <div className="text-xs text-gray-500 mt-1">
+                            Prev: ₹{stock.previousClose?.toFixed(2) || 'N/A'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-xs text-gray-500">
+                            <span className="text-green-600">H: ₹{stock.high?.toFixed(2) || 'N/A'}</span>
+                            <br />
+                            <span className="text-red-600">L: ₹{stock.low?.toFixed(2) || 'N/A'}</span>
+                          </div>
+                          {stock.high && stock.low && stock.price && (
+                            <div className="w-full bg-gray-200 rounded-full h-1 mt-1">
+                              <div
+                                className="bg-purple-600 h-1 rounded-full"
+                                style={{
+                                  width: `${((stock.price - stock.low) / (stock.high - stock.low) * 100)}%`
+                                }}
+                              ></div>
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="font-semibold text-purple-600">
+                            {stock.volume?.toLocaleString() || 'N/A'}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            {stock.timestamp ? new Date(stock.timestamp).toLocaleTimeString() : 'N/A'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                          <div className="flex space-x-2">
+                            <button className="px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">
+                              Trade
+                            </button>
+                            <button className="px-2 py-1 bg-gray-100 text-gray-700 rounded hover:bg-gray-200">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+
+                    {/* No results found message */}
+                    {filteredData.length === 0 && searchQuery.trim() && (
+                      <tr>
+                        <td colSpan="6" className="px-6 py-8 text-center">
+                          <div className="text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <p className="text-lg font-medium">No stocks found</p>
+                            <p className="text-sm">Try searching for a different symbol like "RELIANCE", "TCS", or "HDFC"</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+
+                    {/* Loading state for empty data */}
+                    {filteredData.length === 0 && !searchQuery.trim() && marketData.length === 0 && (
+                      <tr>
+                        <td colSpan="6" className="px-6 py-8 text-center">
+                          <div className="text-gray-500">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+                            <p>Loading market data...</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -389,64 +576,86 @@ export default function LiveMarket() {
               </button>
             </div>
 
-            <div className="space-y-4">
-              <div className="border-b pb-4 hover:bg-blue-50 p-2 rounded transition-colors">
-                <div className="flex items-start">
-                  <div className="h-10 w-10 rounded bg-green-100 flex items-center justify-center text-green-600 mr-3 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-blue-600">Sensex, Nifty Hit Record Highs on Strong FII Inflows</h3>
-                    <p className="text-sm text-gray-600 mt-1">Indian benchmark indices Sensex and Nifty reached new all-time highs, driven by robust foreign institutional investor inflows and positive global cues.</p>
-                    <p className="text-xs text-gray-500 mt-2">1 hour ago • Economic Times</p>
-                  </div>
-                </div>
+            {newsLoading ? (
+              <div className="flex justify-center py-8">
+                <LoadingSpinner text="Loading news..." />
               </div>
-              <div className="border-b pb-4 hover:bg-blue-50 p-2 rounded transition-colors">
-                <div className="flex items-start">
-                  <div className="h-10 w-10 rounded bg-blue-100 flex items-center justify-center text-blue-600 mr-3 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            ) : (
+              <div className="space-y-4">
+                {news.map((newsItem) => (
+                  <div key={newsItem.id} className="border-b pb-4 hover:bg-blue-50 p-2 rounded transition-colors cursor-pointer">
+                    <div className="flex items-start">
+                      <div className={`h-10 w-10 rounded flex items-center justify-center mr-3 mt-1 ${
+                        newsItem.sentiment === 'positive' ? 'bg-green-100 text-green-600' :
+                        newsItem.sentiment === 'negative' ? 'bg-red-100 text-red-600' :
+                        'bg-blue-100 text-blue-600'
+                      }`}>
+                        {newsItem.category === 'Market' && (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                        )}
+                        {newsItem.category === 'Policy' && (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        )}
+                        {newsItem.category === 'Earnings' && (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                        )}
+                        {(newsItem.category === 'Sector' || newsItem.category === 'General') && (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                          </svg>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <h3 className="font-medium text-blue-600 hover:text-blue-800 line-clamp-2">
+                            {newsItem.title}
+                          </h3>
+                          <span className={`ml-2 px-2 py-1 text-xs rounded-full flex-shrink-0 ${
+                            newsItem.category === 'Market' ? 'bg-blue-100 text-blue-800' :
+                            newsItem.category === 'Policy' ? 'bg-purple-100 text-purple-800' :
+                            newsItem.category === 'Earnings' ? 'bg-green-100 text-green-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {newsItem.category}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                          {newsItem.summary}
+                        </p>
+                        <div className="flex items-center justify-between mt-2">
+                          <p className="text-xs text-gray-500">
+                            {new Date(newsItem.timestamp).toLocaleString()} • {newsItem.source}
+                          </p>
+                          {newsItem.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-1">
+                              {newsItem.tags.slice(0, 2).map((tag, index) => (
+                                <span key={index} className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {news.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                     </svg>
+                    <p>No news available at the moment</p>
                   </div>
-                  <div>
-                    <h3 className="font-medium text-blue-600">RBI Maintains Repo Rate at 6.5% for Seventh Consecutive Time</h3>
-                    <p className="text-sm text-gray-600 mt-1">The Reserve Bank of India's Monetary Policy Committee kept the repo rate unchanged at 6.5%, maintaining its focus on inflation control while supporting growth.</p>
-                    <p className="text-xs text-gray-500 mt-2">3 hours ago • Business Standard</p>
-                  </div>
-                </div>
+                )}
               </div>
-              <div className="hover:bg-blue-50 p-2 rounded transition-colors">
-                <div className="flex items-start">
-                  <div className="h-10 w-10 rounded bg-purple-100 flex items-center justify-center text-purple-600 mr-3 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-blue-600">IT Sector Leads Market Gains as Rupee Weakens</h3>
-                    <p className="text-sm text-gray-600 mt-1">Indian IT stocks surged as the rupee depreciated against the US dollar, potentially boosting export revenues for technology companies.</p>
-                    <p className="text-xs text-gray-500 mt-2">5 hours ago • Mint</p>
-                  </div>
-                </div>
-              </div>
-              <div className="hover:bg-blue-50 p-2 rounded transition-colors">
-                <div className="flex items-start">
-                  <div className="h-10 w-10 rounded bg-yellow-100 flex items-center justify-center text-yellow-600 mr-3 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-blue-600">Reliance Industries Announces Strategic Partnership with Global Tech Giant</h3>
-                    <p className="text-sm text-gray-600 mt-1">Reliance Industries has formed a strategic partnership with a leading global technology company to enhance its digital infrastructure and expand its e-commerce footprint.</p>
-                    <p className="text-xs text-gray-500 mt-2">7 hours ago • Financial Express</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </main>
       </div>
