@@ -236,6 +236,13 @@ class RealTimeMarketService {
     }
   }
 
+  // Connect method for compatibility
+  connect() {
+    // Service auto-starts in constructor, this is just for compatibility
+    console.log('RealTimeMarketService: Already connected and running');
+    return Promise.resolve();
+  }
+
   // Get market data for a specific symbol
   getMarketData(symbol) {
     return this.marketData.get(symbol) || null;
