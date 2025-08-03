@@ -1,4 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
+import alpacaService from '../services/alpacaService';
+import notificationService from '../services/notificationService';
 
 const SearchBar = () => {
   const [query, setQuery] = useState('');
@@ -90,14 +92,25 @@ const SearchBar = () => {
 
   const handleResultClick = (result) => {
     if (result.type === 'stock') {
-      // Navigate to stock details or add to watchlist
-      console.log('Navigate to stock:', result.symbol);
+      // Add to watchlist and show notification
+      alpacaService.addToWatchlist(result.symbol);
+      notificationService.notifySystem(`${result.symbol} added to watchlist`, 'low');
     } else if (result.type === 'sector') {
       // Navigate to sector analysis
-      console.log('Navigate to sector:', result.name);
+      window.location.href = '/sector-scope';
     } else if (result.type === 'feature') {
-      // Navigate to feature
-      console.log('Navigate to feature:', result.name);
+      // Navigate to feature based on name
+      const featureRoutes = {
+        'Portfolio Analytics': '/portfolio-analytics',
+        'Sector Scope': '/sector-scope',
+        'Trade Discovery': '/trade-discovery',
+        'Strategy Builder': '/strategy-builder',
+        'Algo Trading': '/algo-trading'
+      };
+      const route = featureRoutes[result.name];
+      if (route) {
+        window.location.href = route;
+      }
     }
     setQuery('');
     setIsOpen(false);
