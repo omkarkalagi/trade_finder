@@ -1,3 +1,4 @@
+// Fixed: Phone input display and bo.connect error - v2.0
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
