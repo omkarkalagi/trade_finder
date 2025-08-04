@@ -1,11 +1,11 @@
 {
   "name": "trade-dashboard",
   "private": true,
-  "version": "0.0.0",
+  "version": "2.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node build.mjs || node build-fallback.mjs",
+    "build": "node verify-login.mjs && node build.mjs || node build-fallback.mjs",
     "build-with-lint": "eslint src --quiet && node build.mjs",
     "verify": "node verify-build.mjs",
     "preview": "vite preview",

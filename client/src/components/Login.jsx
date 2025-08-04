@@ -132,6 +132,7 @@ const Login = () => {
             <p className="text-sm text-gray-600 mt-2">
               {step === 'phone' ? 'Enter your mobile number to continue' : 'Enter the OTP sent to your phone'}
             </p>
+            <p className="text-xs text-gray-400 mt-1">v2.1 - Light Theme</p>
           </div>
 
           {/* Error/Success Messages */}
