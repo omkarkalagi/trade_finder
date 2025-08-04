@@ -30,14 +30,23 @@ class ZerodhaService {
     return this.connectToZerodha();
   }
 
-  // Connect to Zerodha
+  // Connect to Zerodha with proper Kite Connect flow
   async connectToZerodha() {
     try {
-      notificationService.notifyZerodha('Initiating connection to Zerodha...', 'info');
+      notificationService.notifyZerodha('Initiating connection to Zerodha Kite...', 'info');
 
-      // In a real implementation, this would redirect to Zerodha login
-      // For demo purposes, we'll simulate the connection
-      await this.simulateZerodhaConnection();
+      // Check if we already have an access token
+      const storedToken = localStorage.getItem('zerodha_access_token');
+      if (storedToken) {
+        this.accessToken = storedToken;
+        const isValid = await this.validateAccessToken();
+        if (isValid) {
+          return this.fetchUserData();
+        }
+      }
+
+      // Start the Kite Connect authentication flow
+      await this.initiateKiteConnectAuth();
 
       return { success: true, message: 'Connected to Zerodha successfully!' };
     } catch (error) {

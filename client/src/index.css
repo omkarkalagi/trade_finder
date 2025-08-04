@@ -33,20 +33,20 @@ body {
   color-scheme: light;
 }
 
-/* Light theme custom scrollbar */
+/* Dark theme custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #1e293b;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #334155;
 }
 
 ::-webkit-scrollbar-thumb:hover {
