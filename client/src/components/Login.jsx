@@ -109,32 +109,34 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center p-4">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Login Card */}
       <div className="relative w-full max-w-md">
-        <div className="glass dark-card p-8 rounded-2xl border border-slate-700/30 shadow-2xl backdrop-blur-xl">
+        <div className="bg-white/95 p-8 rounded-2xl border border-gray-200/50 shadow-2xl backdrop-blur-xl">
           {/* Logo and Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4 shadow-lg">
               <span className="text-3xl font-bold text-white">TF</span>
             </div>
-            <h1 className="text-3xl font-bold gradient-text mb-2">Trade Finder</h1>
-            <p className="text-lg text-slate-300 font-medium">By Omkar Kalagi</p>
-            <p className="text-sm text-slate-400 mt-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2"
+                style={{ fontFamily: 'Great Vibes, Dancing Script, cursive' }}>
+              Trade Finder by Omkar Kalagi
+            </h1>
+            <p className="text-sm text-gray-600 mt-2">
               {step === 'phone' ? 'Enter your mobile number to continue' : 'Enter the OTP sent to your phone'}
             </p>
           </div>
 
           {/* Error/Success Messages */}
           {error && (
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-red-300 text-sm animate-bounce-in">
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm animate-bounce-in">
               <div className="flex items-center">
                 <span className="mr-2">❌</span>
                 {error}
@@ -143,7 +145,7 @@ const Login = () => {
           )}
 
           {success && (
-            <div className="mb-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg text-green-300 text-sm animate-bounce-in">
+            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-700 text-sm animate-bounce-in">
               <div className="flex items-center">
                 <span className="mr-2">✅</span>
                 {success}
