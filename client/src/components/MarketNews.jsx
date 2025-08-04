@@ -1,336 +1,239 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-const MarketNews = () => {
+const MarketNews = ({ compact = false }) => {
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAllNews, setShowAllNews] = useState(false);
-  const [allNews, setAllNews] = useState([]);
-  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
-  // Mock news data with Indian market focus
+  // Mock news data for demonstration
   const mockNews = [
     {
       id: 1,
-      title: "NIFTY 50 Hits New All-Time High as Banking Stocks Rally",
-      description: "Indian benchmark indices reached record levels driven by strong performance in banking and financial services sector.",
-      source: "Economic Times",
-      publishedAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-      category: "market",
-      impact: "positive",
-      stocks: ["HDFCBANK", "ICICIBANK", "SBIN"]
+      title: "Federal Reserve Announces Interest Rate Decision",
+      summary: "Fed maintains current rates amid inflation concerns and economic uncertainty",
+      source: "Reuters",
+      publishedAt: "2024-01-15T10:30:00Z",
+      url: "#",
+      sentiment: "neutral"
     },
     {
       id: 2,
-      title: "RBI Monetary Policy: Key Rate Unchanged at 6.5%",
-      description: "Reserve Bank of India maintains repo rate, focuses on inflation control and economic growth balance.",
-      source: "Business Standard",
-      publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-      category: "policy",
-      impact: "neutral",
-      stocks: ["BANKBARODA", "PNB"]
+      title: "Tech Stocks Rally on Strong Earnings",
+      summary: "Major tech companies report better-than-expected quarterly results",
+      source: "Bloomberg",
+      publishedAt: "2024-01-15T09:15:00Z",
+      url: "#",
+      sentiment: "positive"
     },
     {
       id: 3,
-      title: "Reliance Industries Q3 Results Beat Estimates",
-      description: "RIL reports strong quarterly earnings driven by petrochemicals and retail business growth.",
-      source: "Mint",
-      publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
-      category: "earnings",
-      impact: "positive",
-      stocks: ["RELIANCE"]
+      title: "Oil Prices Surge on Supply Concerns",
+      summary: "Crude oil futures jump 3% following geopolitical tensions in key producing regions",
+      source: "MarketWatch",
+      publishedAt: "2024-01-15T08:45:00Z",
+      url: "#",
+      sentiment: "neutral"
     },
     {
       id: 4,
-      title: "IT Sector Faces Headwinds Amid Global Slowdown Concerns",
-      description: "Technology stocks under pressure as clients reduce spending on discretionary projects.",
-      source: "Moneycontrol",
-      publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 hours ago
-      category: "sector",
-      impact: "negative",
-      stocks: ["TCS", "INFY", "WIPRO"]
+      title: "Cryptocurrency Market Shows Mixed Signals",
+      summary: "Bitcoin consolidates while altcoins experience volatility",
+      source: "CoinDesk",
+      publishedAt: "2024-01-15T07:20:00Z",
+      url: "#",
+      sentiment: "negative"
     },
     {
       id: 5,
-      title: "Foreign Institutional Investors Turn Net Buyers",
-      description: "FIIs invest ₹2,500 crore in Indian equities amid positive market sentiment.",
-      source: "Financial Express",
-      publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 8), // 8 hours ago
-      category: "flows",
-      impact: "positive",
-      stocks: []
-    },
-    // Older news for "View All" functionality
-    {
-      id: 6,
-      title: "Adani Group Stocks Recover After Recent Volatility",
-      description: "Adani portfolio companies show signs of stabilization following recent market turbulence.",
-      source: "Reuters",
-      publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-      category: "market",
-      impact: "positive",
-      stocks: ["ADANIPORTS", "ADANIGREEN"]
-    },
-    {
-      id: 7,
-      title: "Auto Sector Outlook Positive on Rural Demand Recovery",
-      description: "Automobile manufacturers expect strong growth driven by improving rural consumption patterns.",
-      source: "Hindu BusinessLine",
-      publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 36), // 1.5 days ago
-      category: "sector",
-      impact: "positive",
-      stocks: ["MARUTI", "TATAMOTORS", "M&M"]
-    },
-    {
-      id: 8,
-      title: "Pharmaceutical Exports Show Strong Growth in Q3",
-      description: "Indian pharma companies report robust export performance to key international markets.",
-      source: "Economic Times",
-      publishedAt: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
-      category: "sector",
-      impact: "positive",
-      stocks: ["SUNPHARMA", "DRREDDY", "CIPLA"]
+      title: "Global Markets React to Economic Data",
+      summary: "Asian markets open higher following positive economic indicators",
+      source: "Financial Times",
+      publishedAt: "2024-01-15T06:00:00Z",
+      url: "#",
+      sentiment: "positive"
     }
   ];
 
-  // Fetch real news from API
-  const fetchRealNews = async () => {
-    try {
-      // Try to fetch from news API using News API
-      const newsApiKey = process.env.REACT_APP_NEWS_API_KEY || '0c0cf893b14d468a9f7acf0c588f8345';
-      const response = await fetch(`https://newsapi.org/v2/everything?q=indian+stock+market+OR+nifty+OR+sensex+OR+BSE+OR+NSE&language=en&sortBy=publishedAt&pageSize=20&apiKey=${newsApiKey}`);
-
-      if (response.ok) {
-        const data = await response.json();
-        const processedNews = data.articles.map((article, index) => ({
-          id: index + 1,
-          title: article.title,
-          description: article.description || article.content?.substring(0, 150) + '...',
-          source: article.source.name,
-          publishedAt: new Date(article.publishedAt),
-          category: 'market',
-          impact: Math.random() > 0.5 ? 'positive' : Math.random() > 0.3 ? 'negative' : 'neutral',
-          stocks: extractStocksFromTitle(article.title),
-          url: article.url,
-          urlToImage: article.urlToImage
-        }));
-
-        setNews(processedNews.slice(0, 5)); // Show latest 5
-        setAllNews(processedNews); // Store all news
+  useEffect(() => {
+    const fetchNews = async () => {
+      setLoading(true);
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        setNews(mockNews);
+        setError(null);
+      } catch (err) {
+        setError('Failed to fetch market news');
+        setNews(mockNews); // Fallback to mock data
+      } finally {
         setLoading(false);
-        return;
       }
-    } catch (error) {
-      console.error('Error fetching real news:', error);
-    }
-
-    // Fallback to mock data with more realistic timestamps
-    const updatedMockNews = mockNews.map(item => ({
-      ...item,
-      publishedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000) // Random time within last 24 hours
-    }));
-
-    setNews(updatedMockNews.slice(0, 5));
-    setAllNews(updatedMockNews);
-    setLoading(false);
-  };
-
-  // Extract stock symbols from news title
-  const extractStocksFromTitle = (title) => {
-    const stockKeywords = {
-      'reliance': ['RELIANCE'],
-      'tcs': ['TCS'],
-      'infosys': ['INFY'],
-      'hdfc': ['HDFCBANK'],
-      'icici': ['ICICIBANK'],
-      'sbi': ['SBIN'],
-      'adani': ['ADANIPORTS', 'ADANIGREEN'],
-      'tata': ['TATAMOTORS', 'TATACONSUM'],
-      'wipro': ['WIPRO'],
-      'bharti': ['BHARTIARTL'],
-      'maruti': ['MARUTI'],
-      'bajaj': ['BAJFINANCE']
     };
 
-    const stocks = [];
-    const lowerTitle = title.toLowerCase();
-
-    Object.entries(stockKeywords).forEach(([keyword, symbols]) => {
-      if (lowerTitle.includes(keyword)) {
-        stocks.push(...symbols);
-      }
-    });
-
-    return stocks.slice(0, 3); // Limit to 3 stocks
-  };
-
-  useEffect(() => {
-    fetchRealNews();
-
+    fetchNews();
+    
     // Refresh news every 5 minutes
-    const interval = setInterval(fetchRealNews, 5 * 60 * 1000);
-
+    const interval = setInterval(fetchNews, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
-  const getImpactColor = (impact) => {
-    switch (impact) {
-      case 'positive': return 'text-green-400 bg-green-500/20 border-green-500/30';
-      case 'negative': return 'text-red-400 bg-red-500/20 border-red-500/30';
-      default: return 'text-blue-400 bg-blue-500/20 border-blue-500/30';
+  const formatTimeAgo = (timestamp) => {
+    const now = new Date();
+    const newsTime = new Date(timestamp);
+    const diffInHours = Math.floor((now - newsTime) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours === 1) return '1 hour ago';
+    return `${diffInHours} hours ago`;
+  };
+
+  const getSentimentColor = (sentiment) => {
+    switch (sentiment) {
+      case 'positive': return 'text-green-600';
+      case 'negative': return 'text-red-600';
+      default: return 'text-yellow-600';
     }
   };
 
-  const getImpactIcon = (impact) => {
-    switch (impact) {
+  const getSentimentIcon = (sentiment) => {
+    switch (sentiment) {
       case 'positive': return '📈';
       case 'negative': return '📉';
-      default: return 'ℹ️';
+      default: return '📊';
     }
   };
 
-  const getCategoryIcon = (category) => {
-    switch (category) {
-      case 'market': return '📊';
-      case 'policy': return '🏛️';
-      case 'earnings': return '💰';
-      case 'sector': return '🏭';
-      case 'flows': return '💸';
-      default: return '📰';
-    }
-  };
-
-  const formatTimeAgo = (date) => {
-    const now = new Date();
-    const diff = now - date;
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    return `${days}d ago`;
-  };
-
-  const displayedNews = showAllNews ? allNews : news;
-
-  const handleViewAll = () => {
-    navigate('/market-news', { state: { allNews } });
-  };
-
-  return (
-    <div className="h-full">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-slate-100 flex items-center">
-          <span className="mr-2">📰</span>
-          Market News
-        </h2>
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={handleViewAll}
-            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
-          >
-            View All
-          </button>
-          <div className="flex items-center space-x-1 text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded-full border border-red-500/30">
-            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
-            <span>Live</span>
-          </div>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="flex justify-center items-center h-40">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-2"></div>
-            <p className="text-slate-400 text-sm">Loading latest news...</p>
-          </div>
-        </div>
-      ) : news.length > 0 ? (
-        <div className="space-y-3">
-          {displayedNews.map((item) => (
-            <div
-              key={item.id}
-              className="glass dark-card border border-slate-700/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-blue-500/50"
-              onClick={() => item.url && window.open(item.url, '_blank')}
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex items-center space-x-2">
-                  <span className="text-lg">{getCategoryIcon(item.category)}</span>
-                  <span className={`text-xs px-2 py-1 rounded-full border ${getImpactColor(item.impact)}`}>
-                    {getImpactIcon(item.impact)} {item.impact}
-                  </span>
-                </div>
-                <span className="text-xs text-slate-400">{formatTimeAgo(item.publishedAt)}</span>
-              </div>
-
-              <h3 className="font-semibold text-slate-100 mb-2 line-clamp-2 hover:text-blue-400 transition-colors">
-                {item.title}
-              </h3>
-
-              <p className="text-sm text-slate-400 mb-3 line-clamp-2">
-                {item.description}
-              </p>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-slate-500">{item.source}</span>
-                  {item.stocks.length > 0 && (
-                    <>
-                      <span className="text-xs text-slate-600">•</span>
-                      <div className="flex space-x-1">
-                        {item.stocks.slice(0, 2).map((stock, idx) => (
-                          <span key={idx} className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30">
-                            {stock}
-                          </span>
-                        ))}
-                        {item.stocks.length > 2 && (
-                          <span className="text-xs text-slate-500">+{item.stocks.length - 2}</span>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-                <button className="text-xs text-blue-400 hover:text-blue-300 font-medium">
-                  Read More →
-                </button>
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(compact ? 3 : 5)].map((_, i) => (
+          <div key={i} className="animate-pulse">
+            <div className="flex space-x-3">
+              <div className="w-12 h-12 bg-gray-200 rounded-lg"></div>
+              <div className="flex-1 space-y-2">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
               </div>
             </div>
-          ))}
+          </div>
+        ))}
+      </div>
+    );
+  }
 
-          {/* View All Button */}
-          {!showAllNews && allNews.length > 5 && (
-            <button
-              onClick={() => setShowAllNews(true)}
-              className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
-            >
-              <span className="mr-2">📰</span>
-              View All News ({allNews.length - 5} more)
-            </button>
-          )}
+  if (error) {
+    return (
+      <div className="text-center py-8">
+        <div className="text-red-500 mb-2">⚠️</div>
+        <p className="text-gray-600">{error}</p>
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
-          {showAllNews && (
-            <button
-              onClick={() => setShowAllNews(false)}
-              className="w-full py-3 glass dark-card border border-slate-600/30 text-slate-300 rounded-xl font-medium hover:bg-slate-700/50 transition-all duration-200"
-            >
-              <span className="mr-2">📰</span>
-              Show Less
-            </button>
-          )}
-        </div>
-      ) : (
-        <div className="text-center py-8">
-          <span className="text-4xl mb-4 block">📰</span>
-          <p className="text-slate-400">No news available at the moment</p>
-          <button
-            onClick={fetchRealNews}
-            className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-          >
-            Refresh News
-          </button>
-        </div>
-      )}
+  const displayNews = compact ? news.slice(0, 3) : news;
+
+  if (compact) {
+    return (
+      <div className="space-y-3">
+        {displayNews.map((article) => (
+          <div key={article.id} className="border-b border-gray-100 pb-3 last:border-b-0">
+            <div className="flex items-start space-x-3">
+              <span className="text-lg mt-1">{getSentimentIcon(article.sentiment)}</span>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-medium text-gray-900 text-sm line-clamp-2 leading-tight">
+                  {article.title}
+                </h3>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs text-gray-500">{article.source}</span>
+                  <span className="text-xs text-gray-400">{formatTimeAgo(article.publishedAt)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+        <Link 
+          to="/news" 
+          className="block text-center px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-lg text-sm font-medium text-gray-700 transition-colors"
+        >
+          View All News
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">Market News</h2>
+        <button className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+          Refresh
+        </button>
+      </div>
+
+      <div className="grid gap-6">
+        {displayNews.map((article) => (
+          <article key={article.id} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+            <div className="flex items-start space-x-4">
+              <div className="flex-shrink-0">
+                <div className={`w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-xl`}>
+                  {getSentimentIcon(article.sentiment)}
+                </div>
+              </div>
+              
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center space-x-2 mb-2">
+                  <span className="text-sm font-medium text-gray-600">{article.source}</span>
+                  <span className="text-gray-300">•</span>
+                  <span className="text-sm text-gray-500">{formatTimeAgo(article.publishedAt)}</span>
+                  <span className={`text-sm font-medium ${getSentimentColor(article.sentiment)}`}>
+                    {article.sentiment}
+                  </span>
+                </div>
+                
+                <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
+                  {article.title}
+                </h3>
+                
+                <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                  {article.summary}
+                </p>
+                
+                <div className="flex items-center justify-between">
+                  <a 
+                    href={article.url}
+                    className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
+                  >
+                    Read More
+                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </a>
+                  
+                  <div className="flex space-x-2">
+                    <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                    </button>
+                    <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
     </div>
   );
 };
