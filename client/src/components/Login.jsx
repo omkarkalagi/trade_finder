@@ -127,7 +127,7 @@ const Login = () => {
             </div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2"
                 style={{ fontFamily: 'Great Vibes, Dancing Script, cursive' }}>
-              Trade Finder by Omkar Kalagi
+              Trade Finder
             </h1>
             <p className="text-sm text-gray-600 mt-2">
               {step === 'phone' ? 'Enter your mobile number to continue' : 'Enter the OTP sent to your phone'}
@@ -169,7 +169,7 @@ const Login = () => {
                       type="tel"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                      className="dark-input w-full px-4 py-3 text-lg font-medium focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                      className="w-full px-4 py-3 text-lg font-medium bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
                       placeholder="9876543210"
                       maxLength="10"
                       required
@@ -222,7 +222,7 @@ const Login = () => {
                   type="text"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  className="dark-input w-full px-4 py-3 text-center text-2xl font-bold tracking-widest focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                  className="w-full px-4 py-3 text-center text-2xl font-bold tracking-widest bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
                   placeholder="000000"
                   maxLength="6"
                   required

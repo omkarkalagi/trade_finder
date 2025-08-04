@@ -54,8 +54,8 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Sidebar */}
       <div className={`
         fixed inset-y-0 left-0 z-50
-        bg-gradient-to-b from-dark-900 via-dark-800 to-dark-950
-        text-white w-72 h-screen shadow-2xl border-r border-slate-700/30
+        bg-gradient-to-b from-blue-600 via-purple-600 to-pink-600
+        text-white w-72 h-screen shadow-2xl border-r border-white/20
         transform transition-transform duration-300 ease-in-out
         ${isMobile ? (isOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}
         lg:translate-x-0 overflow-hidden
@@ -73,7 +73,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         )}
 
         {/* Logo Section */}
-        <div className="p-6 border-b border-slate-700/30">
+        <div className="p-6 border-b border-white/20">
           <Logo size="md" showText={true} />
         </div>
 
@@ -88,15 +88,15 @@ const Sidebar = ({ isOpen, onClose }) => {
                   className={({isActive}) =>
                     `group flex items-center p-3 rounded-xl transition-all duration-200 touch-manipulation ${
                       isActive
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25 transform scale-105'
-                        : 'hover:bg-gray-100/80 hover:transform hover:scale-105 active:scale-95 text-gray-700'
+                        ? 'bg-white/20 text-white shadow-lg shadow-white/10 transform scale-105'
+                        : 'hover:bg-white/10 hover:transform hover:scale-105 active:scale-95 text-white/80 hover:text-white'
                     }`
                   }
                 >
                   <span className="mr-4 text-2xl group-hover:animate-bounce flex-shrink-0">{item.icon}</span>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{item.label}</div>
-                    <div className="text-xs text-gray-500 opacity-75 truncate hidden sm:block">{item.description}</div>
+                    <div className="text-xs text-white/60 opacity-75 truncate hidden sm:block">{item.description}</div>
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

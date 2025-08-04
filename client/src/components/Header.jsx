@@ -51,21 +51,9 @@ const Header = ({ onMenuClick }) => {
 
             {/* Page Title - Hidden on small mobile */}
             <div className="hidden sm:block">
-              {getPageTitle() === 'Dashboard' ? (
-                <div className="flex flex-col">
-                  <h1 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
-                      style={{ fontFamily: 'Great Vibes, Dancing Script, cursive' }}>
-                    Trade Finder by Omkar Kalagi
-                  </h1>
-                  <p className="text-4xl lg:text-6xl font-bold text-gray-800 mt-2" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '0.1em' }}>
-                    DASHBOARD
-                  </p>
-                </div>
-              ) : (
-                <h1 className="text-4xl lg:text-6xl font-bold text-gray-800" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '0.1em' }}>
-                  {getPageTitle().toUpperCase()}
-                </h1>
-              )}
+              <h1 className="text-4xl lg:text-6xl font-bold text-gray-800" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '0.1em' }}>
+                {getPageTitle().toUpperCase()}
+              </h1>
             </div>
           </div>
 

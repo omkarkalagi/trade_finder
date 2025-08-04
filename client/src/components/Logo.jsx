@@ -146,13 +146,13 @@ const Logo = ({ size = 'md', showText = true, variant = 'default' }) => {
       {/* Enhanced Text */}
       {showText && (
         <div className="flex flex-col space-y-1">
-          <h1 className={`${textSizeClasses[size]} font-black bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-tight leading-none`}
+          <h1 className={`${textSizeClasses[size]} font-black bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent tracking-tight leading-none`}
               style={{ fontFamily: 'Orbitron, Inter, sans-serif' }}>
             Trade Finder
           </h1>
-          <p className={`${subtextSizeClasses[size]} text-slate-400 font-medium tracking-wide -mt-1 transition-colors duration-300 group-hover:text-slate-300`}
+          <p className={`${subtextSizeClasses[size]} text-white/70 font-medium tracking-wide -mt-1 transition-colors duration-300 group-hover:text-white/90`}
              style={{ fontFamily: 'Inter, sans-serif' }}>
-            By Omkar Kalagi
+            Smart Trading Platform
           </p>
         </div>
       )}
