@@ -30,16 +30,16 @@ const Header = ({ onMenuClick }) => {
 
   return (
     <>
-      <header className="bg-gradient-to-r from-white via-gray-50 to-white shadow-xl border-b border-gray-200/50 sticky top-0 z-30 backdrop-blur-xl">
-        <div className="flex items-center justify-between px-4 lg:px-6 py-4">
+      <header className="bg-gradient-to-r from-white via-gray-50 to-white shadow-lg border-b border-gray-200/50 sticky top-0 z-40 backdrop-blur-xl">
+        <div className="flex items-center justify-between px-4 lg:px-6 py-2">
           {/* Left side - Mobile menu + Title */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             {/* Mobile Menu Button */}
             <button
               onClick={onMenuClick}
-              className="lg:hidden p-2 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 transition-colors touch-manipulation"
+              className="lg:hidden p-1.5 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 transition-colors touch-manipulation"
             >
-              <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
@@ -49,22 +49,22 @@ const Header = ({ onMenuClick }) => {
               <Logo size="sm" showText={false} />
             </div>
 
-            {/* Page Title - Hidden on small mobile */}
+            {/* Page Title - Reduced size */}
             <div className="hidden sm:block">
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-800" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '0.1em' }}>
-                {getPageTitle().toUpperCase()}
+              <h1 className="text-lg lg:text-xl font-semibold text-gray-800" style={{ fontFamily: 'Inter, sans-serif' }}>
+                {getPageTitle()}
               </h1>
             </div>
           </div>
 
           {/* Right side - Actions */}
-          <div className="flex items-center space-x-2 lg:space-x-4">
+          <div className="flex items-center space-x-2 lg:space-x-3">
             {/* Mobile Search Toggle */}
             <button
               onClick={() => setShowMobileSearch(!showMobileSearch)}
-              className="md:hidden p-2 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 transition-colors touch-manipulation"
+              className="md:hidden p-1.5 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 transition-colors touch-manipulation"
             >
-              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
@@ -74,8 +74,8 @@ const Header = ({ onMenuClick }) => {
               <SearchBar />
             </div>
 
-            {/* Market Status - Desktop only */}
-            <div className="hidden xl:flex items-center space-x-2 bg-white/90 px-3 py-2 rounded-full border border-green-500/30 shadow-sm">
+            {/* Market Status - Desktop only with improved styling */}
+            <div className="hidden xl:flex items-center space-x-2 bg-white/95 px-2.5 py-1.5 rounded-full border border-green-500/20 shadow-sm backdrop-blur-sm">
               <MarketStatusIndicator />
             </div>
 

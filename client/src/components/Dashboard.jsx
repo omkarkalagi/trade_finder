@@ -49,7 +49,7 @@ export default function Dashboard() {
       <div className="flex flex-1">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        <main className="flex-1 lg:ml-0 p-4 lg:p-6 overflow-y-auto">
+        <main className="flex-1 lg:ml-72 p-4 lg:p-6 overflow-y-auto transition-all duration-300">
           {/* Welcome Section */}
           <div className="mb-6 lg:mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">

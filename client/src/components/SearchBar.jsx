@@ -206,11 +206,11 @@ const SearchBar = () => {
           type="text"
           value={query}
           onChange={handleInputChange}
-          placeholder="Search stocks, sectors, features..."
-          className="w-full dark-input rounded-full px-4 py-2 pl-12 pr-10 text-sm outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
+          placeholder="Search stocks, sectors..."
+          className="w-full dark-input rounded-full px-3 py-2 pl-10 pr-8 text-sm outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all placeholder-slate-500"
         />
         <svg
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+          className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"

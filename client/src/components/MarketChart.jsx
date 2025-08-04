@@ -100,21 +100,21 @@ const MarketChart = () => {
     <div className="h-full">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-xl font-bold text-slate-100 flex items-center">
+          <h2 className="text-xl font-bold text-gray-800 flex items-center">
             <span className="mr-2">📈</span>
             Market Chart
           </h2>
           <div className="flex items-center space-x-4 mt-2">
-            <span className="text-2xl font-bold text-slate-100">
+            <span className="text-2xl font-bold text-gray-800">
               ₹{currentData.price?.toLocaleString() || '19,845.65'}
             </span>
-            <span className={`text-sm font-medium ${priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            <span className={`text-sm font-medium ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {priceChange >= 0 ? '+' : ''}₹{Math.abs(priceChange).toFixed(2)} ({priceChange >= 0 ? '+' : ''}{priceChangePercent}%)
             </span>
           </div>
         </div>
-        <div className="flex items-center space-x-1 text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded-full border border-green-500/30">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+        <div className="flex items-center space-x-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full border border-green-200">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
           <span>Live</span>
         </div>
       </div>
@@ -128,7 +128,7 @@ const MarketChart = () => {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
               selectedTimeframe === timeframe.id
                 ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                : 'glass dark-card text-slate-300 hover:bg-slate-700/50 hover:shadow-md border border-slate-600/30'
+                : 'glass text-gray-600 hover:bg-gray-100 hover:shadow-md border border-gray-200'
             }`}
           >
             <span className="mr-1">{timeframe.icon}</span>
@@ -138,12 +138,12 @@ const MarketChart = () => {
       </div>
 
       {/* Chart */}
-      <div className="glass dark-card rounded-xl p-6 mb-6 border border-slate-700/30">
+      <div className="glass rounded-xl p-6 mb-6 border border-gray-200">
         {loading ? (
           <div className="h-64 flex items-center justify-center">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
-              <p className="text-slate-400">Loading real-time chart data...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading real-time chart data...</p>
             </div>
           </div>
         ) : (
@@ -151,27 +151,27 @@ const MarketChart = () => {
             <ResponsiveContainer width="100%" height="100%">
               {chartType === 'area' ? (
                 <AreaChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis
                     dataKey="time"
-                    stroke="#94a3b8"
+                    stroke="#6b7280"
                     fontSize={12}
                     tickFormatter={(value) => selectedTimeframe === '1D' ? value : value.split('/')[0] + '/' + value.split('/')[1]}
                   />
                   <YAxis
-                    stroke="#94a3b8"
+                    stroke="#6b7280"
                     fontSize={12}
                     tickFormatter={(value) => `₹${value.toLocaleString()}`}
                   />
                   <Tooltip
                     formatter={(value) => [`₹${value.toLocaleString()}`, 'Price']}
-                    labelStyle={{ color: '#e2e8f0' }}
+                    labelStyle={{ color: '#1f2937' }}
                     contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #e5e7eb',
                       borderRadius: '8px',
-                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
-                      color: '#e2e8f0'
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                      color: '#1f2937'
                     }}
                   />
                   <Area
@@ -190,27 +190,27 @@ const MarketChart = () => {
                 </AreaChart>
               ) : (
                 <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis
                     dataKey="time"
-                    stroke="#94a3b8"
+                    stroke="#6b7280"
                     fontSize={12}
                     tickFormatter={(value) => selectedTimeframe === '1D' ? value : value.split('/')[0] + '/' + value.split('/')[1]}
                   />
                   <YAxis
-                    stroke="#94a3b8"
+                    stroke="#6b7280"
                     fontSize={12}
                     tickFormatter={(value) => `₹${value.toLocaleString()}`}
                   />
                   <Tooltip
                     formatter={(value) => [`₹${value.toLocaleString()}`, 'Price']}
-                    labelStyle={{ color: '#e2e8f0' }}
+                    labelStyle={{ color: '#1f2937' }}
                     contentStyle={{
-                      backgroundColor: '#1e293b',
-                      border: '1px solid #475569',
+                      backgroundColor: '#ffffff',
+                      border: '1px solid #e5e7eb',
                       borderRadius: '8px',
-                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.3)',
-                      color: '#e2e8f0'
+                      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                      color: '#1f2937'
                     }}
                   />
                   <Line
@@ -219,7 +219,7 @@ const MarketChart = () => {
                     stroke="#3b82f6"
                     strokeWidth={3}
                     dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
-                    activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#1e293b' }}
+                    activeDot={{ r: 6, stroke: '#3b82f6', strokeWidth: 2, fill: '#ffffff' }}
                   />
                 </LineChart>
               )}

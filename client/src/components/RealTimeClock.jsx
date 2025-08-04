@@ -31,10 +31,10 @@ const RealTimeClock = ({ className = "" }) => {
 
   return (
     <div className={`text-center ${className}`}>
-      <div className="text-xl lg:text-2xl font-bold text-green-400">
+      <div className="text-lg lg:text-xl font-bold text-green-600">
         {formatDate(currentTime)}
       </div>
-      <div className="text-sm text-slate-400">
+      <div className="text-sm text-gray-600">
         {formatTime(currentTime)}
       </div>
     </div>

@@ -175,9 +175,9 @@ const MarketNews = () => {
 
   const getImpactColor = (impact) => {
     switch (impact) {
-      case 'positive': return 'text-green-400 bg-green-500/20 border-green-500/30';
-      case 'negative': return 'text-red-400 bg-red-500/20 border-red-500/30';
-      default: return 'text-blue-400 bg-blue-500/20 border-blue-500/30';
+      case 'positive': return 'text-green-700 bg-green-100 border-green-200';
+      case 'negative': return 'text-red-700 bg-red-100 border-red-200';
+      default: return 'text-blue-700 bg-blue-100 border-blue-200';
     }
   };
 
@@ -221,19 +221,19 @@ const MarketNews = () => {
   return (
     <div className="h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-slate-100 flex items-center">
+        <h2 className="text-xl font-bold text-gray-800 flex items-center">
           <span className="mr-2">📰</span>
           Market News
         </h2>
         <div className="flex items-center space-x-2">
           <button
             onClick={handleViewAll}
-            className="text-xs text-blue-400 hover:text-blue-300 transition-colors"
+            className="text-xs text-blue-600 hover:text-blue-700 transition-colors"
           >
             View All
           </button>
-          <div className="flex items-center space-x-1 text-xs bg-red-500/20 text-red-300 px-2 py-1 rounded-full border border-red-500/30">
-            <div className="w-2 h-2 bg-red-400 rounded-full animate-pulse"></div>
+          <div className="flex items-center space-x-1 text-xs bg-red-100 text-red-700 px-2 py-1 rounded-full border border-red-200">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
             <span>Live</span>
           </div>
         </div>
@@ -242,8 +242,8 @@ const MarketNews = () => {
       {loading ? (
         <div className="flex justify-center items-center h-40">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto mb-2"></div>
-            <p className="text-slate-400 text-sm">Loading latest news...</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto mb-2"></div>
+            <p className="text-gray-600 text-sm">Loading latest news...</p>
           </div>
         </div>
       ) : news.length > 0 ? (
@@ -251,7 +251,7 @@ const MarketNews = () => {
           {displayedNews.map((item) => (
             <div
               key={item.id}
-              className="glass dark-card border border-slate-700/30 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-blue-500/50"
+              className="glass border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-blue-300"
               onClick={() => item.url && window.open(item.url, '_blank')}
             >
               <div className="flex items-start justify-between mb-2">
@@ -261,37 +261,37 @@ const MarketNews = () => {
                     {getImpactIcon(item.impact)} {item.impact}
                   </span>
                 </div>
-                <span className="text-xs text-slate-400">{formatTimeAgo(item.publishedAt)}</span>
+                <span className="text-xs text-gray-500">{formatTimeAgo(item.publishedAt)}</span>
               </div>
 
-              <h3 className="font-semibold text-slate-100 mb-2 line-clamp-2 hover:text-blue-400 transition-colors">
+              <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
                 {item.title}
               </h3>
 
-              <p className="text-sm text-slate-400 mb-3 line-clamp-2">
+              <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                 {item.description}
               </p>
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs text-slate-500">{item.source}</span>
+                  <span className="text-xs text-gray-500">{item.source}</span>
                   {item.stocks.length > 0 && (
                     <>
-                      <span className="text-xs text-slate-600">•</span>
+                      <span className="text-xs text-gray-400">•</span>
                       <div className="flex space-x-1">
                         {item.stocks.slice(0, 2).map((stock, idx) => (
-                          <span key={idx} className="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded border border-blue-500/30">
+                          <span key={idx} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded border border-blue-200">
                             {stock}
                           </span>
                         ))}
                         {item.stocks.length > 2 && (
-                          <span className="text-xs text-slate-500">+{item.stocks.length - 2}</span>
+                          <span className="text-xs text-gray-500">+{item.stocks.length - 2}</span>
                         )}
                       </div>
                     </>
                   )}
                 </div>
-                <button className="text-xs text-blue-400 hover:text-blue-300 font-medium">
+                <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">
                   Read More →
                 </button>
               </div>
@@ -312,7 +312,7 @@ const MarketNews = () => {
           {showAllNews && (
             <button
               onClick={() => setShowAllNews(false)}
-              className="w-full py-3 glass dark-card border border-slate-600/30 text-slate-300 rounded-xl font-medium hover:bg-slate-700/50 transition-all duration-200"
+              className="w-full py-3 glass border border-gray-200 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200"
             >
               <span className="mr-2">📰</span>
               Show Less
@@ -322,7 +322,7 @@ const MarketNews = () => {
       ) : (
         <div className="text-center py-8">
           <span className="text-4xl mb-4 block">📰</span>
-          <p className="text-slate-400">No news available at the moment</p>
+          <p className="text-gray-600">No news available at the moment</p>
           <button
             onClick={fetchRealNews}
             className="mt-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
