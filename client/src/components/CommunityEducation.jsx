@@ -1177,8 +1177,6 @@ export default function CommunityEducation() {
               </div>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+    </PageLayout>
   );
 }
