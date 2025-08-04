@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import PageLayout from './PageLayout';
-import Header from './Header';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import alpacaService from '../services/alpacaService';
 import notificationService from '../services/notificationService';
@@ -821,21 +820,17 @@ export default function SocialTrading() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="flex">
-        <Sidebar />
-
-        <main className="flex-1 p-6">
+    <PageLayout
+      title="👥 Social Trading"
+      subtitle="Follow and copy trades from successful traders"
+    >
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">👥 Social Trading</h1>
-
             <div className="flex items-center space-x-4">
-              <div className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
+              <div className="bg-blue-500/20 text-blue-400 text-xs font-medium px-2.5 py-1 rounded-full border border-blue-500/30">
                 NSE
               </div>
-              <div className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-1 rounded-full flex items-center">
-                <span className="h-2 w-2 bg-purple-500 rounded-full mr-1.5"></span>
+              <div className="bg-purple-500/20 text-purple-400 text-xs font-medium px-2.5 py-1 rounded-full flex items-center border border-purple-500/30">
+                <span className="h-2 w-2 bg-purple-400 rounded-full mr-1.5"></span>
                 Copy Trading
               </div>
             </div>
@@ -1102,8 +1097,6 @@ export default function SocialTrading() {
               </button>
             </div>
           </div>
-        </main>
-      </div>
-    </div>
+    </PageLayout>
   );
 }
