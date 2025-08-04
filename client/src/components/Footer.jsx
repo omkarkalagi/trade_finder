@@ -23,7 +23,7 @@ const Footer = () => {
             </div>
             <div className="flex flex-col items-center sm:items-start">
               <span className="font-black text-xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent tracking-wide">
-                Kalagi Group of Companies
+                Trade Finder Technologies
               </span>
               <span className="text-sm text-slate-400 font-medium">Since 2025</span>
             </div>
@@ -71,7 +71,7 @@ const Footer = () => {
           <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4 text-sm text-slate-400">
             <span>© {currentYear} Trade Finder. All rights reserved.</span>
             <span className="hidden sm:inline text-slate-600">•</span>
-            <span className="font-medium">Powered by Kalagi Technologies</span>
+            <span className="font-medium">Powered by Trade Finder Technologies</span>
           </div>
 
           {/* Social links or additional info */}

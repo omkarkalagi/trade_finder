@@ -70,9 +70,9 @@ const Login = () => {
       if (otp.length === 6) {
         const demoUser = {
           id: '1',
-          name: 'Omkar Kalagi',
+          name: 'Demo User',
           phone: `+91${phone}`,
-          email: 'omkar@kalagigroup.com'
+          email: 'demo@tradefinder.com'
         };
 
         const demoToken = 'demo-jwt-token-' + Date.now();
@@ -293,7 +293,7 @@ const Login = () => {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-sm text-slate-400">
-            With Love ❤️ from <span className="font-semibold text-slate-300">Kalagi Group of Companies</span>
+            Professional Trading Platform
           </p>
           <p className="text-xs text-slate-500 mt-1">Since 2025</p>
         </div>

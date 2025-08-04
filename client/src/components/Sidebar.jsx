@@ -186,7 +186,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               </span>
             </div>
             <div className="opacity-75">
-              Powered by Kalagi Technologies
+              Smart Trading Platform
             </div>
           </div>
         </div>
