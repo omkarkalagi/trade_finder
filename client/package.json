@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "build-with-lint": "eslint src --quiet && vite build",
+    "build": "node build.mjs || node build-fallback.mjs",
+    "build-with-lint": "eslint src --quiet && node build.mjs",
     "verify": "node verify-build.mjs",
     "preview": "vite preview",
     "start": "vite preview --port 3000",
