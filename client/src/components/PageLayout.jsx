@@ -5,7 +5,7 @@ import Footer from './Footer';
 
 const PageLayout = ({ children, title, subtitle }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col">
       <Header />
       <div className="flex flex-1">
         <Sidebar />
@@ -13,12 +13,12 @@ const PageLayout = ({ children, title, subtitle }) => {
           {(title || subtitle) && (
             <div className="mb-6">
               {title && (
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
                   {title}
                 </h1>
               )}
               {subtitle && (
-                <p className="text-slate-400">{subtitle}</p>
+                <p className="text-gray-600">{subtitle}</p>
               )}
             </div>
           )}

@@ -99,9 +99,9 @@ const MarketSummary = () => {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center bg-white/90 rounded-xl border border-gray-200/50">
         <LoadingSpinner
-          text="Connecting to real-time market data..."
+          text="Loading market data..."
           size="md"
         />
       </div>
@@ -110,8 +110,8 @@ const MarketSummary = () => {
 
   if (!marketData || typeof marketData !== 'object' || Object.keys(marketData || {}).length === 0) {
     return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center text-slate-400">
+      <div className="h-full flex items-center justify-center bg-white/90 rounded-xl border border-gray-200/50">
+        <div className="text-center text-gray-600">
           <span className="text-4xl mb-2 block">📊</span>
           <p>Market data unavailable</p>
           <p className="text-xs mt-1">
@@ -125,7 +125,7 @@ const MarketSummary = () => {
   return (
     <div className="h-full">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold text-white flex items-center">
+        <h2 className="text-xl font-bold text-gray-800 flex items-center">
           <span className="mr-2">📊</span>
           Market Summary
         </h2>
@@ -159,31 +159,31 @@ const MarketSummary = () => {
 
       <div className="space-y-3">
         {Object.entries(marketData).map(([key, value]) => (
-          <div key={key} className="glass-light p-4 rounded-lg border border-slate-700/30 hover:shadow-dark transition-all duration-300 hover:scale-105">
+          <div key={key} className="bg-white/90 p-4 rounded-lg border border-gray-200/50 hover:shadow-lg transition-all duration-300 hover:scale-105">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <span className="text-2xl">{value.icon}</span>
                 <div>
-                  <h3 className="font-semibold text-white">{value.name}</h3>
-                  <p className="text-xl lg:text-2xl font-bold text-white">
+                  <h3 className="font-semibold text-gray-800">{value.name}</h3>
+                  <p className="text-xl lg:text-2xl font-bold text-gray-900">
                     ₹{value.price.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                   </p>
                   {value.volume && (
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-gray-500">
                       Vol: {value.volume.toLocaleString()}
                     </p>
                   )}
                 </div>
               </div>
               <div className="text-right">
-                <p className={`text-lg font-bold ${value.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <p className={`text-lg font-bold ${value.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {value.change >= 0 ? '+' : ''}{value.change.toFixed(2)}
                 </p>
-                <p className={`text-sm ${value.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <p className={`text-sm ${value.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   ({value.change >= 0 ? '+' : ''}{value.changePercent.toFixed(2)}%)
                 </p>
                 {value.timestamp && (
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     {new Date(value.timestamp).toLocaleTimeString()}
                   </p>
                 )}
