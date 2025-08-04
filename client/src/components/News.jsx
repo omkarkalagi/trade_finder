@@ -115,7 +115,7 @@ export default function News() {
       <Header />
       <div className="flex">
         <Sidebar />
-        <main className="flex-1 ml-64 p-6">
+        <main className="flex-1 lg:ml-72 p-6">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">
