@@ -1,4 +1,5 @@
 import express from 'express';
+import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import marketRoutes from './routes/marketRoutes.js';
@@ -6,12 +7,15 @@ import tradeRoutes from './routes/tradeRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 import mongoose from 'mongoose'; // Added for health check
 
+// Load environment variables
+dotenv.config();
+
 // Debug: Log imported routes
 console.log('AuthRoutes:', authRoutes);
 console.log('MarketRoutes:', marketRoutes);
 console.log('TradeRoutes:', tradeRoutes);
 
-// Add this immediately after loading dotenv
+// Log environment variables
 console.log('Environment variables loaded:');
 console.log('MONGO_URI:', process.env.MONGO_URI ? 'Set' : 'Not set');
 console.log('ALPACA_API_KEY:', process.env.ALPACA_API_KEY ? 'Set' : 'Not set');
@@ -25,6 +29,10 @@ await connectDB();
 
 // Middleware
 app.use(express.json());
+
+// Import and use CORS middleware
+import cors from 'cors';
+app.use(cors());
 
 // Add this after initializing the app but before other routes
 app.get('/', (req, res) => {

@@ -157,12 +157,12 @@ const Login = () => {
           {step === 'phone' && (
             <form onSubmit={handleSendOTP} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Mobile Number
                 </label>
                 <div className="flex items-center space-x-2">
-                  <div className="flex items-center bg-slate-700/50 border border-slate-600 rounded-lg px-3 py-3">
-                    <span className="text-slate-300 font-medium text-lg">+91</span>
+                  <div className="flex items-center bg-gray-100 border border-gray-300 rounded-lg px-3 py-3">
+                    <span className="text-gray-700 font-medium text-lg">+91</span>
                   </div>
                   <div className="flex-1 relative">
                     <input
@@ -205,15 +205,15 @@ const Login = () => {
           {step === 'otp' && (
             <form onSubmit={handleVerifyOTP} className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Enter OTP
                 </label>
-                <div className="text-xs text-slate-400 mb-3">
+                <div className="text-xs text-gray-600 mb-3">
                   Sent to +91{phone}
                   <button
                     type="button"
                     onClick={() => setStep('phone')}
-                    className="ml-2 text-blue-400 hover:text-blue-300 underline"
+                    className="ml-2 text-blue-600 hover:text-blue-800 underline"
                   >
                     Change number
                   </button>
@@ -277,11 +277,11 @@ const Login = () => {
           )}
 
           {/* Security Notice */}
-          <div className="mt-8 p-4 bg-slate-800/50 rounded-lg border border-slate-700/30">
+          <div className="mt-8 p-4 bg-gray-100 rounded-lg border border-gray-200">
             <div className="flex items-start">
-              <span className="text-yellow-400 mr-2 mt-0.5">🔒</span>
+              <span className="text-yellow-600 mr-2 mt-0.5">🔒</span>
               <div>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs text-gray-600 leading-relaxed">
                   Your phone number is secure and will only be used for authentication.
                   We use industry-standard encryption to protect your data.
                 </p>
@@ -292,10 +292,10 @@ const Login = () => {
 
         {/* Footer */}
         <div className="text-center mt-8">
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-gray-600">
             Professional Trading Platform
           </p>
-          <p className="text-xs text-slate-500 mt-1">Since 2025</p>
+          <p className="text-xs text-gray-500 mt-1">Since 2023</p>
         </div>
       </div>
 

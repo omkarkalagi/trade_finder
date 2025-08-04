@@ -727,7 +727,7 @@ export const getTrades = async (symbols) => {
     // Convert symbols array to comma-separated string if it's an array
     const symbolsParam = Array.isArray(symbols) ? symbols.join(',') : symbols;
 
-    const response = await alpacaDataApi.get('/stocks/trades/latest', {
+    const response = await alpacaService.alpacaDataApi.get('/stocks/trades/latest', {
       params: { symbols: symbolsParam }
     });
     return response.data;
