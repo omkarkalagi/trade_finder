@@ -19,6 +19,10 @@ export default function LiveMarketWidget() {
   }, []);
 
   const renderPriceChange = (change, percentChange) => {
+    if (change === undefined || change === null || percentChange === undefined || percentChange === null) {
+      return <span className="text-gray-500">--</span>;
+    }
+
     const isPositive = change >= 0;
     const colorClass = isPositive ? 'text-green-600' : 'text-red-600';
     const arrow = isPositive ? '▲' : '▼';
@@ -52,9 +56,11 @@ export default function LiveMarketWidget() {
               {Object.entries(marketData).slice(0, 5).map(([symbol, data]) => (
                 <tr key={symbol} className="hover:bg-gray-50">
                   <td className="px-3 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{symbol}</td>
-                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">₹{data.price.toFixed(2)}</td>
+                  <td className="px-3 py-2 whitespace-nowrap text-sm text-gray-500">
+                    ₹{data?.price ? data.price.toFixed(2) : '--'}
+                  </td>
                   <td className="px-3 py-2 whitespace-nowrap text-sm">
-                    {renderPriceChange(data.change, data.percentChange)}
+                    {renderPriceChange(data?.change, data?.percentChange)}
                   </td>
                 </tr>
               ))}

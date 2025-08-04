@@ -35,12 +35,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (token, userData) => {
-    console.log('Login called with:', { token, userData });
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(userData));
     setUser(userData);
     setIsAuthenticated(true);
-    console.log('Authentication state updated:', { isAuthenticated: true, user: userData });
   };
 
   const logout = () => {

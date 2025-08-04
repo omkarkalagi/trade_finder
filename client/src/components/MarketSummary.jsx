@@ -200,7 +200,7 @@ const MarketSummary = () => {
                 <div>
                   <h3 className="font-semibold text-gray-800">{value.name}</h3>
                   <p className="text-xl lg:text-2xl font-bold text-gray-900">
-                    ₹{value.price.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
+                    ₹{value.price ? value.price.toLocaleString('en-IN', { maximumFractionDigits: 2 }) : '--'}
                   </p>
                   {value.volume && (
                     <p className="text-xs text-gray-500">
@@ -211,10 +211,10 @@ const MarketSummary = () => {
               </div>
               <div className="text-right">
                 <p className={`text-lg font-bold ${value.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  {value.change >= 0 ? '+' : ''}{value.change.toFixed(2)}
+                  {value.change >= 0 ? '+' : ''}{value.change ? value.change.toFixed(2) : '--'}
                 </p>
                 <p className={`text-sm ${value.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  ({value.change >= 0 ? '+' : ''}{value.changePercent.toFixed(2)}%)
+                  ({value.change >= 0 ? '+' : ''}{value.changePercent ? value.changePercent.toFixed(2) : '--'}%)
                 </p>
                 {value.timestamp && (
                   <p className="text-xs text-gray-500 mt-1">
