@@ -80,7 +80,7 @@ const Login = () => {
         login(demoToken, demoUser);
         setSuccess('Login successful! Redirecting...');
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate('/', { replace: true });
         }, 1500);
       } else {
         setError('Please enter a valid 6-digit OTP');

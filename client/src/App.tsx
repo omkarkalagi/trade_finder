@@ -5,14 +5,14 @@ import { AlpacaProvider } from './context/AlpacaContext';
 
 function App() {
   useEffect(() => {
-    // Apply dark theme to document
-    document.documentElement.classList.add('dark');
-    document.body.classList.add('dark');
+    // Remove any dark theme classes
+    document.documentElement.classList.remove('dark');
+    document.body.classList.remove('dark');
   }, []);
 
   return (
     <AlpacaProvider>
-      <div className="app-container dark min-h-screen bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+      <div className="app-container min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100">
         {/* The Outlet component will render the matched child route */}
         <Outlet />
       </div>

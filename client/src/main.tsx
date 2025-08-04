@@ -24,10 +24,6 @@ import RiskManagement from './components/RiskManagement';
 
 const router = createBrowserRouter([
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
     path: "/",
     element: <ProtectedRoute><App /></ProtectedRoute>,
     children: [
@@ -49,6 +45,10 @@ const router = createBrowserRouter([
       { path: "risk-management", element: <RiskManagement /> },
       { path: "*", element: <Dashboard /> }, // Fallback to dashboard
     ],
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 ], {
   future: {
