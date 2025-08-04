@@ -70,7 +70,7 @@ export default function Dashboard() {
           </div>
 
           {/* Connection Status Banner */}
-          {!isConnected && (
+          {!isConnected ? (
             <div className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl p-4 shadow-lg">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                 <div className="flex items-center space-x-3">
@@ -87,6 +87,26 @@ export default function Dashboard() {
                   className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors text-sm lg:text-base flex-shrink-0 touch-manipulation"
                 >
                   Connect Now
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-6 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-xl p-4 shadow-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+                <div className="flex items-center space-x-3">
+                  <div className="text-2xl flex-shrink-0">✅</div>
+                  <div>
+                    <h3 className="font-semibold text-sm lg:text-base">Connected to Alpaca</h3>
+                    <p className="text-xs lg:text-sm opacity-90">
+                      Your account is connected and ready for trading
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => alpacaService.disconnect()}
+                  className="bg-white text-red-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors text-sm lg:text-base flex-shrink-0 touch-manipulation"
+                >
+                  Disconnect
                 </button>
               </div>
             </div>

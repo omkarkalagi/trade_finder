@@ -18,6 +18,12 @@ class AlpacaService {
     this.portfolio = null;
     this.listeners = [];
 
+    // Check if we have a stored connection
+    const storedConnection = localStorage.getItem('alpaca_connected');
+    if (storedConnection === 'true') {
+      this.isConnected = true;
+    }
+
     // Create axios instances
     this.alpacaApi = axios.create({
       baseURL: ALPACA_CONFIG.endpoint,
@@ -38,6 +44,11 @@ class AlpacaService {
     });
   }
 
+  // Check if connected to Alpaca
+  isAlpacaConnected() {
+    return this.isConnected;
+  }
+
   // Initialize connection to Alpaca
   async connect() {
     try {
@@ -46,11 +57,32 @@ class AlpacaService {
       // Try to fetch real portfolio data first
       await this.fetchRealPortfolioData();
 
+      // Set connected state
+      this.isConnected = true;
+      localStorage.setItem('alpaca_connected', 'true');
+
+      // Notify listeners
+      this.notifyListeners();
+
+      // Notify user
+      notificationService.notifySystem('Connected to Alpaca successfully!', 'medium');
+
       return { success: true, message: 'Connected to Alpaca successfully!' };
     } catch (error) {
       console.error('Alpaca connection error:', error);
       // Fallback to demo mode
       await this.generateEnhancedDemoPortfolio();
+
+      // Set connected state
+      this.isConnected = true;
+      localStorage.setItem('alpaca_connected', 'true');
+
+      // Notify listeners
+      this.notifyListeners();
+
+      // Notify user
+      notificationService.notifySystem('Connected to Alpaca in demo mode', 'medium');
+
       return { success: true, message: 'Connected to Alpaca (Demo Mode)!' };
     }
   }
@@ -625,7 +657,7 @@ class AlpacaService {
     }
   }
 
-  // Disconnect
+  // Disconnect from Alpaca
   disconnect() {
     this.isConnected = false;
     this.account = null;
@@ -633,8 +665,13 @@ class AlpacaService {
     this.orders = [];
     this.portfolio = null;
 
+    // Remove from local storage
+    localStorage.removeItem('alpaca_connected');
+
     notificationService.notifySystem('Disconnected from Alpaca', 'medium');
     this.notifyListeners();
+
+    return { success: true, message: 'Disconnected from Alpaca' };
   }
 }
 
