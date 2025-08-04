@@ -53,16 +53,16 @@ const Header = ({ onMenuClick }) => {
             <div className="hidden sm:block">
               {getPageTitle() === 'Dashboard' ? (
                 <div className="flex flex-col">
-                  <h1 className="text-2xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
-                      style={{ fontFamily: 'Brush Script MT, cursive' }}>
+                  <h1 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+                      style={{ fontFamily: 'Great Vibes, Dancing Script, cursive' }}>
                     Trade Finder by Omkar Kalagi
                   </h1>
-                  <p className="text-3xl lg:text-5xl font-bold text-gray-800 mt-1">
+                  <p className="text-4xl lg:text-6xl font-bold text-gray-800 mt-2" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '0.1em' }}>
                     DASHBOARD
                   </p>
                 </div>
               ) : (
-                <h1 className="text-3xl lg:text-5xl font-bold text-gray-800">
+                <h1 className="text-4xl lg:text-6xl font-bold text-gray-800" style={{ fontFamily: 'Inter, sans-serif', letterSpacing: '0.1em' }}>
                   {getPageTitle().toUpperCase()}
                 </h1>
               )}
@@ -74,9 +74,9 @@ const Header = ({ onMenuClick }) => {
             {/* Mobile Search Toggle */}
             <button
               onClick={() => setShowMobileSearch(!showMobileSearch)}
-              className="md:hidden p-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors touch-manipulation"
+              className="md:hidden p-2 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 transition-colors touch-manipulation"
             >
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </button>
@@ -87,7 +87,7 @@ const Header = ({ onMenuClick }) => {
             </div>
 
             {/* Market Status - Desktop only */}
-            <div className="hidden xl:flex items-center space-x-2 glass-light px-3 py-2 rounded-full border border-green-500/20">
+            <div className="hidden xl:flex items-center space-x-2 bg-white/90 px-3 py-2 rounded-full border border-green-500/30 shadow-sm">
               <MarketStatusIndicator />
             </div>
 
@@ -103,28 +103,28 @@ const Header = ({ onMenuClick }) => {
 
         {/* Mobile Search Bar */}
         {showMobileSearch && (
-          <div className="md:hidden px-4 pb-4 border-t border-slate-700/30">
+          <div className="md:hidden px-4 pb-4 border-t border-gray-200/50">
             <SearchBar />
           </div>
         )}
       </header>
 
       {/* Mobile Market Status Bar */}
-      <div className="lg:hidden bg-gradient-to-r from-dark-800 to-dark-900 px-4 py-2 border-b border-slate-700/30">
+      <div className="lg:hidden bg-gradient-to-r from-gray-50 to-white px-4 py-2 border-b border-gray-200/50">
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
-              <span className="text-slate-400">NIFTY</span>
-              <span className="text-green-400 font-medium">+0.85%</span>
+              <span className="text-gray-600">NIFTY</span>
+              <span className="text-green-600 font-medium">+0.85%</span>
             </div>
             <div className="flex items-center space-x-1">
-              <span className="text-slate-400">SENSEX</span>
-              <span className="text-green-400 font-medium">+1.12%</span>
+              <span className="text-gray-600">SENSEX</span>
+              <span className="text-green-600 font-medium">+1.12%</span>
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-            <span className="text-green-400 font-medium">Live</span>
+            <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            <span className="text-green-600 font-medium">Live</span>
           </div>
         </div>
       </div>

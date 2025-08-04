@@ -46,7 +46,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Mobile Overlay */}
       {isMobile && isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 lg:hidden"
           onClick={onClose}
         />
       )}
@@ -54,8 +54,8 @@ const Sidebar = ({ isOpen, onClose }) => {
       {/* Sidebar */}
       <div className={`
         fixed lg:static inset-y-0 left-0 z-50
-        bg-gradient-to-b from-dark-900 via-dark-800 to-dark-950
-        text-white w-72 min-h-screen shadow-2xl border-r border-slate-700/30
+        bg-gradient-to-b from-white via-gray-50 to-gray-100
+        text-gray-800 w-72 min-h-screen shadow-2xl border-r border-gray-200/50
         transform transition-transform duration-300 ease-in-out
         ${isMobile ? (isOpen ? 'translate-x-0' : '-translate-x-full') : 'translate-x-0'}
         lg:translate-x-0
@@ -64,16 +64,16 @@ const Sidebar = ({ isOpen, onClose }) => {
         {isMobile && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-lg bg-slate-800/50 hover:bg-slate-700/50 transition-colors lg:hidden"
+            className="absolute top-4 right-4 p-2 rounded-lg bg-gray-100/80 hover:bg-gray-200/80 transition-colors lg:hidden"
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         )}
 
         {/* Logo Section */}
-        <div className="p-6 border-b border-slate-700/30">
+        <div className="p-6 border-b border-gray-200/50">
           <Logo size="md" showText={true} />
         </div>
 
@@ -89,14 +89,14 @@ const Sidebar = ({ isOpen, onClose }) => {
                     `group flex items-center p-3 rounded-xl transition-all duration-200 touch-manipulation ${
                       isActive
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25 transform scale-105'
-                        : 'hover:bg-slate-700/50 hover:transform hover:scale-105 active:scale-95'
+                        : 'hover:bg-gray-100/80 hover:transform hover:scale-105 active:scale-95 text-gray-700'
                     }`
                   }
                 >
                   <span className="mr-4 text-2xl group-hover:animate-bounce flex-shrink-0">{item.icon}</span>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{item.label}</div>
-                    <div className="text-xs text-slate-300 opacity-75 truncate hidden sm:block">{item.description}</div>
+                    <div className="text-xs text-gray-500 opacity-75 truncate hidden sm:block">{item.description}</div>
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,22 +111,22 @@ const Sidebar = ({ isOpen, onClose }) => {
 
         {/* Market Status - Hidden on small mobile screens */}
         <div className="p-4 mt-4 hidden sm:block">
-          <div className="glass-light rounded-xl p-4 border border-green-500/20">
-            <h3 className="text-sm font-semibold mb-3 flex items-center">
+          <div className="bg-white/90 rounded-xl p-4 border border-green-500/30 shadow-sm">
+            <h3 className="text-sm font-semibold mb-3 flex items-center text-gray-800">
               <span className="mr-2">📈</span>
               Market Status
             </h3>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between">
-                <span className="text-slate-300">NIFTY 50</span>
-                <span className="text-green-400 font-medium">+0.85%</span>
+                <span className="text-gray-600">NIFTY 50</span>
+                <span className="text-green-600 font-medium">+0.85%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-300">SENSEX</span>
-                <span className="text-green-400 font-medium">+1.12%</span>
+                <span className="text-gray-600">SENSEX</span>
+                <span className="text-green-600 font-medium">+1.12%</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-300">Bank NIFTY</span>
+                <span className="text-gray-600">Bank NIFTY</span>
                 <span className="text-red-400 font-medium">-0.23%</span>
               </div>
             </div>
