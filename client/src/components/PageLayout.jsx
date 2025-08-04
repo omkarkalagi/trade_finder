@@ -11,7 +11,7 @@ const PageLayout = ({ children, title, subtitle }) => {
       <Header onMenuClick={() => setSidebarOpen(true)} />
       <div className="flex flex-1">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-        <main className="flex-1 lg:ml-0 p-4 lg:p-6 overflow-y-auto">
+        <main className="flex-1 lg:ml-72 p-4 lg:p-6 overflow-y-auto">
           {(title || subtitle) && (
             <div className="mb-6">
               {title && (
