@@ -47,6 +47,12 @@ const MarketSummary = () => {
       }
     }, 1000);
 
+    // Since we're using fallback data, set loading to false immediately
+    setTimeout(() => {
+      setLoading(false);
+      setConnectionStatus('connected');
+    }, 500);
+
     // Initialize with current data if available
     const allMarketData = realTimeMarketService.getAllMarketData() || [];
     const currentData = {};
