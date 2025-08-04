@@ -129,22 +129,24 @@ const Sidebar = ({ isOpen, onClose }) => {
                 <span className="text-gray-600">Bank NIFTY</span>
                 <span className="text-red-400 font-medium">-0.23%</span>
               </div>
+              <div className="mt-3 pt-2 border-t border-gray-200">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-gray-600">Market</span>
+                  <div className="flex items-center">
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                    <span className="text-green-600 font-medium">Open</span>
+                  </div>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">Next Close</span>
+                  <span className="text-gray-700 font-medium">3:30 PM</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Trading Hours - Hidden on small mobile screens */}
-        <div className="p-4 hidden sm:block">
-          <div className="glass-light rounded-xl p-4 border border-purple-500/20">
-            <h3 className="text-sm font-semibold mb-2 flex items-center">
-              <span className="mr-2">🕒</span>
-              Trading Hours
-            </h3>
-            <div className="text-xs text-slate-300">
-              <MarketStatusIndicator />
-            </div>
-          </div>
-        </div>
+
 
         {/* User Profile Section */}
         <div className="p-4 mt-auto">

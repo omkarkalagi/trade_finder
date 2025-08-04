@@ -44,7 +44,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex flex-col">
       <Header onMenuClick={() => setSidebarOpen(true)} />
       <div className="flex flex-1">
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
@@ -54,15 +54,15 @@ export default function Dashboard() {
           <div className="mb-6 lg:mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
-                <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                  🚀 Welcome to Trade Finder By Omkar Kalagi
+                <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+                  🚀 Welcome to Trade Finder
                 </h1>
-                <p className="text-slate-400 text-sm lg:text-base">
+                <p className="text-gray-600 text-sm lg:text-base">
                   Your intelligent trading dashboard powered by AI and real-time market data
                 </p>
               </div>
               <div className="hidden lg:block">
-                <div className="glass dark-card p-4 border border-slate-700/30 rounded-xl">
+                <div className="bg-white/90 p-4 border border-gray-200/50 rounded-xl shadow-sm">
                   <RealTimeClock />
                 </div>
               </div>

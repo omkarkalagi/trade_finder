@@ -826,11 +826,11 @@ export default function SocialTrading() {
     >
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center space-x-4">
-              <div className="bg-blue-500/20 text-blue-400 text-xs font-medium px-2.5 py-1 rounded-full border border-blue-500/30">
+              <div className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
                 NSE
               </div>
-              <div className="bg-purple-500/20 text-purple-400 text-xs font-medium px-2.5 py-1 rounded-full flex items-center border border-purple-500/30">
-                <span className="h-2 w-2 bg-purple-400 rounded-full mr-1.5"></span>
+              <div className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-1 rounded-full flex items-center">
+                <span className="h-2 w-2 bg-purple-500 rounded-full mr-1.5"></span>
                 Copy Trading
               </div>
             </div>
