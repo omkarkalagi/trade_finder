@@ -11,7 +11,7 @@ import BotPerformance from './BotPerformance';
 import FeatureHighlights from './FeatureHighlights';
 import MarketStatus from './MarketStatus';
 import RealTimeClock from './RealTimeClock';
-import zerodhaService from '../services/zerodhaService';
+import alpacaService from '../services/alpacaService';
 import notificationService from '../services/notificationService';
 import marketStatusService from '../services/marketStatusService';
 
@@ -21,18 +21,18 @@ export default function Dashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    // Subscribe to Zerodha service updates
-    const unsubscribe = zerodhaService.subscribe((data) => {
+    // Subscribe to Alpaca service updates
+    const unsubscribe = alpacaService.subscribe((data) => {
       setIsConnected(data.connected);
       if (data.connected) {
-        setPortfolioSummary(zerodhaService.getPortfolioSummary());
+        setPortfolioSummary(data.portfolio);
       }
     });
 
     // Initial state
-    setIsConnected(zerodhaService.isZerodhaConnected());
-    if (zerodhaService.isZerodhaConnected()) {
-      setPortfolioSummary(zerodhaService.getPortfolioSummary());
+    setIsConnected(alpacaService.isAlpacaConnected());
+    if (alpacaService.isAlpacaConnected()) {
+      setPortfolioSummary(alpacaService.getPortfolioSummary());
     }
 
     // Welcome notification
@@ -71,20 +71,20 @@ export default function Dashboard() {
 
           {/* Connection Status Banner */}
           {!isConnected && (
-            <div className="mb-6 bg-gradient-to-r from-orange-500 to-red-500 text-white rounded-xl p-4 shadow-lg">
+            <div className="mb-6 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl p-4 shadow-lg">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
                 <div className="flex items-center space-x-3">
                   <div className="text-2xl flex-shrink-0">🔗</div>
                   <div>
-                    <h3 className="font-semibold text-sm lg:text-base">Connect to Zerodha for Live Trading</h3>
+                    <h3 className="font-semibold text-sm lg:text-base">Connect to Alpaca for Live Trading</h3>
                     <p className="text-xs lg:text-sm opacity-90">
-                      Connect your Zerodha account to access real-time portfolio data and enable live trading
+                      Connect your Alpaca account to access real-time portfolio data and enable live trading
                     </p>
                   </div>
                 </div>
                 <button
-                  onClick={() => zerodhaService.connectToZerodha()}
-                  className="bg-white text-orange-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors text-sm lg:text-base flex-shrink-0 touch-manipulation"
+                  onClick={() => alpacaService.connect()}
+                  className="bg-white text-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors text-sm lg:text-base flex-shrink-0 touch-manipulation"
                 >
                   Connect Now
                 </button>

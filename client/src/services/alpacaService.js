@@ -3,8 +3,8 @@ import notificationService from './notificationService';
 
 // Alpaca Configuration
 const ALPACA_CONFIG = {
-  key: process.env.VITE_ALPACA_API_KEY || 'PK2LGOIJ1F1V9RQ0UPU5',
-  secret: process.env.VITE_ALPACA_API_SECRET || 'lOdhyveIeUkBrO6OPRb38M7XwqxkG4WRLzQsEuIt',
+  key: import.meta.env.VITE_ALPACA_API_KEY || 'PK2LGOIJ1F1V9RQ0UPU5',
+  secret: import.meta.env.VITE_ALPACA_API_SECRET || 'lOdhyveIeUkBrO6OPRb38M7XwqxkG4WRLzQsEuIt',
   endpoint: 'https://paper-api.alpaca.markets/v2',
   dataEndpoint: 'https://data.alpaca.markets/v2'
 };
@@ -277,9 +277,9 @@ class AlpacaService {
   // Fetch real portfolio data from Alpaca
   async fetchRealPortfolioData() {
     try {
-      const apiKey = process.env.REACT_APP_ALPACA_API_KEY;
-      const apiSecret = process.env.REACT_APP_ALPACA_SECRET_KEY;
-      const baseUrl = process.env.REACT_APP_ALPACA_BASE_URL || 'https://paper-api.alpaca.markets';
+      const apiKey = import.meta.env.VITE_ALPACA_API_KEY;
+      const apiSecret = import.meta.env.VITE_ALPACA_API_SECRET;
+      const baseUrl = import.meta.env.VITE_ALPACA_BASE_URL || 'https://paper-api.alpaca.markets';
 
       if (!apiKey || !apiSecret) {
         console.log('Alpaca credentials not configured, using enhanced demo data');
