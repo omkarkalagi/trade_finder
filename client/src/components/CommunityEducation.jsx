@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import PageLayout from './PageLayout';
-import Header from './Header';
 
 // Mock strategy marketplace data
 const STRATEGIES = [
@@ -1020,21 +1019,17 @@ export default function CommunityEducation() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="flex">
-        <Sidebar />
-
-        <main className="flex-1 p-6">
+    <PageLayout
+      title="👥 Community & Education"
+      subtitle="Learn from experts, share strategies, and grow your trading knowledge"
+    >
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">👥 Community & Education</h1>
-
             <div className="flex items-center space-x-4">
-              <div className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-1 rounded-full">
+              <div className="bg-blue-500/20 text-blue-400 text-xs font-medium px-2.5 py-1 rounded-full border border-blue-500/30">
                 NSE
               </div>
-              <div className="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-1 rounded-full flex items-center">
-                <span className="h-2 w-2 bg-purple-500 rounded-full mr-1.5"></span>
+              <div className="bg-purple-500/20 text-purple-400 text-xs font-medium px-2.5 py-1 rounded-full flex items-center border border-purple-500/30">
+                <span className="h-2 w-2 bg-purple-400 rounded-full mr-1.5"></span>
                 Premium
               </div>
             </div>
