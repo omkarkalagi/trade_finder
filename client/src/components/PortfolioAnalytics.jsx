@@ -299,10 +299,11 @@ export default function PortfolioAnalytics() {
       } catch (error) {
         console.error('Error initializing portfolio:', error);
         setPortfolioData(PORTFOLIO_DATA);
-        setWatchlistData(WATCHLIST_DATA);
+        setWatchlistData(PORTFOLIO_DATA.watchlist || []);
+      } finally {
+        // Ensure loading is always set to false
+        setTimeout(() => setLoading(false), 100);
       }
-
-      setLoading(false);
     };
 
     initializePortfolioData();

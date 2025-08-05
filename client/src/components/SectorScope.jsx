@@ -13,6 +13,7 @@ const SectorScope = () => {
   const [watchlist, setWatchlist] = useState([]);
   const [orderHistory, setOrderHistory] = useState([]);
   const [realTimeData, setRealTimeData] = useState({});
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   // Mock sector data
   const mockSectorData = [
@@ -177,6 +178,13 @@ const SectorScope = () => {
 
     initializeSectorData();
 
+    // Update time every second
+    const timeInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timeInterval);
+
     // Subscribe to Alpaca updates
     const unsubscribe = alpacaService.subscribe((data) => {
       setIsAlpacaConnected(data.connected);
@@ -291,7 +299,7 @@ const SectorScope = () => {
       if (!confirmed) return;
 
       // Place the order
-      const order = await alpacaService.placeBuyOrder(stock.symbol, orderQuantity, 'market');
+      const order = await alpacaService.placeMarketOrder(stock.symbol, orderQuantity, 'buy');
 
       if (order) {
         notificationService.notifyTrade(
@@ -368,7 +376,7 @@ const SectorScope = () => {
 
       if (!confirmed) return;
 
-      const order = await alpacaService.placeSellOrder(stock.symbol, orderQuantity, 'market');
+      const order = await alpacaService.placeMarketOrder(stock.symbol, orderQuantity, 'sell');
       notificationService.notifyTrade(
         `✅ Sell order placed: ${orderQuantity} shares of ${stock.symbol} at ₹${currentPrice}`,
         'success'
@@ -437,7 +445,7 @@ const SectorScope = () => {
             <div className="text-sm text-gray-600">Total Market Cap</div>
           </div>
           <div className="bg-white rounded-xl p-4 shadow-lg border border-gray-200">
-            <div className="text-2xl font-bold text-orange-600">{new Date().toLocaleTimeString()}</div>
+            <div className="text-2xl font-bold text-orange-600">{currentTime.toLocaleTimeString()}</div>
             <div className="text-sm text-gray-600">Last Updated</div>
           </div>
         </div>

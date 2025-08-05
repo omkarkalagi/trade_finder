@@ -11,7 +11,7 @@ const DATA_SOURCES = [
     updateFrequency: 'Real-time',
     coverage: 'US, India, Global',
     price: 'Premium',
-    icon: '💬',
+    icon: 'SOCIAL',
     image: 'https://images.unsplash.com/photo-1611224923853-80b023f02d71?w=400&h=200&fit=crop&crop=center',
     features: ['Real-time monitoring', 'Emotion analysis', 'Trend detection', 'Influencer tracking'],
     accuracy: '87%',
@@ -25,7 +25,7 @@ const DATA_SOURCES = [
     updateFrequency: '15 minutes',
     coverage: 'Global',
     price: 'Premium',
-    icon: '📰',
+    icon: 'NEWS',
     image: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=400&h=200&fit=crop&crop=center',
     features: ['NLP analysis', 'Impact scoring', 'Source credibility', 'Breaking news alerts'],
     accuracy: '92%',
@@ -39,7 +39,7 @@ const DATA_SOURCES = [
     updateFrequency: 'Daily/Monthly',
     coverage: 'Global',
     price: 'Basic',
-    icon: '📊',
+    icon: 'ECON',
     image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop&crop=center',
     features: ['Economic calendars', 'Forecasting models', 'Historical data', 'Policy tracking'],
     accuracy: '95%',
@@ -53,7 +53,7 @@ const DATA_SOURCES = [
     updateFrequency: 'Daily',
     coverage: 'US, India',
     price: 'Premium',
-    icon: '👔',
+    icon: 'INSIDER',
     image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=200&fit=crop&crop=center',
     features: ['Executive tracking', 'Pattern analysis', 'Timing insights', 'Volume analysis'],
     accuracy: '89%',
@@ -67,7 +67,7 @@ const DATA_SOURCES = [
     updateFrequency: 'Real-time',
     coverage: 'US, India',
     price: 'Premium',
-    icon: '🔄',
+    icon: 'OPTIONS',
     image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=400&h=200&fit=crop&crop=center',
     features: ['Unusual activity alerts', 'Gamma exposure', 'Put/call ratios', 'Smart money tracking'],
     accuracy: '85%',
@@ -81,7 +81,7 @@ const DATA_SOURCES = [
     updateFrequency: 'Real-time',
     coverage: 'Global',
     price: 'Basic',
-    icon: '₿',
+    icon: 'CRYPTO',
     image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=400&h=200&fit=crop&crop=center',
     features: ['Fear & greed index', 'On-chain metrics', 'Whale tracking', 'DeFi analytics'],
     accuracy: '78%',
@@ -385,7 +385,7 @@ export default function AlternativeData() {
       >
         <div className="flex justify-between items-start mb-2">
           <div className="flex items-center">
-            <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-xl">
+            <div className="flex-shrink-0 bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-medium">
               {source.icon}
             </div>
             <h3 className="ml-3 font-medium">{source.name}</h3>
