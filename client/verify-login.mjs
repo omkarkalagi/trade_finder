@@ -12,24 +12,24 @@ try {
     console.log('❌ main.tsx does not import Login component correctly')
   }
 
-  // Check Login.jsx exists and has NEW light theme
+  // Check Login.jsx exists and has restored original design
   const loginContent = readFileSync(resolve('src/components/Login.jsx'), 'utf8')
-  if (loginContent.includes('bg-gradient-to-br from-blue-50 via-white to-purple-50')) {
-    console.log('✅ Login.jsx has NEW light theme styling')
+  if (loginContent.includes('bg-gray-50')) {
+    console.log('✅ Login.jsx has restored original light theme')
   } else {
-    console.log('❌ Login.jsx does not have NEW light theme styling')
+    console.log('❌ Login.jsx does not have restored original light theme')
   }
 
-  if (loginContent.includes('NEW v3.0 - Light Theme Active')) {
-    console.log('✅ Login.jsx has NEW version identifier')
+  if (loginContent.includes('by Omkar Kalagi')) {
+    console.log('✅ Login.jsx has author attribution')
   } else {
-    console.log('❌ Login.jsx missing NEW version identifier')
+    console.log('❌ Login.jsx missing author attribution')
   }
 
-  if (loginContent.includes('COMPLETELY REBUILT')) {
-    console.log('✅ Login.jsx is the completely rebuilt version')
+  if (loginContent.includes('RESTORED ORIGINAL LOGIN')) {
+    console.log('✅ Login.jsx is the restored original version')
   } else {
-    console.log('❌ Login.jsx is not the rebuilt version')
+    console.log('❌ Login.jsx is not the restored original version')
   }
 
   // Check that LoginPage.jsx is removed
