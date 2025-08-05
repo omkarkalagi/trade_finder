@@ -11,7 +11,7 @@ async function buildApp() {
     console.log('🧹 Aggressively cleaning ALL caches and builds...')
 
     // Force clean multiple directories
-    const dirsToClean = ['dist', 'build', 'node_modules/.cache', 'node_modules/.vite']
+    const dirsToClean = ['build', 'dist', 'node_modules/.cache', 'node_modules/.vite']
     for (const dir of dirsToClean) {
       try {
         rmSync(resolve(__dirname, dir), { recursive: true, force: true })
@@ -28,7 +28,7 @@ async function buildApp() {
       configFile: resolve(__dirname, 'vite.config.js'),
       logLevel: 'info',
       build: {
-        outDir: 'dist',
+        outDir: 'build',
         emptyOutDir: true,
         rollupOptions: {
           output: {
@@ -39,6 +39,7 @@ async function buildApp() {
     })
 
     console.log('✅ Fresh build completed successfully!')
+    console.log('📁 Build output directory: build/')
   } catch (error) {
     console.error('❌ Build failed:', error)
     process.exit(1)
