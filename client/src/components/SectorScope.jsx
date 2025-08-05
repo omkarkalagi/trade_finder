@@ -551,7 +551,7 @@ const SectorScope = () => {
                       max="1000"
                       value={orderQuantity}
                       onChange={(e) => setOrderQuantity(parseInt(e.target.value) || 1)}
-                      className="w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center"
+                      className="w-16 px-2 py-1 border border-gray-300 rounded text-sm text-center bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     />
                   </div>
 

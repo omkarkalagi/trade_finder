@@ -756,21 +756,109 @@ export default function PortfolioAnalytics() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div className="bg-white p-4 rounded-lg border border-gray-200">
             <h3 className="font-medium mb-3">Risk Heatmap</h3>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500">Risk heatmap would be displayed here</p>
+            <div className="h-64 bg-gray-50 rounded-lg p-4">
+              {/* Demo Risk Heatmap */}
+              <div className="grid grid-cols-5 gap-1 h-full">
+                {/* Row 1 - Banking */}
+                <div className="bg-red-400 rounded flex items-center justify-center text-xs text-white font-medium">HDFC</div>
+                <div className="bg-red-300 rounded flex items-center justify-center text-xs text-white font-medium">ICICI</div>
+                <div className="bg-orange-400 rounded flex items-center justify-center text-xs text-white font-medium">SBI</div>
+                <div className="bg-yellow-400 rounded flex items-center justify-center text-xs text-gray-800 font-medium">AXIS</div>
+                <div className="bg-green-400 rounded flex items-center justify-center text-xs text-white font-medium">KOTAK</div>
+
+                {/* Row 2 - IT */}
+                <div className="bg-green-500 rounded flex items-center justify-center text-xs text-white font-medium">TCS</div>
+                <div className="bg-green-400 rounded flex items-center justify-center text-xs text-white font-medium">INFY</div>
+                <div className="bg-yellow-400 rounded flex items-center justify-center text-xs text-gray-800 font-medium">WIPRO</div>
+                <div className="bg-orange-300 rounded flex items-center justify-center text-xs text-white font-medium">HCL</div>
+                <div className="bg-green-300 rounded flex items-center justify-center text-xs text-white font-medium">TECH M</div>
+
+                {/* Row 3 - Energy */}
+                <div className="bg-red-500 rounded flex items-center justify-center text-xs text-white font-medium">RIL</div>
+                <div className="bg-orange-500 rounded flex items-center justify-center text-xs text-white font-medium">ONGC</div>
+                <div className="bg-red-400 rounded flex items-center justify-center text-xs text-white font-medium">IOC</div>
+                <div className="bg-yellow-500 rounded flex items-center justify-center text-xs text-gray-800 font-medium">BPCL</div>
+                <div className="bg-orange-400 rounded flex items-center justify-center text-xs text-white font-medium">HPCL</div>
+
+                {/* Row 4 - FMCG */}
+                <div className="bg-green-400 rounded flex items-center justify-center text-xs text-white font-medium">HUL</div>
+                <div className="bg-green-300 rounded flex items-center justify-center text-xs text-white font-medium">ITC</div>
+                <div className="bg-yellow-300 rounded flex items-center justify-center text-xs text-gray-800 font-medium">NESTLE</div>
+                <div className="bg-green-500 rounded flex items-center justify-center text-xs text-white font-medium">BRIT</div>
+                <div className="bg-yellow-400 rounded flex items-center justify-center text-xs text-gray-800 font-medium">DABUR</div>
+              </div>
             </div>
-            <div className="mt-3 text-xs text-gray-500">
-              * Showing risk exposure by sector and market cap
+            <div className="mt-3 text-xs text-gray-500 flex items-center justify-between">
+              <span>* Showing risk exposure by sector and market cap</span>
+              <div className="flex items-center space-x-2">
+                <span className="flex items-center"><div className="w-3 h-3 bg-green-500 rounded mr-1"></div>Low Risk</span>
+                <span className="flex items-center"><div className="w-3 h-3 bg-yellow-500 rounded mr-1"></div>Medium</span>
+                <span className="flex items-center"><div className="w-3 h-3 bg-red-500 rounded mr-1"></div>High Risk</span>
+              </div>
             </div>
           </div>
 
           <div className="bg-white p-4 rounded-lg border border-gray-200">
             <h3 className="font-medium mb-3">Correlation Matrix</h3>
-            <div className="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-              <p className="text-gray-500">Correlation matrix would be displayed here</p>
+            <div className="h-64 bg-gray-50 rounded-lg p-4">
+              {/* Demo Correlation Matrix */}
+              <div className="grid grid-cols-6 gap-1 h-full text-xs">
+                {/* Header Row */}
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700"></div>
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">HDFC</div>
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">TCS</div>
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">RIL</div>
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">INFY</div>
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">ITC</div>
+
+                {/* HDFC Row */}
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">HDFC</div>
+                <div className="bg-blue-600 rounded flex items-center justify-center text-white font-medium">1.0</div>
+                <div className="bg-blue-300 rounded flex items-center justify-center text-white font-medium">0.3</div>
+                <div className="bg-blue-400 rounded flex items-center justify-center text-white font-medium">0.5</div>
+                <div className="bg-blue-200 rounded flex items-center justify-center text-gray-800 font-medium">0.2</div>
+                <div className="bg-red-200 rounded flex items-center justify-center text-gray-800 font-medium">-0.1</div>
+
+                {/* TCS Row */}
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">TCS</div>
+                <div className="bg-blue-300 rounded flex items-center justify-center text-white font-medium">0.3</div>
+                <div className="bg-blue-600 rounded flex items-center justify-center text-white font-medium">1.0</div>
+                <div className="bg-blue-200 rounded flex items-center justify-center text-gray-800 font-medium">0.1</div>
+                <div className="bg-blue-500 rounded flex items-center justify-center text-white font-medium">0.8</div>
+                <div className="bg-blue-300 rounded flex items-center justify-center text-white font-medium">0.4</div>
+
+                {/* RIL Row */}
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">RIL</div>
+                <div className="bg-blue-400 rounded flex items-center justify-center text-white font-medium">0.5</div>
+                <div className="bg-blue-200 rounded flex items-center justify-center text-gray-800 font-medium">0.1</div>
+                <div className="bg-blue-600 rounded flex items-center justify-center text-white font-medium">1.0</div>
+                <div className="bg-blue-200 rounded flex items-center justify-center text-gray-800 font-medium">0.2</div>
+                <div className="bg-blue-300 rounded flex items-center justify-center text-white font-medium">0.3</div>
+
+                {/* INFY Row */}
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">INFY</div>
+                <div className="bg-blue-200 rounded flex items-center justify-center text-gray-800 font-medium">0.2</div>
+                <div className="bg-blue-500 rounded flex items-center justify-center text-white font-medium">0.8</div>
+                <div className="bg-blue-200 rounded flex items-center justify-center text-gray-800 font-medium">0.2</div>
+                <div className="bg-blue-600 rounded flex items-center justify-center text-white font-medium">1.0</div>
+                <div className="bg-blue-300 rounded flex items-center justify-center text-white font-medium">0.3</div>
+
+                {/* ITC Row */}
+                <div className="bg-gray-200 rounded flex items-center justify-center font-medium text-gray-700">ITC</div>
+                <div className="bg-red-200 rounded flex items-center justify-center text-gray-800 font-medium">-0.1</div>
+                <div className="bg-blue-300 rounded flex items-center justify-center text-white font-medium">0.4</div>
+                <div className="bg-blue-300 rounded flex items-center justify-center text-white font-medium">0.3</div>
+                <div className="bg-blue-300 rounded flex items-center justify-center text-white font-medium">0.3</div>
+                <div className="bg-blue-600 rounded flex items-center justify-center text-white font-medium">1.0</div>
+              </div>
             </div>
-            <div className="mt-3 text-xs text-gray-500">
-              * Showing correlation between holdings
+            <div className="mt-3 text-xs text-gray-500 flex items-center justify-between">
+              <span>* Showing correlation between holdings</span>
+              <div className="flex items-center space-x-2">
+                <span className="flex items-center"><div className="w-3 h-3 bg-red-400 rounded mr-1"></div>Negative</span>
+                <span className="flex items-center"><div className="w-3 h-3 bg-blue-300 rounded mr-1"></div>Low</span>
+                <span className="flex items-center"><div className="w-3 h-3 bg-blue-600 rounded mr-1"></div>High</span>
+              </div>
             </div>
           </div>
         </div>
@@ -1279,7 +1367,7 @@ export default function PortfolioAnalytics() {
         {/* Connection Status */}
         <div className="bg-white p-4 border border-gray-200 rounded-xl shadow-lg">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-slate-100">Account Connections</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Account Connections</h3>
             <div className="flex items-center space-x-4">
               <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm ${
                 isAlpacaConnected
