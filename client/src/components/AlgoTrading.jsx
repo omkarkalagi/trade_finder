@@ -3,6 +3,7 @@ import PageLayout from './PageLayout';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import alpacaService from '../services/alpacaService';
 import notificationService from '../services/notificationService';
+import LoadingSpinner from './common/LoadingSpinner';
 
 export default function AlgoTrading() {
   const [activeStrategy, setActiveStrategy] = useState(null);
@@ -417,12 +418,18 @@ export default function AlgoTrading() {
                       {isRunning ? 'Running' : 'Stopped'}
                     </div>
                   </div>
-                  <div className="mb-4">
+                  <div className="mb-4 space-y-2">
                     <button
                       onClick={toggleStrategy}
                       className={`w-full py-2 rounded-lg font-medium ${isRunning ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'}`}
                     >
                       {isRunning ? 'Stop Strategy' : 'Start Strategy'}
+                    </button>
+                    <button
+                      onClick={() => setShowInvestmentModal(true)}
+                      className="w-full py-2 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      📊 Track Investment
                     </button>
                   </div>
                   <div className="text-sm text-gray-600">

@@ -111,7 +111,7 @@ export default function News() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="flex">
         <Sidebar />
@@ -120,11 +120,11 @@ export default function News() {
             {/* Header */}
             <div className="mb-8">
               <h1 className="text-3xl font-bold text-white mb-2">📰 Market News</h1>
-              <p className="text-slate-400">Stay updated with the latest market developments and financial news</p>
+              <p className="text-gray-600">Stay updated with the latest market developments and financial news</p>
             </div>
 
             {/* Filters */}
-            <div className="bg-slate-800 rounded-xl p-6 mb-6">
+            <div className="bg-white rounded-xl p-6 mb-6 shadow-lg border border-gray-200">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {/* Search */}
                 <div className="relative">

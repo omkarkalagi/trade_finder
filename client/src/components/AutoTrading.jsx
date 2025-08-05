@@ -339,12 +339,18 @@ export default function AutoTrading() {
                       {isRunning ? 'Running' : 'Stopped'}
                     </div>
                   </div>
-                  <div className="mb-4">
+                  <div className="mb-4 space-y-2">
                     <button
                       onClick={toggleBot}
                       className={`w-full py-2 rounded-lg font-medium ${isRunning ? 'bg-red-500 hover:bg-red-600 text-white' : 'bg-green-500 hover:bg-green-600 text-white'}`}
                     >
                       {isRunning ? 'Stop Bot' : 'Start Bot'}
+                    </button>
+                    <button
+                      onClick={() => setShowInvestmentModal(true)}
+                      className="w-full py-2 rounded-lg font-medium bg-blue-500 hover:bg-blue-600 text-white"
+                    >
+                      📊 Track Investment
                     </button>
                   </div>
                   {botPerformance && isRunning && (
