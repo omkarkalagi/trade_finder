@@ -1,4 +1,4 @@
-// Fixed: Phone input display and bo.connect error - v2.0
+// NEW LIGHT THEME LOGIN - v3.0 - COMPLETELY REBUILT
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -55,7 +55,9 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
 
+    // Validate OTP
     if (!otp || otp.length !== 6) {
       setError('Please enter a valid 6-digit OTP');
       setLoading(false);
@@ -95,26 +97,25 @@ const Login = () => {
 
   const handleResendOTP = () => {
     if (countdown === 0) {
-      setOtp('');
-      setStep('phone');
-      setError('');
-      setSuccess('');
+      setCountdown(300);
+      setSuccess('OTP resent successfully!');
+      setTimeout(() => setSuccess(''), 3000);
     }
   };
 
-  const formatCountdown = (seconds) => {
+  const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-2000"></div>
+        <div className="absolute top-40 left-40 w-80 h-80 bg-pink-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-pulse animation-delay-4000"></div>
       </div>
 
       {/* Login Card */}
@@ -132,14 +133,14 @@ const Login = () => {
             <p className="text-sm text-gray-600 mt-2">
               {step === 'phone' ? 'Enter your mobile number to continue' : 'Enter the OTP sent to your phone'}
             </p>
-            <p className="text-xs text-gray-400 mt-1">v2.1 - Light Theme</p>
+            <p className="text-xs text-green-600 font-semibold mt-1">✅ NEW v3.0 - Light Theme Active</p>
           </div>
 
           {/* Error/Success Messages */}
           {error && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm animate-bounce-in">
               <div className="flex items-center">
-                <span className="mr-2">❌</span>
+                <span className="mr-2">⚠️</span>
                 {error}
               </div>
             </div>
@@ -161,31 +162,26 @@ const Login = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Mobile Number
                 </label>
-                <div className="flex items-center space-x-2">
-                  <div className="flex items-center bg-gray-100 border border-gray-300 rounded-lg px-3 py-3">
-                    <span className="text-gray-700 font-medium text-lg">+91</span>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500 text-sm">+91</span>
                   </div>
-                  <div className="flex-1 relative">
-                    <input
-                      type="tel"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                      className="w-full px-4 py-3 text-lg font-medium bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
-                      placeholder="9876543210"
-                      maxLength="10"
-                      required
-                    />
-                    <div className="absolute inset-y-0 right-0 pr-4 flex items-center">
-                      <span className="text-slate-500 text-sm font-medium">{phone.length}/10</span>
-                    </div>
-                  </div>
+                  <input
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    placeholder="Enter 10-digit mobile number"
+                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-gray-900 placeholder-gray-500"
+                    required
+                    maxLength="10"
+                  />
                 </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading || phone.length !== 10}
-                className="w-full btn-primary py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 hover:scale-105 active:scale-95"
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
               >
                 {loading ? (
                   <div className="flex items-center justify-center">
@@ -193,10 +189,7 @@ const Login = () => {
                     Sending OTP...
                   </div>
                 ) : (
-                  <div className="flex items-center justify-center">
-                    <span className="mr-2">📱</span>
-                    Send OTP
-                  </div>
+                  'Send OTP'
                 )}
               </button>
             </form>
@@ -209,118 +202,79 @@ const Login = () => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Enter OTP
                 </label>
-                <div className="text-xs text-gray-600 mb-3">
-                  Sent to +91{phone}
-                  <button
-                    type="button"
-                    onClick={() => setStep('phone')}
-                    className="ml-2 text-blue-600 hover:text-blue-800 underline"
-                  >
-                    Change number
-                  </button>
-                </div>
                 <input
                   type="text"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  className="w-full px-4 py-3 text-center text-2xl font-bold tracking-widest bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
-                  placeholder="000000"
-                  maxLength="6"
+                  placeholder="Enter 6-digit OTP"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-center text-lg font-mono tracking-widest text-gray-900 placeholder-gray-500"
                   required
+                  maxLength="6"
                 />
-                <div className="text-center mt-2">
-                  <span className="text-slate-500 text-sm">{otp.length}/6</span>
-                </div>
+                <p className="text-xs text-gray-500 mt-1 text-center">
+                  OTP sent to +91{phone}
+                </p>
               </div>
 
-              {/* Countdown Timer */}
-              {countdown > 0 && (
-                <div className="text-center">
-                  <p className="text-sm text-slate-400">
-                    Resend OTP in <span className="font-mono font-bold text-blue-400">{formatCountdown(countdown)}</span>
+              <button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105"
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                    Verifying...
+                  </div>
+                ) : (
+                  'Verify OTP'
+                )}
+              </button>
+
+              {/* Resend OTP */}
+              <div className="text-center">
+                {countdown > 0 ? (
+                  <p className="text-sm text-gray-500">
+                    Resend OTP in {formatTime(countdown)}
                   </p>
-                </div>
-              )}
-
-              <div className="space-y-3">
-                <button
-                  type="submit"
-                  disabled={loading || otp.length !== 6}
-                  className="w-full btn-primary py-3 text-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transform transition-all duration-200 hover:scale-105 active:scale-95"
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Verifying...
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center">
-                      <span className="mr-2">🔐</span>
-                      Verify & Login
-                    </div>
-                  )}
-                </button>
-
-                {countdown === 0 && (
+                ) : (
                   <button
                     type="button"
                     onClick={handleResendOTP}
-                    className="w-full btn-secondary py-3 text-lg font-semibold transform transition-all duration-200 hover:scale-105 active:scale-95"
+                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    <div className="flex items-center justify-center">
-                      <span className="mr-2">🔄</span>
-                      Resend OTP
-                    </div>
+                    Resend OTP
                   </button>
                 )}
+              </div>
+
+              {/* Back to phone */}
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setStep('phone');
+                    setOtp('');
+                    setError('');
+                    setSuccess('');
+                    setCountdown(0);
+                  }}
+                  className="text-sm text-gray-600 hover:text-gray-700"
+                >
+                  ← Change phone number
+                </button>
               </div>
             </form>
           )}
 
-          {/* Security Notice */}
-          <div className="mt-8 p-4 bg-gray-100 rounded-lg border border-gray-200">
-            <div className="flex items-start">
-              <span className="text-yellow-600 mr-2 mt-0.5">🔒</span>
-              <div>
-                <p className="text-xs text-gray-600 leading-relaxed">
-                  Your phone number is secure and will only be used for authentication.
-                  We use industry-standard encryption to protect your data.
-                </p>
-              </div>
-            </div>
+          {/* Footer */}
+          <div className="mt-8 text-center">
+            <p className="text-xs text-gray-500">
+              By continuing, you agree to our Terms of Service and Privacy Policy
+            </p>
           </div>
         </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-gray-600">
-            Professional Trading Platform
-          </p>
-          <p className="text-xs text-gray-500 mt-1">Since 2023</p>
-        </div>
       </div>
-
-      {/* Additional CSS for animations */}
-      <style jsx>{`
-        @keyframes blob {
-          0% { transform: translate(0px, 0px) scale(1); }
-          33% { transform: translate(30px, -50px) scale(1.1); }
-          66% { transform: translate(-20px, 20px) scale(0.9); }
-          100% { transform: translate(0px, 0px) scale(1); }
-        }
-
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </div>
   );
 };

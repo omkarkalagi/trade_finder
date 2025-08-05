@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkalladins_chirag_client=self.webpackChunkalladins_chirag_client||[]).push([[989],{7989:(a,l,c)=>{c.r(l);c(1614)}}]);

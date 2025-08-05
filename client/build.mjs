@@ -8,14 +8,17 @@ const __dirname = dirname(__filename)
 
 async function buildApp() {
   try {
-    console.log('🧹 Cleaning previous build...')
+    console.log('🧹 Aggressively cleaning ALL caches and builds...')
 
-    // Force clean the dist directory
-    try {
-      rmSync(resolve(__dirname, 'dist'), { recursive: true, force: true })
-      console.log('✅ Previous build cleaned')
-    } catch (err) {
-      console.log('ℹ️ No previous build to clean')
+    // Force clean multiple directories
+    const dirsToClean = ['dist', 'build', 'node_modules/.cache', 'node_modules/.vite']
+    for (const dir of dirsToClean) {
+      try {
+        rmSync(resolve(__dirname, dir), { recursive: true, force: true })
+        console.log(`✅ Cleaned ${dir}`)
+      } catch (err) {
+        console.log(`ℹ️ No ${dir} to clean`)
+      }
     }
 
     console.log('🔨 Starting fresh Vite build...')
