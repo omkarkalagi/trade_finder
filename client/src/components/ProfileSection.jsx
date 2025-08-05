@@ -117,7 +117,7 @@ const ProfileSection = () => {
                   {isConnected && userProfile ? userProfile.user_name : 'Omkar D'}
                 </h3>
                 <p className="text-sm text-gray-600">
-                  {isConnected && userProfile ? userProfile.email : 'omkar@example.com'}
+                  {isConnected && userProfile ? userProfile.email : 'omkardigambar4@gmail.com'}
                 </p>
                 <div className={`text-xs font-medium ${isConnected ? 'text-green-600' : 'text-gray-500'}`}>
                   {isConnected ? '🟢 Connected to Zerodha' : '⚪ Not Connected'}

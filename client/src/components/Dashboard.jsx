@@ -154,13 +154,13 @@ export default function Dashboard() {
             {/* Trading Activity */}
             <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">📊</span>
+                <span className="mr-2 bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-medium">ACTIVITY</span>
                 Recent Activity
               </h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between p-2 bg-green-50 rounded-lg">
                   <div className="flex items-center">
-                    <span className="text-green-600 mr-2">📈</span>
+                    <span className="text-green-600 mr-2 font-bold">BUY</span>
                     <div>
                       <p className="text-sm font-medium text-gray-800">RELIANCE</p>
                       <p className="text-xs text-gray-600">Bought 10 shares</p>
@@ -170,7 +170,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between p-2 bg-red-50 rounded-lg">
                   <div className="flex items-center">
-                    <span className="text-red-600 mr-2">📉</span>
+                    <span className="text-red-600 mr-2 font-bold">SELL</span>
                     <div>
                       <p className="text-sm font-medium text-gray-800">TCS</p>
                       <p className="text-xs text-gray-600">Sold 5 shares</p>
@@ -180,7 +180,7 @@ export default function Dashboard() {
                 </div>
                 <div className="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
                   <div className="flex items-center">
-                    <span className="text-blue-600 mr-2">🤖</span>
+                    <span className="text-blue-600 mr-2 font-bold">BOT</span>
                     <div>
                       <p className="text-sm font-medium text-gray-800">Auto Bot</p>
                       <p className="text-xs text-gray-600">Strategy executed</p>
@@ -194,7 +194,7 @@ export default function Dashboard() {
             {/* Market Movers */}
             <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                <span className="mr-2">🚀</span>
+                <span className="mr-2 bg-green-100 text-green-600 px-2 py-1 rounded text-xs font-medium">MOVERS</span>
                 Top Movers
               </h3>
               <div className="space-y-2">

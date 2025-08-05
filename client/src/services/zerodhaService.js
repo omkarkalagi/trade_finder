@@ -93,7 +93,7 @@ class ZerodhaService {
         this.userProfile = {
           user_id: 'OK1234',
           user_name: 'Omkar D',
-          email: 'omkar@example.com',
+          email: 'omkardigambar4@gmail.com',
           broker: 'ZERODHA',
           exchanges: ['NSE', 'BSE', 'MCX'],
           products: ['CNC', 'MIS', 'NRML'],

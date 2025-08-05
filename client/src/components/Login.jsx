@@ -74,7 +74,7 @@ const Login = () => {
           id: '1',
           name: 'Demo User',
           phone: `+91${phone}`,
-          email: 'demo@tradefinder.com'
+          email: 'omkardigambar4@gmail.com'
         };
 
         const demoToken = 'demo-jwt-token-' + Date.now();
@@ -139,8 +139,8 @@ const Login = () => {
                 <label className="block text-sm font-medium text-gray-600 mb-3">
                   Mobile Number
                 </label>
-                <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden">
-                  <div className="flex items-center justify-center bg-gray-500 text-white px-4 py-3 font-medium">
+                <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white">
+                  <div className="flex items-center justify-center bg-blue-500 text-white px-4 py-3 font-medium">
                     +91
                   </div>
                   <input
@@ -177,12 +177,12 @@ const Login = () => {
               </button>
 
               {/* Information Box */}
-              <div className="bg-gray-600 text-white p-4 rounded-xl text-sm">
+              <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-xl text-sm">
                 <div className="flex items-start">
-                  <span className="text-orange-400 mr-2 mt-0.5">🔒</span>
+                  <span className="text-blue-600 mr-2 mt-0.5">🔒</span>
                   <div>
                     <p className="font-medium mb-1">Your phone number is safe with us</p>
-                    <p className="text-gray-300 text-xs">
+                    <p className="text-blue-600 text-xs">
                       We use industry-standard encryption to protect your information. We won't spam or share your number with anyone.
                     </p>
                   </div>
