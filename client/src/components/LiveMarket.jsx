@@ -134,7 +134,7 @@ export default function LiveMarket() {
       <div className="flex">
         <Sidebar />
 
-        <main className="flex-1 p-6">
+        <main className="flex-1 lg:ml-72 p-6 transition-all duration-300">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold">📈 Indian Stock Market (NSE)</h1>
 

@@ -3,7 +3,7 @@ import PageLayout from './PageLayout';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts';
 import alpacaService from '../services/alpacaService';
 import zerodhaService from '../services/zerodhaService';
-import LoadingSpinner from './LoadingSpinner';
+import LoadingSpinner from './common/LoadingSpinner';
 
 // Mock portfolio data
 const PORTFOLIO_DATA = {
@@ -1269,7 +1269,7 @@ export default function PortfolioAnalytics() {
     <PageLayout title="📊 Portfolio Analytics" subtitle="Comprehensive portfolio analysis and insights">
       <div className="space-y-6">
         {/* Connection Status */}
-        <div className="glass dark-card p-4 border border-slate-700/30 rounded-xl">
+        <div className="bg-white p-4 border border-gray-200 rounded-xl shadow-lg">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-slate-100">Account Connections</h3>
             <div className="flex items-center space-x-4">

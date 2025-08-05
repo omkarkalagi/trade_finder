@@ -151,6 +151,84 @@ export default function Dashboard() {
               <FeatureHighlights />
             </div>
 
+            {/* Trading Activity */}
+            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <span className="mr-2">📊</span>
+                Recent Activity
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between p-2 bg-green-50 rounded-lg">
+                  <div className="flex items-center">
+                    <span className="text-green-600 mr-2">📈</span>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">RELIANCE</p>
+                      <p className="text-xs text-gray-600">Bought 10 shares</p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-green-600">+₹2,450</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-red-50 rounded-lg">
+                  <div className="flex items-center">
+                    <span className="text-red-600 mr-2">📉</span>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">TCS</p>
+                      <p className="text-xs text-gray-600">Sold 5 shares</p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-red-600">-₹1,200</span>
+                </div>
+                <div className="flex items-center justify-between p-2 bg-blue-50 rounded-lg">
+                  <div className="flex items-center">
+                    <span className="text-blue-600 mr-2">🤖</span>
+                    <div>
+                      <p className="text-sm font-medium text-gray-800">Auto Bot</p>
+                      <p className="text-xs text-gray-600">Strategy executed</p>
+                    </div>
+                  </div>
+                  <span className="text-sm text-blue-600">Active</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Market Movers */}
+            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                <span className="mr-2">🚀</span>
+                Top Movers
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">ADANI</p>
+                    <p className="text-xs text-gray-600">₹2,450.50</p>
+                  </div>
+                  <span className="text-sm text-green-600">+5.2%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">HDFC</p>
+                    <p className="text-xs text-gray-600">₹1,680.25</p>
+                  </div>
+                  <span className="text-sm text-green-600">+3.8%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">WIPRO</p>
+                    <p className="text-xs text-gray-600">₹425.75</p>
+                  </div>
+                  <span className="text-sm text-red-600">-2.1%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-800">INFY</p>
+                    <p className="text-xs text-gray-600">₹1,520.30</p>
+                  </div>
+                  <span className="text-sm text-green-600">+1.9%</span>
+                </div>
+              </div>
+            </div>
+
             {/* Quick Actions */}
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-dark-lg p-4 lg:p-6 text-white border border-blue-500/20">
               <h3 className="text-lg font-semibold mb-4 flex items-center">

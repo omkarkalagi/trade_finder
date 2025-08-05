@@ -119,10 +119,12 @@ const Login = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl mb-6 shadow-lg">
               <span className="text-2xl font-bold text-white">TF</span>
             </div>
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              Trade Finder
+            <h1 className="text-4xl font-black bg-gradient-to-r from-blue-500 via-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent mb-1 tracking-wide"
+                style={{ fontFamily: 'Inter, system-ui, sans-serif', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+              TRADE FINDER
             </h1>
-            <p className="text-lg font-medium text-gray-600 mb-4">
+            <p className="text-base text-gray-600 mb-4"
+               style={{ fontFamily: 'Dancing Script, cursive' }}>
               by Omkar Kalagi
             </p>
             <p className="text-sm text-gray-500">
