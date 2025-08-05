@@ -175,7 +175,7 @@ const COURSES = [
     students: 1850,
     lastUpdated: "2023-06-02",
     tags: ["Options", "Income Strategies", "Risk Management"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 3,
@@ -191,7 +191,7 @@ const COURSES = [
     students: 1250,
     lastUpdated: "2023-06-10",
     tags: ["Algo Trading", "Python", "Backtesting"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 4,
@@ -207,7 +207,7 @@ const COURSES = [
     students: 4150,
     lastUpdated: "2023-05-20",
     tags: ["Candlesticks", "Price Action", "Chart Patterns"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 5,
@@ -223,7 +223,7 @@ const COURSES = [
     students: 2750,
     lastUpdated: "2023-06-05",
     tags: ["Psychology", "Risk Management", "Discipline"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 6,
@@ -257,7 +257,7 @@ const WEBINARS = [
     price: "Free",
     registrations: 1250,
     tags: ["Market Outlook", "Analysis", "Strategy"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 2,
@@ -271,7 +271,7 @@ const WEBINARS = [
     price: 999,
     registrations: 850,
     tags: ["Supply & Demand", "Price Action", "Trading Zones"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 3,
@@ -285,7 +285,7 @@ const WEBINARS = [
     price: "Free",
     registrations: 2150,
     tags: ["Options", "Expiry", "Strategies"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 4,
@@ -299,7 +299,7 @@ const WEBINARS = [
     price: 499,
     registrations: 720,
     tags: ["Psychology", "Emotions", "Discipline"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=300&h=200&fit=crop&crop=center"
   }
 ];
 
@@ -507,7 +507,17 @@ export default function CommunityEducation() {
               <div className="font-medium">{webinar.price === 'Free' ? 'Free' : `₹${webinar.price}`}</div>
             </div>
           </div>
-          <button className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors">
+          <button
+            onClick={() => {
+              // Show registration success message
+              alert(`Successfully registered for "${webinar.title}"!\n\nYou will receive a confirmation email with the webinar link shortly.`);
+
+              // In a real app, this would make an API call to register the user
+              console.log(`Registering for webinar: ${webinar.title}`);
+            }}
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors flex items-center justify-center"
+          >
+            <span className="mr-2">📅</span>
             Register Now
           </button>
           <div className="text-xs text-gray-500 text-center mt-2">
@@ -660,8 +670,15 @@ export default function CommunityEducation() {
                   <span className="text-xs text-gray-500 ml-1">({selectedStrategy.reviews} reviews)</span>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium mb-3 hover:bg-blue-700 transition-colors">
-                  Buy Now
+                <button
+                  onClick={() => {
+                    alert(`Purchase successful!\n\nYou have purchased "${selectedStrategy.title}" for ₹${selectedStrategy.price}.\n\nThe strategy will be available in your dashboard shortly.`);
+                    setSelectedStrategy(null);
+                  }}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium mb-3 hover:bg-blue-700 transition-colors flex items-center justify-center"
+                >
+                  <span className="mr-2">💳</span>
+                  Buy Now - ₹{selectedStrategy.price}
                 </button>
 
                 <button className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-medium mb-4 hover:bg-gray-300 transition-colors">
@@ -843,8 +860,15 @@ export default function CommunityEducation() {
                   <span className="text-xs text-gray-500 ml-1">({selectedCourse.students} students)</span>
                 </div>
 
-                <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium mb-3 hover:bg-blue-700 transition-colors">
-                  Enroll Now
+                <button
+                  onClick={() => {
+                    alert(`Enrollment successful!\n\nYou have enrolled in "${selectedCourse.title}" for ₹${selectedCourse.price}.\n\nYou can access the course from your learning dashboard.`);
+                    setSelectedCourse(null);
+                  }}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium mb-3 hover:bg-blue-700 transition-colors flex items-center justify-center"
+                >
+                  <span className="mr-2">🎓</span>
+                  Enroll Now - ₹{selectedCourse.price}
                 </button>
 
                 <button className="w-full bg-gray-200 text-gray-800 py-3 rounded-lg font-medium mb-4 hover:bg-gray-300 transition-colors">

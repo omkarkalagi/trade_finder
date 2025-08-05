@@ -119,7 +119,10 @@ export default function News() {
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-white mb-2">📰 Market News</h1>
+              <h1 className="text-3xl font-bold text-gray-800 mb-2 flex items-center">
+                <span className="mr-3" style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}>📰</span>
+                Market News
+              </h1>
               <p className="text-gray-600">Stay updated with the latest market developments and financial news</p>
             </div>
 
@@ -170,7 +173,17 @@ export default function News() {
 
                 {/* Refresh Button */}
                 <button
-                  onClick={() => window.location.reload()}
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      const latestNews = await newsService.fetchLatestNews();
+                      setNews(latestNews);
+                    } catch (error) {
+                      console.error('Failed to refresh news:', error);
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -189,7 +202,7 @@ export default function News() {
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {filteredNews.map((newsItem) => (
-                  <div key={newsItem.id} className="bg-slate-800 rounded-xl overflow-hidden hover:bg-slate-750 transition-colors cursor-pointer group">
+                  <div key={newsItem.id} className="bg-white rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group border border-gray-200">
                     {/* News Image */}
                     <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 relative overflow-hidden">
                       <img
@@ -202,9 +215,11 @@ export default function News() {
                       />
                       <div className="absolute top-4 left-4 flex space-x-2">
                         <span className={`px-2 py-1 text-xs rounded-full ${getSentimentColor(newsItem.sentiment)}`}>
-                          {getSentimentIcon(newsItem.sentiment)} {newsItem.sentiment}
+                          <span style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}>
+                            {getSentimentIcon(newsItem.sentiment)}
+                          </span> {newsItem.sentiment}
                         </span>
-                        <span className="px-2 py-1 text-xs rounded-full bg-slate-900 text-white">
+                        <span className="px-2 py-1 text-xs rounded-full bg-gray-800 text-white">
                           {newsItem.category}
                         </span>
                       </div>
@@ -213,19 +228,19 @@ export default function News() {
                     {/* News Content */}
                     <div className="p-6">
                       <div className="flex items-center mb-3">
-                        <div className="text-blue-400 mr-2">
+                        <div className="text-blue-600 mr-2">
                           {getCategoryIcon(newsItem.category)}
                         </div>
-                        <span className="text-xs text-slate-400">
+                        <span className="text-xs text-gray-500">
                           {new Date(newsItem.timestamp).toLocaleDateString()} • {newsItem.source}
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-semibold text-white mb-3 line-clamp-2 group-hover:text-blue-400 transition-colors">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                         {newsItem.title}
                       </h3>
 
-                      <p className="text-slate-300 text-sm mb-4 line-clamp-3">
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-3">
                         {newsItem.summary}
                       </p>
 
@@ -233,7 +248,7 @@ export default function News() {
                       {newsItem.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 mb-4">
                           {newsItem.tags.slice(0, 3).map((tag, index) => (
-                            <span key={index} className="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">
+                            <span key={index} className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">
                               #{tag}
                             </span>
                           ))}
@@ -242,10 +257,13 @@ export default function News() {
 
                       {/* Read More */}
                       <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-500">
+                        <span className="text-xs text-gray-500">
                           {new Date(newsItem.timestamp).toLocaleTimeString()}
                         </span>
-                        <button className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center">
+                        <button
+                          onClick={() => newsItem.url && window.open(newsItem.url, '_blank')}
+                          className="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center"
+                        >
                           Read More
                           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -259,12 +277,12 @@ export default function News() {
                 {/* No Results */}
                 {filteredNews.length === 0 && !loading && (
                   <div className="col-span-full text-center py-12">
-                    <div className="text-slate-400">
+                    <div className="text-gray-600">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
                       </svg>
                       <h3 className="text-xl font-medium mb-2">No news found</h3>
-                      <p className="text-slate-500">Try adjusting your filters or search terms</p>
+                      <p className="text-gray-500">Try adjusting your filters or search terms</p>
                     </div>
                   </div>
                 )}
@@ -274,8 +292,31 @@ export default function News() {
             {/* Load More Button */}
             {filteredNews.length > 0 && (
               <div className="text-center mt-8">
-                <button className="px-6 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-600 transition-colors">
+                <button
+                  onClick={async () => {
+                    setLoading(true);
+                    try {
+                      const moreNews = await newsService.fetchLatestNews();
+                      setNews(prev => [...prev, ...moreNews.slice(prev.length)]);
+                    } catch (error) {
+                      console.error('Failed to load more news:', error);
+                    } finally {
+                      setLoading(false);
+                    }
+                  }}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mr-4"
+                >
                   Load More News
+                </button>
+                <button
+                  onClick={() => {
+                    // Navigate to subscription page
+                    window.open('/subscription', '_blank');
+                  }}
+                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+                >
+                  <span className="mr-2">⭐</span>
+                  Upgrade Subscription
                 </button>
               </div>
             )}

@@ -23,14 +23,14 @@ const Sidebar = ({ isOpen, onClose }) => {
     { path: '/dashboard', label: 'Dashboard', icon: '📊', description: 'Overview & Analytics' },
     { path: '/market', label: 'Live Market', icon: '📈', description: 'Real-time Data' },
     { path: '/sector-scope', label: 'Sector Scope', icon: '🎯', description: 'Sector Analysis' },
-    { path: '/portfolio-analytics', label: 'Portfolio Analytics', icon: '💼', description: 'Performance Tracking' },
+    { path: '/portfolio-analytics', label: 'Portfolio Analytics', icon: '📊', description: 'Performance Tracking' },
     { path: '/trade-discovery', label: 'Trade Discovery', icon: '🔍', description: 'Find Opportunities' },
     { path: '/strategy-builder', label: 'Strategy Builder', icon: '⚙️', description: 'Build Strategies' },
     { path: '/strategy-lab', label: 'Strategy Lab', icon: '🧪', description: 'Test & Optimize' },
     { path: '/alternative-data', label: 'Alternative Data', icon: '📊', description: 'Advanced Insights' },
     { path: '/community-education', label: 'Community & Education', icon: '👥', description: 'Learn & Share' },
-    { path: '/algo-trading', label: 'Algo Trading', icon: '🤖', description: 'Automated Strategies' },
-    { path: '/auto-trading', label: 'Auto Trading', icon: '🚀', description: 'Smart Execution' },
+    { path: '/algo-trading', label: 'Algorithmic Trading', icon: '🤖', description: 'Automated Strategies' },
+    { path: '/auto-trading', label: 'Automated Trading', icon: '🚀', description: 'Smart Execution' },
     { path: '/social-trading', label: 'Social Trading', icon: '👥', description: 'Follow Experts' },
     { path: '/risk-management', label: 'Risk Management', icon: '🛡️', description: 'Safety & Security' }
   ];
@@ -93,7 +93,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     }`
                   }
                 >
-                  <span className="mr-4 text-2xl group-hover:animate-bounce flex-shrink-0">{item.icon}</span>
+                  <span className="mr-4 text-2xl group-hover:animate-bounce flex-shrink-0" style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}>{item.icon}</span>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{item.label}</div>
                     <div className="text-xs text-white/60 opacity-75 truncate hidden sm:block">{item.description}</div>

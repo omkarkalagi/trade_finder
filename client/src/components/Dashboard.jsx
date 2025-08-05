@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import Footer from './Footer';
@@ -16,8 +17,21 @@ import notificationService from '../services/notificationService';
 import marketStatusService from '../services/marketStatusService';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [isConnected, setIsConnected] = useState(false);
   const [portfolioSummary, setPortfolioSummary] = useState(null);
+  const [showAllActions, setShowAllActions] = useState(false);
+
+  const quickActions = [
+    { icon: '🔍', title: 'Discover Trades', description: 'Find new opportunities', path: '/trade-discovery' },
+    { icon: '📊', title: 'Analyze Sectors', description: 'Sector performance', path: '/sector-scope' },
+    { icon: '🤖', title: 'Setup Bot', description: 'Automated trading', path: '/algo-trading' },
+    { icon: '📈', title: 'Live Market', description: 'Real-time data', path: '/market' },
+    { icon: '💼', title: 'Portfolio', description: 'Track performance', path: '/portfolio-analytics' },
+    { icon: '🛡️', title: 'Risk Management', description: 'Safety controls', path: '/risk-management' },
+    { icon: '⚙️', title: 'Strategy Builder', description: 'Build strategies', path: '/strategy-builder' },
+    { icon: '🧪', title: 'Strategy Lab', description: 'Test & optimize', path: '/strategy-lab' }
+  ];
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -232,42 +246,38 @@ export default function Dashboard() {
             {/* Quick Actions */}
             <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-dark-lg p-4 lg:p-6 text-white border border-blue-500/20">
               <h3 className="text-lg font-semibold mb-4 flex items-center">
-                <span className="mr-2">⚡</span>
+                <span className="mr-2" style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}>⚡</span>
                 Quick Actions
               </h3>
               <div className="space-y-2">
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
-                  <div className="font-medium">🔍 Discover Trades</div>
-                  <div className="text-xs opacity-80">Find new opportunities</div>
-                </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
-                  <div className="font-medium">📊 Analyze Sectors</div>
-                  <div className="text-xs opacity-80">Sector performance</div>
-                </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
-                  <div className="font-medium">🤖 Setup Bot</div>
-                  <div className="text-xs opacity-80">Automated trading</div>
-                </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
-                  <div className="font-medium">📈 Live Market</div>
-                  <div className="text-xs opacity-80">Real-time data</div>
-                </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
-                  <div className="font-medium">💼 Portfolio</div>
-                  <div className="text-xs opacity-80">Track performance</div>
-                </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
-                  <div className="font-medium">🛡️ Risk Management</div>
-                  <div className="text-xs opacity-80">Safety controls</div>
-                </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
-                  <div className="font-medium">⚙️ Strategy Builder</div>
-                  <div className="text-xs opacity-80">Build strategies</div>
-                </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
-                  <div className="font-medium">🧪 Strategy Lab</div>
-                  <div className="text-xs opacity-80">Test & optimize</div>
-                </button>
+                {quickActions.slice(0, showAllActions ? quickActions.length : 3).map((action, index) => (
+                  <button
+                    key={index}
+                    onClick={() => navigate(action.path)}
+                    className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation hover:scale-105 transform"
+                  >
+                    <div className="font-medium flex items-center">
+                      <span className="mr-2" style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}>
+                        {action.icon}
+                      </span>
+                      {action.title}
+                    </div>
+                    <div className="text-xs opacity-80">{action.description}</div>
+                  </button>
+                ))}
+
+                {/* View More/Less Button */}
+                {quickActions.length > 3 && (
+                  <button
+                    onClick={() => setShowAllActions(!showAllActions)}
+                    className="w-full mt-3 py-2.5 px-4 bg-white/10 hover:bg-white/20 rounded-lg font-medium transition-all duration-200 border border-white/20 hover:border-white/30"
+                  >
+                    <span className="mr-2" style={{ fontFamily: 'Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif' }}>
+                      {showAllActions ? '📤' : '📥'}
+                    </span>
+                    {showAllActions ? 'Show Less' : `View More (${quickActions.length - 3} more)`}
+                  </button>
+                )}
               </div>
             </div>
           </div>

@@ -158,6 +158,43 @@ export default function TradeDiscovery() {
     }));
   };
 
+  // Handle refresh
+  const handleRefresh = () => {
+    setLoading(true);
+    setTimeout(() => {
+      const results = generateMockScanResults(activePreset);
+      setScanResults(results);
+      setLoading(false);
+    }, 800);
+  };
+
+  // Handle export
+  const handleExport = () => {
+    const csvContent = [
+      ['Symbol', 'Price', 'Change', 'Change%', 'Signal', 'Sector', 'Volume', 'RSI'].join(','),
+      ...scanResults.map(stock => [
+        stock.symbol,
+        stock.price.toFixed(2),
+        stock.change.toFixed(2),
+        stock.percentChange.toFixed(2),
+        stock.signal,
+        stock.sector,
+        stock.volume.toLocaleString(),
+        stock.rsi
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `scan_results_${activePreset.name.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  };
+
   // Render signal badge with appropriate color
   const renderSignalBadge = (signal) => {
     let bgColor = 'bg-gray-100 text-gray-800';
@@ -375,13 +412,19 @@ export default function TradeDiscovery() {
                 <p className="text-sm text-gray-500">Showing results for "{activePreset.name}"</p>
               </div>
               <div className="flex items-center space-x-2">
-                <button className="bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center">
+                <button
+                  onClick={handleExport}
+                  className="bg-blue-100 text-blue-800 px-3 py-1 rounded-md text-sm flex items-center hover:bg-blue-200 transition-colors"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                   </svg>
                   Export
                 </button>
-                <button className="bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-sm flex items-center">
+                <button
+                  onClick={handleRefresh}
+                  className="bg-gray-100 text-gray-800 px-3 py-1 rounded-md text-sm flex items-center hover:bg-gray-200 transition-colors"
+                >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
