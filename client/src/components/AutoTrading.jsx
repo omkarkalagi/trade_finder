@@ -11,6 +11,8 @@ export default function AutoTrading() {
   const [autoTrades, setAutoTrades] = useState([]);
   const [isAlpacaConnected, setIsAlpacaConnected] = useState(false);
   const [runningBots, setRunningBots] = useState([]);
+  const [investmentHistory, setInvestmentHistory] = useState([]);
+  const [showInvestmentModal, setShowInvestmentModal] = useState(false);
   const [selectedStocks, setSelectedStocks] = useState([
     { id: 1, symbol: 'RELIANCE', name: 'Reliance Industries Ltd', enabled: true, price: 2567.80, change: 1.8 },
     { id: 2, symbol: 'TCS', name: 'Tata Consultancy Services', enabled: true, price: 3845.60, change: 2.1 },
@@ -136,7 +138,10 @@ export default function AutoTrading() {
         pnl: 0
       }]);
 
-      notificationService.notifySystem(`${activeBot.name} bot started`, 'medium');
+      // Show investment tracking modal
+      setShowInvestmentModal(true);
+
+      notificationService.notifySystem(`${activeBot.name} bot started - Investment tracking enabled`, 'medium');
 
       // Initialize performance tracking
       setBotPerformance({
@@ -184,19 +189,34 @@ export default function AutoTrading() {
           }
 
           // Add to auto trades history
+          const tradePrice = randomStock.price + (Math.random() - 0.5) * 10;
           const newTrade = {
             id: Date.now(),
             bot: bot.name,
             symbol: randomStock.symbol,
             side: side,
             quantity: quantity,
-            price: randomStock.price + (Math.random() - 0.5) * 10,
+            price: tradePrice,
             timestamp: new Date(),
             status: 'executed',
-            pnl: (Math.random() - 0.3) * 150 // Slightly positive bias
+            pnl: (Math.random() - 0.3) * 150, // Slightly positive bias
+            investmentAmount: quantity * tradePrice
           };
 
           setAutoTrades(prev => [newTrade, ...prev]);
+
+          // Add to investment history
+          setInvestmentHistory(prev => [{
+            id: Date.now(),
+            bot: bot.name,
+            action: side,
+            symbol: randomStock.symbol,
+            quantity: quantity,
+            price: tradePrice,
+            amount: quantity * tradePrice,
+            timestamp: new Date(),
+            type: side === 'buy' ? 'Investment' : 'Sale'
+          }, ...prev]);
 
           // Update bot performance
           setBotPerformance(prev => ({
@@ -606,6 +626,118 @@ export default function AutoTrading() {
               </div>
             </div>
           )}
+
+      {/* Investment Tracking Modal */}
+      {showInvestmentModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800">🤖 Bot Investment Tracking - {activeBot?.name}</h3>
+              <button
+                onClick={() => setShowInvestmentModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-xl"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-blue-800">Total Invested</h4>
+                <p className="text-2xl font-bold text-blue-600">
+                  ₹{investmentHistory
+                    .filter(inv => inv.type === 'Investment')
+                    .reduce((sum, inv) => sum + inv.amount, 0)
+                    .toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-green-800">Total Sales</h4>
+                <p className="text-2xl font-bold text-green-600">
+                  ₹{investmentHistory
+                    .filter(inv => inv.type === 'Sale')
+                    .reduce((sum, inv) => sum + inv.amount, 0)
+                    .toLocaleString()}
+                </p>
+              </div>
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <h4 className="font-semibold text-purple-800">Bot Trades</h4>
+                <p className="text-2xl font-bold text-purple-600">{autoTrades.length}</p>
+              </div>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+                <h4 className="font-semibold text-gray-800">Recent Bot Activity</h4>
+              </div>
+              <div className="max-h-96 overflow-y-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Time</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Symbol</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">P&L</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {investmentHistory.slice(0, 20).map((investment) => (
+                      <tr key={investment.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {investment.timestamp.toLocaleTimeString()}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                            investment.action === 'buy'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {investment.action.toUpperCase()}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                          {investment.symbol}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {investment.quantity}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          ₹{investment.price.toFixed(2)}
+                        </td>
+                        <td className="px-4 py-3 text-sm font-medium text-gray-800">
+                          ₹{investment.amount.toLocaleString()}
+                        </td>
+                        <td className="px-4 py-3 text-sm">
+                          <span className={`font-medium ${
+                            autoTrades.find(t => t.id === investment.id)?.pnl >= 0
+                              ? 'text-green-600'
+                              : 'text-red-600'
+                          }`}>
+                            {autoTrades.find(t => t.id === investment.id)?.pnl >= 0 ? '+' : ''}
+                            ₹{(autoTrades.find(t => t.id === investment.id)?.pnl || 0).toFixed(2)}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowInvestmentModal(false)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     </PageLayout>
   );

@@ -103,7 +103,7 @@ const STRATEGIES = [
     downloads: 850,
     lastUpdated: "2023-06-01",
     tags: ["Ichimoku", "Technical", "Trend Following"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 7,
@@ -120,7 +120,7 @@ const STRATEGIES = [
     downloads: 480,
     lastUpdated: "2023-06-08",
     tags: ["Earnings", "Fundamental", "Swing Trading"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 8,
@@ -137,7 +137,7 @@ const STRATEGIES = [
     downloads: 1050,
     lastUpdated: "2023-06-18",
     tags: ["Volume Profile", "Support/Resistance", "Order Flow"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=300&h=200&fit=crop&crop=center"
   }
 ];
 
@@ -148,6 +148,7 @@ const COURSES = [
     title: "Technical Analysis Masterclass",
     instructor: "Rajesh Sharma",
     instructorTitle: "Former NSE Trader, 15+ Years Experience",
+    instructorPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face",
     description: "Comprehensive course covering all aspects of technical analysis for Indian markets",
     level: "Beginner to Advanced",
     duration: "24 hours",
@@ -157,13 +158,14 @@ const COURSES = [
     students: 3250,
     lastUpdated: "2023-05-15",
     tags: ["Technical Analysis", "Chart Patterns", "Indicators"],
-    image: "https://via.placeholder.com/300x200"
+    image: "https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=300&h=200&fit=crop&crop=center"
   },
   {
     id: 2,
     title: "Options Trading Strategies",
     instructor: "Priya Patel",
     instructorTitle: "Options Specialist, Hedge Fund Analyst",
+    instructorPhoto: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face",
     description: "Learn advanced options strategies for consistent income generation",
     level: "Intermediate",
     duration: "18 hours",

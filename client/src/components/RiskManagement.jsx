@@ -50,7 +50,7 @@ const RiskManagement = () => {
       case 'Medium': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30';
       case 'High': return 'text-orange-400 bg-orange-500/20 border-orange-500/30';
       case 'Critical': return 'text-red-400 bg-red-500/20 border-red-500/30';
-      default: return 'text-slate-400 bg-slate-500/20 border-slate-500/30';
+      default: return 'text-gray-600 bg-gray-100 border-gray-300';
     }
   };
 
@@ -77,7 +77,7 @@ const RiskManagement = () => {
     <PageLayout title="🛡️ Risk Management" subtitle="Comprehensive risk management and security dashboard">
       <div className="space-y-6">
         {/* Tab Navigation */}
-        <div className="flex space-x-1 bg-slate-800/50 p-1 rounded-xl">
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl">
           {[
             { id: 'overview', name: 'Overview', icon: '📊' },
             { id: 'settings', name: 'Settings', icon: '⚙️' },
@@ -90,7 +90,7 @@ const RiskManagement = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-blue-500 text-white'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-700/50'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-200'
               }`}
             >
               <span>{tab.icon}</span>
@@ -104,62 +104,62 @@ const RiskManagement = () => {
           <div className="space-y-6">
             {/* Risk Metrics Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="glass dark-card p-6 border border-slate-700/30 rounded-xl">
+              <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-slate-400">Daily P&L</h3>
+                  <h3 className="text-sm font-medium text-gray-600">Daily P&L</h3>
                   <span className="text-2xl">💰</span>
                 </div>
-                <div className={`text-2xl font-bold ${riskMetrics.dailyPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                <div className={`text-2xl font-bold ${riskMetrics.dailyPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   ₹{riskMetrics.dailyPnl.toLocaleString()}
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   {riskMetrics.dailyTrades} trades today
                 </p>
               </div>
 
-              <div className="glass dark-card p-6 border border-slate-700/30 rounded-xl">
+              <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-slate-400">Win Rate</h3>
+                  <h3 className="text-sm font-medium text-gray-600">Win Rate</h3>
                   <span className="text-2xl">🎯</span>
                 </div>
-                <div className="text-2xl font-bold text-blue-400">
+                <div className="text-2xl font-bold text-blue-600">
                   {riskMetrics.winRate}%
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   Avg: ₹{riskMetrics.avgTrade}/trade
                 </p>
               </div>
 
-              <div className="glass dark-card p-6 border border-slate-700/30 rounded-xl">
+              <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-slate-400">Risk Level</h3>
+                  <h3 className="text-sm font-medium text-gray-600">Risk Level</h3>
                   <span className="text-2xl">⚡</span>
                 </div>
                 <div className={`inline-flex px-3 py-1 rounded-full text-sm font-medium border ${getRiskLevelColor(riskMetrics.riskLevel)}`}>
                   {riskMetrics.riskLevel}
                 </div>
-                <p className="text-xs text-slate-500 mt-2">
+                <p className="text-xs text-gray-500 mt-2">
                   Max DD: ₹{riskMetrics.maxDrawdown.toLocaleString()}
                 </p>
               </div>
 
-              <div className="glass dark-card p-6 border border-slate-700/30 rounded-xl">
+              <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-lg">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-medium text-slate-400">Remaining Limit</h3>
+                  <h3 className="text-sm font-medium text-gray-600">Remaining Limit</h3>
                   <span className="text-2xl">🛡️</span>
                 </div>
-                <div className="text-2xl font-bold text-slate-100">
+                <div className="text-2xl font-bold text-gray-800">
                   ₹{riskMetrics.remainingDailyLoss.toLocaleString()}
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1">
                   Daily loss limit
                 </p>
               </div>
             </div>
 
             {/* Emergency Controls */}
-            <div className="glass dark-card p-6 border border-slate-700/30 rounded-xl">
-              <h3 className="text-lg font-semibold text-slate-100 mb-4 flex items-center">
+            <div className="bg-white p-6 border border-gray-200 rounded-xl shadow-lg">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                 <span className="mr-2">🚨</span>
                 Emergency Controls
               </h3>
@@ -177,7 +177,7 @@ const RiskManagement = () => {
                   ✅ Resume Trading
                 </button>
               </div>
-              <p className="text-sm text-slate-400 mt-3">
+              <p className="text-sm text-gray-600 mt-3">
                 Emergency stop will immediately halt all trading activities and close open positions.
               </p>
             </div>
@@ -215,7 +215,7 @@ const RiskManagement = () => {
                 <span className="mr-2">⚙️</span>
                 Risk Management Settings
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-2">
@@ -365,7 +365,7 @@ const RiskManagement = () => {
                   Clear All
                 </button>
               </div>
-              
+
               <div className="space-y-3">
                 {alerts.map((alert) => (
                   <div key={alert.id} className={`p-4 rounded-lg border ${getAlertColor(alert.type)}`}>
@@ -402,7 +402,7 @@ const RiskManagement = () => {
                 <span className="mr-2">🔒</span>
                 Security Status
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
@@ -444,8 +444,8 @@ const RiskManagement = () => {
                   <div className="p-4 bg-slate-800/50 rounded-lg">
                     <h4 className="font-medium text-slate-200 mb-2">Last Activity</h4>
                     <p className="text-slate-400">
-                      {securityStatus.lastActivity ? 
-                        securityStatus.lastActivity.toLocaleString() : 
+                      {securityStatus.lastActivity ?
+                        securityStatus.lastActivity.toLocaleString() :
                         'No recent activity'
                       }
                     </p>
