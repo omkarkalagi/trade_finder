@@ -249,11 +249,18 @@ export default function PortfolioAnalytics() {
   useEffect(() => {
     const initializePortfolioData = async () => {
       try {
-        // Check connection status
-        const alpacaConnected = alpacaService.isAlpacaConnected();
-        const zerodhaConnected = zerodhaService.isConnected();
+        // Connect to Alpaca with new credentials
+        try {
+          const alpacaAccount = await alpacaService.connect();
+          setIsAlpacaConnected(true);
+          console.log('✅ Connected to Alpaca Paper Trading Account:', alpacaAccount.id);
+        } catch (error) {
+          console.error('❌ Failed to connect to Alpaca:', error);
+          setIsAlpacaConnected(false);
+        }
 
-        setIsAlpacaConnected(alpacaConnected);
+        // Check Zerodha connection
+        const zerodhaConnected = zerodhaService.isConnected();
         setIsZerodhaConnected(zerodhaConnected);
 
         let realPortfolioData = null;

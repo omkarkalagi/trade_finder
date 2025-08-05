@@ -54,13 +54,13 @@ const NotificationBell = () => {
 
   const getNotificationIcon = (type) => {
     const icons = {
-      trade: '💹',
-      market: '📈',
-      portfolio: '💼',
-      system: '🔔',
-      zerodha: '🟢'
+      trade: <span className="bg-green-100 text-green-600 px-2 py-1 rounded text-xs font-medium">TRADE</span>,
+      market: <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-medium">MARKET</span>,
+      portfolio: <span className="bg-purple-100 text-purple-600 px-2 py-1 rounded text-xs font-medium">PORTFOLIO</span>,
+      system: <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">SYSTEM</span>,
+      zerodha: <span className="bg-green-100 text-green-600 px-2 py-1 rounded text-xs font-medium">ZERODHA</span>
     };
-    return icons[type] || '🔔';
+    return icons[type] || <span className="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-medium">INFO</span>;
   };
 
   const getPriorityColor = (priority) => {
@@ -69,7 +69,7 @@ const NotificationBell = () => {
       medium: 'border-l-yellow-400 bg-yellow-500/10',
       low: 'border-l-blue-400 bg-blue-500/10'
     };
-    return colors[priority] || 'border-l-slate-400 bg-slate-500/10';
+    return colors[priority] || 'border-l-gray-400 bg-gray-100';
   };
 
   const formatTime = (timestamp) => {
@@ -91,7 +91,7 @@ const NotificationBell = () => {
         className={`relative p-2 rounded-full transition-all duration-200 touch-manipulation ${
           unreadCount > 0
             ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/25 animate-pulse'
-            : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700/50 hover:text-white'
+            : 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 hover:text-gray-800 shadow-sm'
         }`}
       >
         <svg
@@ -119,11 +119,11 @@ const NotificationBell = () => {
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 lg:w-96 glass dark-card border border-slate-700/30 rounded-xl shadow-2xl z-50 max-h-96 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-80 lg:w-96 bg-white border border-gray-200 rounded-xl shadow-2xl z-50 max-h-96 overflow-hidden">
           {/* Header */}
-          <div className="p-4 border-b border-slate-700/30 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+          <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50">
             <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">
+              <h3 className="text-lg font-semibold text-gray-800">
                 Notifications
                 {unreadCount > 0 && (
                   <span className="ml-2 text-sm bg-red-500 text-white px-2 py-1 rounded-full animate-pulse">
@@ -134,7 +134,7 @@ const NotificationBell = () => {
               {notifications.length > 0 && (
                 <button
                   onClick={handleClearAll}
-                  className="text-sm text-red-400 hover:text-red-300 font-medium transition-colors"
+                  className="text-sm text-red-600 hover:text-red-700 font-medium transition-colors"
                 >
                   Clear All
                 </button>
@@ -145,19 +145,21 @@ const NotificationBell = () => {
           {/* Notifications List */}
           <div className="max-h-80 overflow-y-auto">
             {notifications.length === 0 ? (
-              <div className="p-8 text-center text-slate-400">
-                <div className="text-4xl mb-2">🔔</div>
+              <div className="p-8 text-center text-gray-500">
+                <div className="text-4xl mb-2">
+                  <span className="bg-gray-100 text-gray-600 px-3 py-2 rounded-full text-sm font-medium">BELL</span>
+                </div>
                 <p>No notifications yet</p>
-                <p className="text-xs mt-1 text-slate-500">You'll see trading alerts and updates here</p>
+                <p className="text-xs mt-1 text-gray-400">You'll see trading alerts and updates here</p>
               </div>
             ) : (
               notifications.map((notification) => (
                 <div
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`p-4 border-l-4 cursor-pointer hover:bg-slate-700/30 transition-all duration-200 ${
+                  className={`p-4 border-l-4 cursor-pointer hover:bg-gray-50 transition-all duration-200 ${
                     getPriorityColor(notification.priority)
-                  } ${!notification.read ? 'bg-blue-500/10' : ''}`}
+                  } ${!notification.read ? 'bg-blue-50' : ''}`}
                 >
                   <div className="flex items-start space-x-3">
                     <div className="text-2xl flex-shrink-0">
@@ -166,16 +168,16 @@ const NotificationBell = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <p className={`text-sm font-medium ${
-                          !notification.read ? 'text-white' : 'text-slate-300'
+                          !notification.read ? 'text-gray-800' : 'text-gray-600'
                         }`}>
                           {notification.title}
                         </p>
-                        <span className="text-xs text-slate-500 flex-shrink-0 ml-2">
+                        <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
                           {formatTime(notification.timestamp)}
                         </span>
                       </div>
                       <p className={`text-sm mt-1 ${
-                        !notification.read ? 'text-slate-200' : 'text-slate-400'
+                        !notification.read ? 'text-gray-700' : 'text-gray-500'
                       }`}>
                         {notification.message}
                       </p>

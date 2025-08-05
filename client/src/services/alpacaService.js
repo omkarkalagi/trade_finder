@@ -1,10 +1,10 @@
 import axios from 'axios';
 import notificationService from './notificationService';
 
-// Alpaca Configuration
+// Alpaca Configuration - Omkar's Paper Trading Account
 const ALPACA_CONFIG = {
-  key: import.meta.env.VITE_ALPACA_API_KEY || 'PK2LGOIJ1F1V9RQ0UPU5',
-  secret: import.meta.env.VITE_ALPACA_API_SECRET || 'lOdhyveIeUkBrO6OPRb38M7XwqxkG4WRLzQsEuIt',
+  key: 'PK54PI41GULCAJDXH87Q',
+  secret: 'ynDvELbwhCNIYCx7uB7ISLNkpBkwITxjjCCs8NzK',
   endpoint: 'https://paper-api.alpaca.markets/v2',
   dataEndpoint: 'https://data.alpaca.markets/v2'
 };
