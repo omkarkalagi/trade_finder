@@ -226,7 +226,7 @@ const MarketSummary = () => {
 
             {/* Enhanced progress bar */}
             <div className="mt-3">
-              <div className="w-full bg-slate-700 rounded-full h-1.5">
+              <div className="w-full bg-gray-200 rounded-full h-1.5">
                 <div
                   className={`h-1.5 rounded-full transition-all duration-500 ${
                     value.change >= 0 ? 'bg-gradient-to-r from-green-400 to-green-500' : 'bg-gradient-to-r from-red-400 to-red-500'
@@ -239,7 +239,7 @@ const MarketSummary = () => {
         ))}
       </div>
 
-      <div className="mt-4 text-xs text-slate-500 text-center">
+      <div className="mt-4 text-xs text-gray-500 text-center">
         <div className="flex items-center justify-center space-x-2">
           <span>Real-time data via Alpaca Markets</span>
           <span>•</span>

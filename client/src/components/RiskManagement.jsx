@@ -405,10 +405,10 @@ const RiskManagement = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg">
-                    <span className="text-slate-300">Authentication Status</span>
+                  <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <span className="text-gray-700">Authentication Status</span>
                     <span className={`px-3 py-1 rounded-full text-sm ${
-                      securityStatus.isAuthenticated ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'
+                      securityStatus.isAuthenticated ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                       {securityStatus.isAuthenticated ? 'Authenticated' : 'Not Authenticated'}
                     </span>

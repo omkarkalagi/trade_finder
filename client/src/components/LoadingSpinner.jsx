@@ -27,10 +27,10 @@ const LoadingSpinner = ({ size = 'md', text = 'Loading...', variant = 'primary' 
     <div className="flex flex-col items-center justify-center space-y-3">
       {/* Animated Spinner */}
       <div className="relative">
-        <div className={`${sizeClasses[size]} border-4 border-slate-700 rounded-full animate-spin`}>
+        <div className={`${sizeClasses[size]} border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin`}>
           <div className={`absolute inset-0 border-4 ${variants[variant]} border-t-transparent rounded-full animate-spin`}></div>
         </div>
-        
+
         {/* Pulsing center dot */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className={`w-2 h-2 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full animate-pulse`}></div>
@@ -39,7 +39,7 @@ const LoadingSpinner = ({ size = 'md', text = 'Loading...', variant = 'primary' 
 
       {/* Loading text */}
       {text && (
-        <p className={`${textSizeClasses[size]} text-slate-400 font-medium animate-pulse`}>
+        <p className={`${textSizeClasses[size]} text-gray-600 font-medium animate-pulse`}>
           {text}
         </p>
       )}
@@ -49,14 +49,14 @@ const LoadingSpinner = ({ size = 'md', text = 'Loading...', variant = 'primary' 
 
 // Skeleton loader for cards
 export const SkeletonCard = ({ className = '' }) => (
-  <div className={`glass dark-card p-6 border border-slate-700/30 animate-pulse ${className}`}>
+  <div className={`bg-white p-6 border border-gray-200 rounded-xl shadow-lg animate-pulse ${className}`}>
     <div className="space-y-4">
-      <div className="h-4 bg-slate-700 rounded w-3/4"></div>
+      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
       <div className="space-y-2">
-        <div className="h-3 bg-slate-700 rounded"></div>
-        <div className="h-3 bg-slate-700 rounded w-5/6"></div>
+        <div className="h-3 bg-gray-200 rounded"></div>
+        <div className="h-3 bg-gray-200 rounded w-5/6"></div>
       </div>
-      <div className="h-8 bg-slate-700 rounded w-1/2"></div>
+      <div className="h-8 bg-gray-200 rounded w-1/2"></div>
     </div>
   </div>
 );
@@ -66,10 +66,10 @@ export const SkeletonList = ({ items = 3, className = '' }) => (
   <div className={`space-y-3 ${className}`}>
     {[...Array(items)].map((_, i) => (
       <div key={i} className="flex items-center space-x-3 animate-pulse">
-        <div className="w-10 h-10 bg-slate-700 rounded-full"></div>
+        <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
         <div className="flex-1 space-y-2">
-          <div className="h-3 bg-slate-700 rounded w-3/4"></div>
-          <div className="h-2 bg-slate-700 rounded w-1/2"></div>
+          <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-2 bg-gray-200 rounded w-1/2"></div>
         </div>
       </div>
     ))}
@@ -82,7 +82,7 @@ export const LoadingOverlay = ({ text = 'Loading...', show = true }) => {
 
   return (
     <div className="fixed inset-0 bg-dark-950/80 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="glass dark-card p-8 rounded-2xl border border-slate-700/30 text-center">
+      <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-lg text-center">
         <LoadingSpinner size="xl" text={text} />
       </div>
     </div>

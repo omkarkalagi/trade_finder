@@ -114,12 +114,12 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
             {/* Market Summary */}
-            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <MarketSummary />
             </div>
 
             {/* Portfolio Summary */}
-            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <PortfolioSummary
                 isConnected={isConnected}
                 portfolioSummary={portfolioSummary}
@@ -127,32 +127,32 @@ export default function Dashboard() {
             </div>
 
             {/* Live Market Widget */}
-            <div className="glass dark-card p-4 lg:p-6 md:col-span-2 lg:col-span-1 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 md:col-span-2 lg:col-span-1 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <LiveMarketWidget />
             </div>
 
             {/* Market Chart */}
-            <div className="glass dark-card p-4 lg:p-6 md:col-span-2 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 md:col-span-2 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <MarketChart />
             </div>
 
             {/* Bot Performance */}
-            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <BotPerformance />
             </div>
 
             {/* Market Status */}
-            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <MarketStatus />
             </div>
 
             {/* Feature Highlights */}
-            <div className="glass dark-card p-4 lg:p-6 md:col-span-2 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 md:col-span-2 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <FeatureHighlights />
             </div>
 
             {/* Trading Activity */}
-            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                 <span className="mr-2 bg-blue-100 text-blue-600 px-2 py-1 rounded text-xs font-medium">ACTIVITY</span>
                 Recent Activity
@@ -192,7 +192,7 @@ export default function Dashboard() {
             </div>
 
             {/* Market Movers */}
-            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
+            <div className="bg-white p-4 lg:p-6 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                 <span className="mr-2 bg-green-100 text-green-600 px-2 py-1 rounded text-xs font-medium">MOVERS</span>
                 Top Movers
@@ -274,7 +274,7 @@ export default function Dashboard() {
 
           {/* Market News - Full Width at Bottom */}
           <div className="mt-6">
-            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300">
+            <div className="bg-white p-4 lg:p-6 border border-gray-200 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300">
               <MarketNews />
             </div>
           </div>

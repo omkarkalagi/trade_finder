@@ -230,44 +230,44 @@ const MarketChart = () => {
 
       {/* Price Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="glass dark-card p-4 rounded-xl border border-green-500/30 bg-gradient-to-br from-green-500/10 to-emerald-500/10 hover:shadow-lg transition-shadow">
+        <div className="bg-white p-4 rounded-xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <span className="text-2xl mr-3">📈</span>
             <div>
-              <p className="text-sm text-slate-400">High</p>
+              <p className="text-sm text-gray-600">High</p>
               <p className="text-lg font-bold text-green-400">
                 ₹{Math.max(...chartData.map(d => d.high)).toLocaleString() || '19,420'}
               </p>
             </div>
           </div>
         </div>
-        <div className="glass dark-card p-4 rounded-xl border border-red-500/30 bg-gradient-to-br from-red-500/10 to-rose-500/10 hover:shadow-lg transition-shadow">
+        <div className="bg-white p-4 rounded-xl border border-red-200 bg-gradient-to-br from-red-50 to-rose-50 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <span className="text-2xl mr-3">📉</span>
             <div>
-              <p className="text-sm text-slate-400">Low</p>
+              <p className="text-sm text-gray-600">Low</p>
               <p className="text-lg font-bold text-red-400">
                 ₹{Math.min(...chartData.map(d => d.low)).toLocaleString() || '19,200'}
               </p>
             </div>
           </div>
         </div>
-        <div className="glass dark-card p-4 rounded-xl border border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 hover:shadow-lg transition-shadow">
+        <div className="bg-white p-4 rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <span className="text-2xl mr-3">💰</span>
             <div>
-              <p className="text-sm text-slate-400">Open</p>
+              <p className="text-sm text-gray-600">Open</p>
               <p className="text-lg font-bold text-blue-400">
                 ₹{chartData[0]?.open?.toLocaleString() || '19,250'}
               </p>
             </div>
           </div>
         </div>
-        <div className="glass dark-card p-4 rounded-xl border border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-violet-500/10 hover:shadow-lg transition-shadow">
+        <div className="bg-white p-4 rounded-xl border border-purple-200 bg-gradient-to-br from-purple-50 to-violet-50 hover:shadow-lg transition-shadow">
           <div className="flex items-center">
             <span className="text-2xl mr-3">📊</span>
             <div>
-              <p className="text-sm text-slate-400">Volume</p>
+              <p className="text-sm text-gray-600">Volume</p>
               <p className="text-lg font-bold text-purple-400">
                 {((chartData.reduce((sum, d) => sum + d.volume, 0) / 1000000).toFixed(1) || '13.6')}M
               </p>
