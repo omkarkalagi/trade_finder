@@ -27,6 +27,9 @@ const PageLayout = ({ children, title, subtitle }) => {
           {children}
         </main>
       </div>
+      <div className="lg:ml-72">
+        <Footer />
+      </div>
     </div>
   );
 };

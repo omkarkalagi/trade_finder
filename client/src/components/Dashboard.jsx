@@ -146,11 +146,6 @@ export default function Dashboard() {
               <MarketStatus />
             </div>
 
-            {/* Market News */}
-            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
-              <MarketNews />
-            </div>
-
             {/* Feature Highlights */}
             <div className="glass dark-card p-4 lg:p-6 md:col-span-2 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300 hover:scale-105">
               <FeatureHighlights />
@@ -196,6 +191,13 @@ export default function Dashboard() {
                   <div className="text-xs opacity-80">Test & optimize</div>
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Market News - Full Width at Bottom */}
+          <div className="mt-6">
+            <div className="glass dark-card p-4 lg:p-6 border border-slate-700/30 hover:shadow-dark-lg transition-all duration-300">
+              <MarketNews />
             </div>
           </div>
         </main>

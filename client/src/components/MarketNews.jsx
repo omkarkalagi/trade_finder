@@ -115,7 +115,7 @@ const MarketNews = () => {
           urlToImage: article.urlToImage
         }));
 
-        setNews(processedNews.slice(0, 5)); // Show latest 5
+        setNews(processedNews.slice(0, 8)); // Show latest 8
         setAllNews(processedNews); // Store all news
         setLoading(false);
         return;
@@ -130,7 +130,7 @@ const MarketNews = () => {
       publishedAt: new Date(Date.now() - Math.random() * 24 * 60 * 60 * 1000) // Random time within last 24 hours
     }));
 
-    setNews(updatedMockNews.slice(0, 5));
+    setNews(updatedMockNews.slice(0, 8));
     setAllNews(updatedMockNews);
     setLoading(false);
   };
@@ -247,11 +247,11 @@ const MarketNews = () => {
           </div>
         </div>
       ) : news.length > 0 ? (
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {displayedNews.map((item) => (
             <div
               key={item.id}
-              className="glass border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-blue-300"
+              className="glass border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-blue-300 h-full flex flex-col"
               onClick={() => item.url && window.open(item.url, '_blank')}
             >
               <div className="flex items-start justify-between mb-2">
@@ -264,36 +264,33 @@ const MarketNews = () => {
                 <span className="text-xs text-gray-500">{formatTimeAgo(item.publishedAt)}</span>
               </div>
 
-              <h3 className="font-semibold text-gray-800 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+              <h3 className="font-semibold text-gray-800 mb-2 line-clamp-3 hover:text-blue-600 transition-colors text-sm">
                 {item.title}
               </h3>
 
-              <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+              <p className="text-xs text-gray-600 mb-3 line-clamp-2">
                 {item.description}
               </p>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
+              <div className="mt-auto">
+                <div className="flex items-center justify-between mb-2">
                   <span className="text-xs text-gray-500">{item.source}</span>
-                  {item.stocks.length > 0 && (
-                    <>
-                      <span className="text-xs text-gray-400">•</span>
-                      <div className="flex space-x-1">
-                        {item.stocks.slice(0, 2).map((stock, idx) => (
-                          <span key={idx} className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded border border-blue-200">
-                            {stock}
-                          </span>
-                        ))}
-                        {item.stocks.length > 2 && (
-                          <span className="text-xs text-gray-500">+{item.stocks.length - 2}</span>
-                        )}
-                      </div>
-                    </>
-                  )}
+                  <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">
+                    Read →
+                  </button>
                 </div>
-                <button className="text-xs text-blue-600 hover:text-blue-700 font-medium">
-                  Read More →
-                </button>
+                {item.stocks.length > 0 && (
+                  <div className="flex flex-wrap gap-1">
+                    {item.stocks.slice(0, 2).map((stock, idx) => (
+                      <span key={idx} className="text-xs bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded border border-blue-200">
+                        {stock}
+                      </span>
+                    ))}
+                    {item.stocks.length > 2 && (
+                      <span className="text-xs text-gray-500">+{item.stocks.length - 2}</span>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))}
