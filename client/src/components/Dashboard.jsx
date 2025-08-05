@@ -162,25 +162,47 @@ export default function Dashboard() {
                 <span className="mr-2">⚡</span>
                 Quick Actions
               </h3>
-              <div className="space-y-3">
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-3 text-left transition-all duration-200 touch-manipulation">
+              <div className="space-y-2">
+                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
                   <div className="font-medium">🔍 Discover Trades</div>
-                  <div className="text-sm opacity-80">Find new opportunities</div>
+                  <div className="text-xs opacity-80">Find new opportunities</div>
                 </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-3 text-left transition-all duration-200 touch-manipulation">
+                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
                   <div className="font-medium">📊 Analyze Sectors</div>
-                  <div className="text-sm opacity-80">Sector performance</div>
+                  <div className="text-xs opacity-80">Sector performance</div>
                 </button>
-                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-3 text-left transition-all duration-200 touch-manipulation">
+                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
                   <div className="font-medium">🤖 Setup Bot</div>
-                  <div className="text-sm opacity-80">Automated trading</div>
+                  <div className="text-xs opacity-80">Automated trading</div>
+                </button>
+                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
+                  <div className="font-medium">📈 Live Market</div>
+                  <div className="text-xs opacity-80">Real-time data</div>
+                </button>
+                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
+                  <div className="font-medium">💼 Portfolio</div>
+                  <div className="text-xs opacity-80">Track performance</div>
+                </button>
+                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
+                  <div className="font-medium">🛡️ Risk Management</div>
+                  <div className="text-xs opacity-80">Safety controls</div>
+                </button>
+                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
+                  <div className="font-medium">⚙️ Strategy Builder</div>
+                  <div className="text-xs opacity-80">Build strategies</div>
+                </button>
+                <button className="w-full bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-lg p-2.5 text-left transition-all duration-200 touch-manipulation">
+                  <div className="font-medium">🧪 Strategy Lab</div>
+                  <div className="text-xs opacity-80">Test & optimize</div>
                 </button>
               </div>
             </div>
           </div>
         </main>
       </div>
-      <Footer />
+      <div className="lg:ml-72">
+        <Footer />
+      </div>
     </div>
   );
 }
